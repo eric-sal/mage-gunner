@@ -6,3 +6,9 @@
 *.csproj
 *.unityproj
 *.sln
+*.userprefs
+*.pidb
+
+# OS-specific files
+.DS_Store
+*.exe

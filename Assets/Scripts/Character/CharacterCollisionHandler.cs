@@ -18,32 +18,36 @@ public class CharacterCollisionHandler : AbstractCollisionHandler {
     /// <summary>
     /// Stop the character's movement in the direction the collision came from.
     /// </summary>
-    public override void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance) {
+    public override void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance, Vector3 normal) {
+        float hDistance = 0;
+        float vDistance = 0;
+     
+        // TODO: Take into account input in both x and y directions... AT THE SAME TIME!
+     
         // a collision in the direction we are moving means we should stop moving
-        if (_character.isMovingRight && fromDirection == Vector3.right ||
-            _character.isMovingLeft && fromDirection == Vector3.left) {
-            float hDistance = distance - _colliderBoundsOffsetX;
-         
-            _character.velocity.x = 0;
-            if (fromDirection == Vector3.left) {
-                hDistance *= -1;
-            }
-         
+        if (fromDirection == Vector3.right || fromDirection == Vector3.left) {
+            hDistance = (distance - _colliderBoundsOffsetX) * fromDirection.x;
             _transform.position = new Vector3(_transform.position.x + hDistance, _transform.position.y, 0);
-
-        } else if (_character.isMovingUp && fromDirection == Vector3.up ||
-            _character.isMovingDown && fromDirection == Vector3.down) {
-
-            _character.velocity.y = 0;
-            float vDistance = distance - _colliderBoundsOffsetY;
-
-            if (fromDirection == Vector3.down) {
-                _character.isGrounded = true;
-                _character.isJumping = false;
-                vDistance *= -1;
-            }
          
-            _transform.position = new Vector3(_transform.position.x, _transform.position.y + vDistance, 0);
+            // Determine the angle of the sloped surface from the normal.
+            float angle = Vector3.Angle(fromDirection, normal) - 90;
+            if (angle > 70) {
+                // If the surface we collied with is a (near) vertical wall,
+                // then stop our forward progress.
+                _character.velocity.x = 0;
+            } else {
+                // Otherwise, this is a sloped surface.
+                float radians = angle * Mathf.Deg2Rad;
+                _character.velocity.x = Mathf.Abs(Mathf.Cos(radians) * _character.velocity.x) * fromDirection.x;
+                _character.velocity.y = Mathf.Abs(Mathf.Sin(radians) * _character.velocity.x) * fromDirection.x;
+            }
+        } else if (fromDirection == Vector3.up || fromDirection == Vector3.down) {
+
+            vDistance = (distance - _colliderBoundsOffsetY) * fromDirection.y;
+         
+            if (normal.x == 0) {
+                _character.velocity.y = 0;
+            }
         }
     }
 }

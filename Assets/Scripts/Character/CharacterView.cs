@@ -4,7 +4,7 @@ using System.Collections;
 // TODO: This is a straight conversion from js without much modification, need to tweak for more robust inheritance
 public class CharacterView : MonoBehaviour {
 
-    public enum Animations { StandRight, SlideRight, WalkRight, JumpRight, StandLeft, SlideLeft, WalkLeft, JumpLeft, PlayerDeath };
+    public enum Animations { StandRight, SlideRight, WalkRight, StandLeft, SlideLeft, WalkLeft, PlayerDeath };
 
     protected CharacterState _character;
     protected AnimatedSprite _sprite;
@@ -43,11 +43,6 @@ public class CharacterView : MonoBehaviour {
                         _sprite.ShowFrame(13);
                         _sprite.Play("WalkRight");
                     }
-                } else if (_character.isJumping) {
-                    if (_currentAnimation != Animations.JumpRight) {
-                        _currentAnimation = Animations.JumpRight;
-                        _sprite.ShowFrame(2);
-                    }
                 } else {
                     if (_currentAnimation != Animations.StandRight) {
                         _currentAnimation = Animations.StandRight;
@@ -61,11 +56,6 @@ public class CharacterView : MonoBehaviour {
                         _currentAnimation = Animations.WalkLeft;
                         _sprite.ShowFrame(10);
                         _sprite.Play("WalkLeft");
-                    }
-                } else if (_character.isJumping) {
-                    if (_currentAnimation != Animations.JumpLeft) {
-                        _currentAnimation = Animations.JumpLeft;
-                        _sprite.ShowFrame(1);
                     }
                 } else {
                     if (_currentAnimation != Animations.StandLeft) {

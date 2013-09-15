@@ -21,33 +21,29 @@ public class CharacterCollisionHandler : AbstractCollisionHandler {
     public override void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance, Vector3 normal) {
         float hDistance = 0;
         float vDistance = 0;
-     
-        // TODO: Take into account input in both x and y directions... AT THE SAME TIME!
-     
-        // a collision in the direction we are moving means we should stop moving
-        if (fromDirection == Vector3.right || fromDirection == Vector3.left) {
-            hDistance = (distance - _colliderBoundsOffsetX) * fromDirection.x;
-            _transform.position = new Vector3(_transform.position.x + hDistance, _transform.position.y, 0);
-         
-            // Determine the angle of the sloped surface from the normal.
-            float angle = Vector3.Angle(fromDirection, normal) - 90;
-            if (angle > 70) {
-                // If the surface we collied with is a (near) vertical wall,
-                // then stop our forward progress.
-                _character.velocity.x = 0;
-            } else {
-                // Otherwise, this is a sloped surface.
-                float radians = angle * Mathf.Deg2Rad;
-                _character.velocity.x = Mathf.Abs(Mathf.Cos(radians) * _character.velocity.x) * fromDirection.x;
-                _character.velocity.y = Mathf.Abs(Mathf.Sin(radians) * _character.velocity.x) * fromDirection.x;
-            }
-        } else if (fromDirection == Vector3.up || fromDirection == Vector3.down) {
 
-            vDistance = (distance - _colliderBoundsOffsetY) * fromDirection.y;
-         
-            if (normal.x == 0) {
-                _character.velocity.y = 0;
-            }
-        }
+        //float theta = Vector3.Angle(fromDirection, normal);
+        //Debug.Log(theta);
+        //float radians = theta * Mathf.Deg2Rad;
+        //Vector3 adjacentVector = new Vector3(normal.x * Mathf.Abs(Mathf.Cos(radians)), normal.y * Mathf.Abs(Mathf.Sin(radians)));
+
+
+        Vector3 adjacentVector = normal;
+        Debug.Log("From: " + fromDirection.normalized);
+        Debug.Log("Adjacent: " + adjacentVector);
+        Vector3 oppositeVector = fromDirection.normalized + adjacentVector;
+        Debug.Log("Opposite: " + oppositeVector);
+
+        //float delta = Vector3.Angle(fromDirection, oppositeVector);
+        //Debug.Log(delta);
+
+        _character.velocity.x = oppositeVector.x;
+        _character.velocity.y = oppositeVector.y;
+
+        //Debug.Log(_character.velocity.x);
+        //Debug.Log(_character.velocity.y);
+
+        //Vector3 distanceOffset = fromDirection.normalized * distance * -1;
+        //_transform.position = new Vector3(_transform.position.x + distanceOffset.x, _transform.position.y + distanceOffset.y);
     }
 }

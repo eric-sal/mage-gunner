@@ -59,7 +59,7 @@ public abstract class AbstractCharacterController : MonoBehaviour {
         float y = _transform.position.y + _character.velocity.y * dt;
         _transform.position = new Vector3(x, y, 0);
         _character.position = new Vector2(x, y);
-		_character.isWalking = _character.velocity.x != 0 || _character.velocity.y != 0;
+        _character.isWalking = _character.velocity.x != 0 || _character.velocity.y != 0;
     }
 
     /// <summary>
@@ -78,53 +78,36 @@ public abstract class AbstractCharacterController : MonoBehaviour {
         float absoluteDistance;
         RaycastHit hitInfo;
 
-        // cast horizontal rays
-        float hVelocity = _character.velocity.x;
 
-        // if we're not moving horizontally, then don't cast any horizontal rays
-        if (hVelocity != 0) {
-            Vector3 hDirection = (hVelocity > 0) ? Vector3.right : Vector3.left;
+        if (_character.velocity.sqrMagnitude != 0) {
+            Vector3 velocity = (Vector3)_character.velocity;
+            Vector3 distance = velocity * deltaTime;
+            absoluteDistance = distance.magnitude + _colliderBoundsOffsetX + _skinThickness;
 
-            float hDistance = hVelocity * deltaTime;
-            absoluteDistance = Mathf.Abs(hDistance) + _colliderBoundsOffsetX + _skinThickness;
+            /*
+            Debug.Log("Velocity: " + velocity);
+            Debug.Log("Distance: " + distance);
+            Debug.Log("AbsoluteDistance: " + absoluteDistance);
+            */
 
-            Vector3 yOffset = new Vector3(0, _colliderBoundsOffsetY - _skinThickness, 0);
+            /*
+            Debug.Log("Position: " + _transform.position);
+            Debug.Log("Velocity: " + _character.velocity);
+            Debug.Log("Velocity * Time: " + (_character.velocity * deltaTime));
+            Debug.Log("Position + Velocity * Time: " + ((Vector2)_transform.position + _character.velocity * deltaTime));
+            */
 
-            if (Physics.Raycast(rayOrigin, hDirection, out hitInfo, absoluteDistance) ||
-                Physics.Raycast(rayOrigin + yOffset, hDirection, out hitInfo, absoluteDistance) ||
-                Physics.Raycast(rayOrigin - yOffset, hDirection, out hitInfo, absoluteDistance)) {
+            Vector3 end = new Vector3(rayOrigin.x + velocity.x * absoluteDistance, rayOrigin.y + velocity.y * absoluteDistance);
+            Debug.DrawLine(rayOrigin, end, Color.magenta);
+            if (Physics.Raycast(rayOrigin, velocity, out hitInfo, absoluteDistance)) {
 
-                // a horizontal collision has occurred
-                _collisionHandler.OnCollision(hitInfo.collider, hDirection, hitInfo.distance, hitInfo.normal);
+                Debug.Log("HIT!");
+                Debug.Log("Distance: " + hitInfo.distance);
+                Debug.Log("Normal: " + hitInfo.normal);
 
-            } else {
-                // we didn't have a horizontal collision, offset the vertical rays by the amount the player moved
-                rayOrigin.x += hDistance;
+                _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
             }
         }
-
-        // cast veritcal rays
-        float vVelocity = _character.velocity.y;
-		
-		if (vVelocity != 0) {
-	        Vector3 vDirection = (vVelocity > 0) ? Vector3.up : Vector3.down;
-	
-	        float vDistance = vVelocity * deltaTime;
-	        absoluteDistance = Mathf.Abs(vDistance) + _colliderBoundsOffsetY + _skinThickness;
-	
-	        Vector3 xOffset = new Vector3(_colliderBoundsOffsetX - _skinThickness, 0, 0);
-	
-	        if (Physics.Raycast(rayOrigin, vDirection, out hitInfo, absoluteDistance) ||
-	            Physics.Raycast(rayOrigin + xOffset, vDirection, out hitInfo, absoluteDistance) ||
-	            Physics.Raycast(rayOrigin - xOffset, vDirection, out hitInfo, absoluteDistance)) {
-	
-	            // a vertical collision has occurred
-	            _collisionHandler.OnCollision(hitInfo.collider, vDirection, hitInfo.distance, hitInfo.normal);
-	
-	        } else {
-	            rayOrigin.y += vDistance;
-	        }
-		}
     }
 
     protected void AddVelocity(Vector2 v) {

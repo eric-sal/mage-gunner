@@ -82,29 +82,10 @@ public abstract class AbstractCharacterController : MonoBehaviour {
         if (_character.velocity.sqrMagnitude != 0) {
             Vector3 velocity = (Vector3)_character.velocity;
             Vector3 distance = velocity * deltaTime;
-            absoluteDistance = distance.magnitude + _colliderBoundsOffsetX + _skinThickness;
 
-            /*
-            Debug.Log("Velocity: " + velocity);
-            Debug.Log("Distance: " + distance);
-            Debug.Log("AbsoluteDistance: " + absoluteDistance);
-            */
-
-            /*
-            Debug.Log("Position: " + _transform.position);
-            Debug.Log("Velocity: " + _character.velocity);
-            Debug.Log("Velocity * Time: " + (_character.velocity * deltaTime));
-            Debug.Log("Position + Velocity * Time: " + ((Vector2)_transform.position + _character.velocity * deltaTime));
-            */
-
-            Vector3 end = new Vector3(rayOrigin.x + velocity.x * absoluteDistance, rayOrigin.y + velocity.y * absoluteDistance);
+            Vector3 end = rayOrigin + distance;
             Debug.DrawLine(rayOrigin, end, Color.magenta);
-            if (Physics.Raycast(rayOrigin, velocity, out hitInfo, absoluteDistance)) {
-
-                Debug.Log("HIT!");
-                Debug.Log("Distance: " + hitInfo.distance);
-                Debug.Log("Normal: " + hitInfo.normal);
-
+            if (Physics.Raycast(rayOrigin, velocity, out hitInfo, distance.magnitude)) {
                 _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
             }
         }

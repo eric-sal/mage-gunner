@@ -13,6 +13,8 @@ using System.Collections;
 /// </summary>
 public abstract class AbstractCharacterController : MonoBehaviour {
 
+    const float RAY_GAP = 0.2f;
+
     protected CharacterState _character;
     protected Sprite _sprite;
     protected Transform _transform;
@@ -75,18 +77,65 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     protected virtual void CollisionCheck(float deltaTime) {
 
         Vector3 rayOrigin = this.collider.bounds.center;
-        float absoluteDistance;
         RaycastHit hitInfo;
-
 
         if (_character.velocity.sqrMagnitude != 0) {
             Vector3 velocity = (Vector3)_character.velocity;
             Vector3 distance = velocity * deltaTime;
+            float rayLength = distance.magnitude;
 
-            Vector3 end = rayOrigin + distance;
-            Debug.DrawLine(rayOrigin, end, Color.magenta);
-            if (Physics.Raycast(rayOrigin, velocity, out hitInfo, distance.magnitude)) {
-                _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+            Bounds b = this.collider.bounds;
+            Vector3 center = b.center;
+            float ex = b.extents.x;
+            float ey = b.extents.y;
+    
+            var topLeft = new Vector3(center.x - ex + _skinThickness, center.y + ey - _skinThickness);
+            var topRight = new Vector3(center.x + ex - _skinThickness, center.y + ey - _skinThickness);
+            var bottomLeft = new Vector3(center.x - ex + _skinThickness, center.y - ey + _skinThickness);
+            var bottomRight = new Vector3(center.x + ex - _skinThickness, center.y - ey + _skinThickness);
+
+            if (velocity.x > 0) {
+                // Moving right...
+                if (velocity.y > 0) {
+                    // ... and up
+                    if (TopToBottomRaySweep(topRight, bottomRight, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                    }
+
+                    if (RightToLeftRaySweep(topRight, topLeft, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                    }
+                } else {
+                    // ... and down or straight ahead
+                    if (BottomToTopRaySweep(bottomRight, topRight, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                    }
+
+                    if (RightToLeftRaySweep(bottomRight, bottomLeft, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                    }
+                }
+            } else {
+                // Moving left
+                if (velocity.y > 0) {
+                    // ... and up
+                    if (TopToBottomRaySweep(topLeft, bottomLeft, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                    }
+
+                    if (LeftToRightRaySweep(topLeft, topRight, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                    }
+                } else {
+                    // ... and down or straight ahead
+                    if (BottomToTopRaySweep(bottomLeft, topLeft, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                    }
+
+                    if (LeftToRightRaySweep(bottomLeft, bottomRight, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                    }
+                }
             }
         }
     }
@@ -94,5 +143,73 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     protected void AddVelocity(Vector2 v) {
         _character.velocity.x += v.x;
         _character.velocity.y += v.y;
+    }
+
+    private bool RightToLeftRaySweep(Vector3 startPoint, Vector3 endPoint, Vector3 direction, out RaycastHit hitInfo, float rayLength) {
+        float y = startPoint.y;
+
+        for (float x = startPoint.x; x >= endPoint.x; x -= RAY_GAP) {
+            var start = new Vector3(x, y);
+            var end = new Vector3(start.x + direction.x * rayLength, start.y + direction.y * rayLength);
+
+            Debug.DrawLine(start, end, Color.red, 0.25f);
+            if (Physics.Raycast(start, direction, out hitInfo, rayLength)) {
+                return true;
+            }
+        }
+
+        hitInfo = new RaycastHit();
+        return false;
+    }
+
+    private bool LeftToRightRaySweep(Vector3 startPoint, Vector3 endPoint, Vector3 direction, out RaycastHit hitInfo, float rayLength) {
+        float y = startPoint.y;
+
+        for (float x = startPoint.x; x <= endPoint.x; x += RAY_GAP) {
+            var start = new Vector3(x, y);
+            var end = new Vector3(start.x + direction.x * rayLength, start.y + direction.y * rayLength);
+
+            Debug.DrawLine(start, end, Color.green, 0.25f);
+            if (Physics.Raycast(start, direction, out hitInfo, rayLength)) {
+                return true;
+            }
+        }
+
+        hitInfo = new RaycastHit();
+        return false;
+    }
+
+    private bool TopToBottomRaySweep(Vector3 startPoint, Vector3 endPoint, Vector3 direction, out RaycastHit hitInfo, float rayLength) {
+        float x = startPoint.x;
+
+        for (float y = startPoint.y; y >= endPoint.y; y -= RAY_GAP) {
+            var start = new Vector3(x, y);
+            var end = new Vector3(start.x + direction.x * rayLength, start.y + direction.y * rayLength);
+
+            Debug.DrawLine(start, end, Color.cyan, 0.25f);
+            if (Physics.Raycast(start, direction, out hitInfo, rayLength)) {
+                return true;
+            }
+        }
+
+        hitInfo = new RaycastHit();
+        return false;
+    }
+
+    private bool BottomToTopRaySweep(Vector3 startPoint, Vector3 endPoint, Vector3 direction, out RaycastHit hitInfo, float rayLength) {
+        float x = startPoint.x;
+
+        for (float y = startPoint.y; y <= endPoint.y; y += RAY_GAP) {
+            var start = new Vector3(x, y);
+            var end = new Vector3(start.x + direction.x * rayLength, start.y + direction.y * rayLength);
+
+            Debug.DrawLine(start, end, Color.magenta, 0.25f);
+            if (Physics.Raycast(start, direction, out hitInfo, rayLength)) {
+                return true;
+            }
+        }
+
+        hitInfo = new RaycastHit();
+        return false;
     }
 }

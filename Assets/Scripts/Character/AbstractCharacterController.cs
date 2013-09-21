@@ -100,40 +100,54 @@ public abstract class AbstractCharacterController : MonoBehaviour {
                     // ... and up
                     if (TopToBottomRaySweep(topRight, bottomRight, velocity, out hitInfo, rayLength)) {
                         _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
-                    }
-
-                    if (RightToLeftRaySweep(topRight, topLeft, velocity, out hitInfo, rayLength)) {
-                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                        CollisionCheck(deltaTime);
                     }
                 } else {
                     // ... and down or straight ahead
                     if (BottomToTopRaySweep(bottomRight, topRight, velocity, out hitInfo, rayLength)) {
                         _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
-                    }
-
-                    if (RightToLeftRaySweep(bottomRight, bottomLeft, velocity, out hitInfo, rayLength)) {
-                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                        CollisionCheck(deltaTime);
                     }
                 }
-            } else {
+            } else if (velocity.x < 0) {
                 // Moving left
                 if (velocity.y > 0) {
                     // ... and up
                     if (TopToBottomRaySweep(topLeft, bottomLeft, velocity, out hitInfo, rayLength)) {
                         _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
-                    }
-
-                    if (LeftToRightRaySweep(topLeft, topRight, velocity, out hitInfo, rayLength)) {
-                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                        CollisionCheck(deltaTime);
                     }
                 } else {
                     // ... and down or straight ahead
                     if (BottomToTopRaySweep(bottomLeft, topLeft, velocity, out hitInfo, rayLength)) {
                         _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                        CollisionCheck(deltaTime);
                     }
+                }
+            }
 
+            if (velocity.y > 0) {
+                if (velocity.x > 0) {
+                    if (RightToLeftRaySweep(topRight, topLeft, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                        CollisionCheck(deltaTime);
+                    }
+                } else {
+                    if (LeftToRightRaySweep(topLeft, topRight, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                        CollisionCheck(deltaTime);
+                    }
+                }
+            } else if (velocity.y < 0) {
+                if (velocity.x > 0) {
+                    if (RightToLeftRaySweep(bottomRight, bottomLeft, velocity, out hitInfo, rayLength)) {
+                        _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                        CollisionCheck(deltaTime);
+                    }
+                } else {
                     if (LeftToRightRaySweep(bottomLeft, bottomRight, velocity, out hitInfo, rayLength)) {
                         _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                        CollisionCheck(deltaTime);
                     }
                 }
             }

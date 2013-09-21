@@ -21,16 +21,23 @@ public class CharacterCollisionHandler : AbstractCollisionHandler {
     public override void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance, Vector3 normal) {
 
         float theta = Vector3.Angle(fromDirection, normal);
-        float radians = theta * Mathf.Deg2Rad;
 
-        // QUESTION: Does it make sense to pass the fromDirection.magnitude to the collision
-        // handler methods since calculating the magnitude is an expensive operation?
-        float adjacentVectorMagnitude = fromDirection.magnitude * Mathf.Abs(Mathf.Cos(radians));
+        // If the wall or floor we've just run into is close enough to exactly opposite
+        // to our velocity vector, then we'll just just stop our forward progress.
+        if (theta <= 160f) {
+            float radians = theta * Mathf.Deg2Rad;
 
-        Vector3 adjacentVector = normal * adjacentVectorMagnitude;
-        Vector3 oppositeVector = fromDirection + adjacentVector;
+            // QUESTION: Does it make sense to pass the fromDirection.magnitude to the collision
+            // handler methods since calculating the magnitude is an expensive operation?
+            float adjacentVectorMagnitude = fromDirection.magnitude * Mathf.Abs(Mathf.Cos(radians));
+            Vector3 adjacentVector = normal * adjacentVectorMagnitude;
+            Vector3 oppositeVector = fromDirection + adjacentVector;
 
-        _character.velocity.x = oppositeVector.x;
-        _character.velocity.y = oppositeVector.y;
+            _character.velocity.x = oppositeVector.x;
+            _character.velocity.y = oppositeVector.y;
+        } else {
+            _character.velocity.x = 0;
+            _character.velocity.y = 0;
+        }
     }
 }

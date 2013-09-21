@@ -76,19 +76,17 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     /// </param>
     protected virtual void CollisionCheck(float deltaTime) {
 
-        Vector3 rayOrigin = this.collider.bounds.center;
-        RaycastHit hitInfo;
-
         if (_character.velocity.sqrMagnitude != 0) {
             Vector3 velocity = (Vector3)_character.velocity;
             Vector3 distance = velocity * deltaTime;
             float rayLength = distance.magnitude;
+            RaycastHit hitInfo;
 
             Bounds b = this.collider.bounds;
             Vector3 center = b.center;
             float ex = b.extents.x;
             float ey = b.extents.y;
-    
+
             var topLeft = new Vector3(center.x - ex + _skinThickness, center.y + ey - _skinThickness);
             var topRight = new Vector3(center.x + ex - _skinThickness, center.y + ey - _skinThickness);
             var bottomLeft = new Vector3(center.x - ex + _skinThickness, center.y - ey + _skinThickness);

@@ -8,17 +8,9 @@ public class PlayerCharacterController : AbstractCharacterController {
 	private float _verticalInput;
 
     protected override void Act() {
-		
-		_character.velocity.y = _character.maxWalkSpeed * _verticalInput;
-        _character.velocity.x = _character.maxWalkSpeed * _horizontalInput;
-
-        if (_horizontalInput > 0) {
-            _character.facing = Vector2.right;
-        } else if (_horizontalInput < 0) {
-            _character.facing = -Vector2.right;
-        }
-
-        return;
+        var velocity = new Vector2(_horizontalInput, _verticalInput) * _character.maxWalkSpeed;
+        _character.velocity = Vector2.ClampMagnitude(velocity, _character.maxWalkSpeed);
+        _moveable.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
     }
 
     public void Update() {

@@ -70,7 +70,12 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
     /// Calls the appropriate overload of HandleCollision for this.gameObject and collidedWith.gameObject
     /// </summary>
     public void OnCollision(Collider collidedWith, Vector3 fromDirection, float distance, Vector3 normal) {
-        
+
+        if (collidedWith == null) {
+            // this is indicative of a bug in the code that invoked this method
+            throw new ArgumentNullException("collidedWith", "Cannot call OnCollision without providing a collider");
+        }
+
         var other = collidedWith.gameObject.GetComponent<AbstractCollisionHandler>();
         
         if (other == null) {

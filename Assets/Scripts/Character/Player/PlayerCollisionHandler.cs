@@ -7,7 +7,7 @@ public class PlayerCollisionHandler : CharacterCollisionHandler {
  
     public override void Awake() {
         base.Awake();
-        _controller = GetComponent<PlayerCharacterController>();
+        //_controller = GetComponent<PlayerCharacterController>();
     }
 	/* Left here as an example
     public override void HandleCollision(MarioTwinCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal) {

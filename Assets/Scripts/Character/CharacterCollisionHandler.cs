@@ -19,7 +19,7 @@ public class CharacterCollisionHandler : AbstractCollisionHandler {
     /// Stop the character's movement in the direction the collision came from.
     /// </summary>
     public override void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance, Vector3 normal) {
-
+        /*
         float theta = Vector3.Angle(fromDirection, normal);
 
         // If the wall or floor we've just run into is close enough to exactly opposite
@@ -38,6 +38,6 @@ public class CharacterCollisionHandler : AbstractCollisionHandler {
         } else {
             _character.velocity.x = 0;
             _character.velocity.y = 0;
-        }
+        }*/
     }
 }

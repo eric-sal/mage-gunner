@@ -100,11 +100,10 @@ public class MoveableObject : MonoBehaviour {
             hadVertCollision = HorizontalSweep(bottomLeft, bottomRight, velocity, out vHitInfo, rayLength);
         }
 
-        Transform t = this.transform;
-        Vector3 p = t.position;
         if (!hadHorzCollision && !hadVertCollision) {
             // no collisions, move the object the desired distance
-            t.position = new Vector3(p.x + distance.x, p.y + distance.y, 0);
+            Vector3 p = this.transform.position;
+            this.transform.position = new Vector3(p.x + distance.x, p.y + distance.y);
         } else {
             // collision, use the shortest distance
             RaycastHit hitInfo = vHitInfo;
@@ -118,22 +117,11 @@ public class MoveableObject : MonoBehaviour {
 
             float actualDistance = hitInfo.distance - SKIN_THICKNESS;
             if (actualDistance > 0f) {
-                // only move the distance until we hit another collider
-                float speed = velocity.magnitude;
-                float timeSpentMoving = actualDistance / speed;
-                Vector3 tempDistance = velocity * timeSpentMoving;
-                t.position = new Vector3(p.x + tempDistance.x, p.y + tempDistance.y);
-
-                _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
-
-                float remainingTime = deltaTime - timeSpentMoving;
-                if (remainingTime > 0f) {
-                    // there's still time left, slide along the wall if the angles allow for it
-                    // TODO
-                }
+                // we cannot move the full distance we originally wanted to
+                _collisionHandler.OnCollision(hitInfo.collider, velocity, actualDistance, hitInfo.normal, deltaTime);
             } else {
                 // cannot move, collided as soon we tried to move
-                _collisionHandler.OnCollision(hitInfo.collider, velocity, hitInfo.distance, hitInfo.normal);
+                _collisionHandler.OnCollision(hitInfo.collider, velocity, 0f, hitInfo.normal, deltaTime);
             }
         }
 

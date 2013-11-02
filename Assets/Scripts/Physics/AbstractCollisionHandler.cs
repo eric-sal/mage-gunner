@@ -22,7 +22,7 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
 
     public virtual void Awake() {
         this.typeName = this.GetType().Name;
-        _args = new System.Object[3];
+        _args = new System.Object[5];
         BuildMethodInfoTable();
     }
 
@@ -69,7 +69,7 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
     /// <summary>
     /// Calls the appropriate overload of HandleCollision for this.gameObject and collidedWith.gameObject
     /// </summary>
-    public void OnCollision(Collider collidedWith, Vector3 fromDirection, float distance, Vector3 normal) {
+    public void OnCollision(Collider collidedWith, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
 
         if (collidedWith == null) {
             // this is indicative of a bug in the code that invoked this method
@@ -79,7 +79,7 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
         var other = collidedWith.gameObject.GetComponent<AbstractCollisionHandler>();
         
         if (other == null) {
-            this.HandleCollision(collidedWith, fromDirection, distance, normal);
+            this.HandleCollision(collidedWith, impactVelocity, distance, normal, deltaTime);
         
         } else {
             string thisName = this.typeName;
@@ -88,14 +88,17 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
             // dispatch other handler to our own overload
             MethodInfo mi = _methodInfoTable[thisName][otherName];
             _args[0] = other;
-            _args[1] = fromDirection;
+            _args[1] = impactVelocity;
             _args[2] = distance;
+            _args[3] = normal;
+            _args[4] = deltaTime;
             mi.Invoke(this, _args);
 
             // dispatch ourselves to the other handler's overload
             mi = _methodInfoTable[otherName][thisName];
             _args[0] = this;
-            _args[1] = fromDirection * -1;
+            //_args[1] = impactVelocity * -1;
+            //_args[3] = normal * -1; // this is wrong
             mi.Invoke(other, _args);
         }
     }
@@ -106,14 +109,14 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
     /// minimum, provide an implementation for this method.  All other overloads of the HandleCollision
     /// method will funnel into this function unless overridden with different behavior.
     /// </summary>
-    public abstract void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance, Vector3 normal);
+    public abstract void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance, Vector3 normal, float deltaTime);
 
     /// <summary>
     /// The behavior to use for unknown colliders.  Unless overridden this will pass through to
-    /// HandleCollision(other.collider, fromDirection, distance).
+    /// HandleCollision(other.collider, fromDirection, distance, deltaTime).
     /// </summary>
-    public virtual void DefaultHandleCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal) {
-        HandleCollision(other.collider, fromDirection, distance, normal);
+    public virtual void DefaultHandleCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal, float deltaTime) {
+        HandleCollision(other.collider, fromDirection, distance, normal, deltaTime);
     }
 
     /*
@@ -124,12 +127,12 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
     those classes and the dispatching is done based on the run-time type of the collision handlers, not
     the compile-time type.
     */
-    public virtual void HandleCollision(CharacterCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal) {
-        DefaultHandleCollision(other, fromDirection, distance, normal);
+    public virtual void HandleCollision(CharacterCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal, float deltaTime) {
+        DefaultHandleCollision(other, fromDirection, distance, normal, deltaTime);
     }
 
-    public virtual void HandleCollision(PlayerCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal) {
-        DefaultHandleCollision(other, fromDirection, distance, normal);
+    public virtual void HandleCollision(PlayerCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal, float deltaTime) {
+        DefaultHandleCollision(other, fromDirection, distance, normal, deltaTime);
     }
 
 	/* Left here as an example

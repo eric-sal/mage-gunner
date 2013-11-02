@@ -39,6 +39,8 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     /// </summary>
     protected abstract void Act();
 
+    protected abstract void Aim();
+
     public virtual void FixedUpdate() {
         // Let player or AI modify character state first
         Act();

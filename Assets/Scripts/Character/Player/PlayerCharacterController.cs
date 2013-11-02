@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PlayerCharacterController : BaseCharacterController {
 
+    public Firearm equippedFirearm;
     public bool isPlayerInputEnabled;
     private float _horizontalInput;
 	private float _verticalInput;
@@ -26,14 +27,14 @@ public class PlayerCharacterController : BaseCharacterController {
 
             Aim();
 
-            if (Input.GetMouseButton(0)) {
+            if (equippedFirearm != null && Input.GetMouseButton(0)) {
 
-                // simulate weapon fire
                 Debug.Log("BANG!");
-                var recoil = new Vector3(Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
+
+                Vector3 bulletVector = _reticle.transform.position - this.transform.position;
+                Vector3 recoil = equippedFirearm.Fire(bulletVector);
                 _reticle.ApplyRecoil(recoil);
             }
-
         }
     }
 }

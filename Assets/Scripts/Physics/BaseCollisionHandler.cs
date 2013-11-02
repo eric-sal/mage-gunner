@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// <summary>
 /// This is the base class from which all other collision handlers inherit.
 /// </summary>
-public abstract class AbstractCollisionHandler : MonoBehaviour {
+public abstract class BaseCollisionHandler : MonoBehaviour {
 
     // to cache the reflected type name
     public string typeName;
@@ -28,7 +28,7 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
 
 
     /// <summary>
-    /// Create a table mapping sublcasses of AbstractCollisionHandler to the correct HandleCollision method.
+    /// Create a table mapping sublcasses of BaseCollisionHandler to the correct HandleCollision method.
     /// Inspiration: http://www.arcadianvisions.com/downloads/MultipleDispatch/multiDispatch.html
     /// </summary>
     private void BuildMethodInfoTable() {
@@ -41,7 +41,7 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
             }
 
             _methodInfoTable = new Dictionary<string, Dictionary<string, MethodInfo>>();
-            Type baseType = System.Type.GetType("AbstractCollisionHandler");
+            Type baseType = System.Type.GetType("BaseCollisionHandler");
 
             foreach (Type t in Assembly.GetCallingAssembly().GetTypes()) {
 
@@ -76,7 +76,7 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
             throw new ArgumentNullException("collidedWith", "Cannot call OnCollision without providing a collider");
         }
 
-        var other = collidedWith.gameObject.GetComponent<AbstractCollisionHandler>();
+        var other = collidedWith.gameObject.GetComponent<BaseCollisionHandler>();
         
         if (other == null) {
             this.HandleCollision(collidedWith, impactVelocity, distance, normal, deltaTime);
@@ -105,7 +105,7 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
 
     /// <summary>
     /// Handles collision with objects that we don't have special behavior for; like the ground or other
-    /// non-interactive things in the environment.  A subclass of AbstractCollisionHandler must, at a
+    /// non-interactive things in the environment.  A subclass of BaseCollisionHandler must, at a
     /// minimum, provide an implementation for this method.  All other overloads of the HandleCollision
     /// method will funnel into this function unless overridden with different behavior.
     /// </summary>
@@ -115,13 +115,13 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
     /// The behavior to use for unknown colliders.  Unless overridden this will pass through to
     /// HandleCollision(other.collider, fromDirection, distance, deltaTime).
     /// </summary>
-    public virtual void DefaultHandleCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal, float deltaTime) {
+    public virtual void DefaultHandleCollision(BaseCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal, float deltaTime) {
         HandleCollision(other.collider, fromDirection, distance, normal, deltaTime);
     }
 
     /*
     We want a virtual overload of HandleCollision for every concrete subtype of CollisionHandler.
-    In AbstractCollisionHandler, every method should call the DefaultHandleCollision method.  Subclasses
+    In BaseCollisionHandler, every method should call the DefaultHandleCollision method.  Subclasses
     can then override HandleCollision for specific cases or can also override DefaultHandleCollision if necessary.
     Note, we don't need to include overloads for abstract subclasses as there will never be instances of
     those classes and the dispatching is done based on the run-time type of the collision handlers, not

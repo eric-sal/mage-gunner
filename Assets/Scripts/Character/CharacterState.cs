@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// The Character state is modified by a class that inherits from AbstractCharacterController.
+/// The Character state is modified by a class that inherits from BaseCharacterController.
 /// </summary>
 public class CharacterState : MonoBehaviour {
 

@@ -5,24 +5,38 @@ public class CameraController : MonoBehaviour {
 
     public Transform player; // set in unity
 
-    private Transform _camera;
-    private Transform _bgCamera1;
-    private Transform _bgCamera2;
-    private Transform _bgCamera3;
+    private Camera _camera;
 
     void Awake() {
-        _camera = GameObject.FindWithTag("MainCamera").transform;
-        _bgCamera1 = GameObject.FindWithTag("BGCamera1").transform;
-        _bgCamera2 = GameObject.FindWithTag("BGCamera2").transform;
-        _bgCamera3 = GameObject.FindWithTag("BGCamera3").transform;
+        _camera = Camera.main;
     }
 
     void Update() {
-        var x = player.position.x;
-        _camera.position = new Vector3(x, _camera.position.y, _camera.position.z);
-        _bgCamera1.position = new Vector3(x * 0.65f, _bgCamera1.position.y, _bgCamera1.position.z);
-        _bgCamera2.position = new Vector3(x * 0.9f, _bgCamera2.position.y, _bgCamera2.position.z);
-        _bgCamera3.position = new Vector3(x * 0.85f, _bgCamera3.position.y, _bgCamera3.position.z);
+        _camera.transform.position = new Vector3(player.position.x, player.position.y, _camera.transform.position.z);
+    }
+
+    public static Vector3 clampPosition(Vector3 worldPosition) {
+        Camera camera = Camera.main;
+        Vector3 screenPosition = camera.WorldToScreenPoint(worldPosition);
+
+        if (screenPosition.x < 0f) {
+            Vector3 leftmostPoint = new Vector3(0f, screenPosition.y, screenPosition.z);
+            worldPosition = camera.ScreenToWorldPoint(leftmostPoint);
+
+        } else if (screenPosition.x > camera.pixelWidth) {
+            Vector3 rightmostPoint = new Vector3(camera.pixelWidth, screenPosition.y, screenPosition.z);
+            worldPosition = camera.ScreenToWorldPoint(rightmostPoint);
+        }
+
+        if (screenPosition.y < 0f) {
+            Vector3 bottommostPoint = new Vector3(screenPosition.x, 0f, screenPosition.z);
+            worldPosition = camera.ScreenToWorldPoint(bottommostPoint);
+
+        } else if (screenPosition.y > camera.pixelHeight) {
+            Vector3 topmostPoint = new Vector3(screenPosition.x, camera.pixelHeight, screenPosition.z);
+            worldPosition = camera.ScreenToWorldPoint(topmostPoint);
+        }
+
+        return worldPosition;
     }
 }
-

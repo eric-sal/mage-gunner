@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Reticle : MonoBehaviour {
+public class ReticleController : MonoBehaviour {
 
     protected Vector3 _recoil;
 

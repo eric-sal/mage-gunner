@@ -16,13 +16,17 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     protected CharacterState _character;
     protected Sprite _sprite;
     protected MoveableObject _moveable;
-    protected Reticle _reticle;
+    protected ReticleController _reticle;
 
     public virtual void Awake() {
         _character = GetComponent<CharacterState>();
         _sprite = GetComponent<Sprite>();
         _moveable = GetComponent<MoveableObject>();
-        _reticle = GameObject.Find("Reticle").GetComponent<Reticle>();
+
+        GameObject reticlePrefab = (GameObject)Resources.Load("Prefabs/Reticle");
+        Vector3 spawnPosition = _character.transform.position + new Vector3(0, 2);
+        GameObject reticleInstance = (GameObject)Instantiate(reticlePrefab, spawnPosition, reticlePrefab.transform.rotation);
+        _reticle = reticleInstance.GetComponent<ReticleController>();
     }
 
     public virtual void Start() {

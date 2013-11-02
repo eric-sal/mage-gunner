@@ -16,11 +16,13 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     protected CharacterState _character;
     protected Sprite _sprite;
     protected MoveableObject _moveable;
+    protected Reticle _reticle;
 
     public virtual void Awake() {
         _character = GetComponent<CharacterState>();
         _sprite = GetComponent<Sprite>();
         _moveable = GetComponent<MoveableObject>();
+        _reticle = GameObject.Find("Reticle").GetComponent<Reticle>();
     }
 
     public virtual void Start() {
@@ -44,5 +46,7 @@ public abstract class AbstractCharacterController : MonoBehaviour {
         if (_moveable != null) {
             _moveable.Move(_character.velocity, Time.deltaTime);
         }
+
+        _reticle.ReduceRecoil(_character.getRecoilReduction());
     }
 }

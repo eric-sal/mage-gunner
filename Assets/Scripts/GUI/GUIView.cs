@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 
 public class GUIView : MonoBehaviour {
+    /*
     // Coins
     private GUIText _marioCoins;
     private CharacterState _mario;
@@ -33,4 +34,5 @@ public class GUIView : MonoBehaviour {
         // Timer
         _timeValue.text = Math.Floor(_gameTimer.currentTime).ToString();
     }
+    */
 }

@@ -12,7 +12,9 @@ public class CharacterState : MonoBehaviour {
     public float maxWalkSpeed;
     public int health;
     public bool isWalking;
-    public int coinCount;
+
+    public int strength;
+
 
     public bool isMovingRight {
         get { return velocity.x > 0; }
@@ -29,4 +31,10 @@ public class CharacterState : MonoBehaviour {
     public bool isMovingDown {
         get { return velocity.y < 0; }
     }
+
+    // TODO: pass in some kind of parameter for weapon?
+    public float getRecoilReduction() {
+        return strength * 0.05f;
+    }
+
 }

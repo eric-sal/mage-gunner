@@ -7,14 +7,6 @@ public class PlayerCharacterController : AbstractCharacterController {
     private float _horizontalInput;
 	private float _verticalInput;
 
-    public override void Start() {
-        base.Start();
-        Screen.lockCursor = true;
-        //var mousePos = Input.mousePosition;
-        //var reticlePos = Camera.main.ScreenToWorldPoint(mousePos);
-        //_reticle.transform.position = new Vector3(reticlePos.x, reticlePos.y);
-    }
-
     protected override void Act() {
         var velocity = new Vector2(_horizontalInput, _verticalInput) * _character.maxWalkSpeed;
         _character.velocity = Vector2.ClampMagnitude(velocity, _character.maxWalkSpeed);

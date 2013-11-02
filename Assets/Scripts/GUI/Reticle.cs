@@ -15,6 +15,10 @@ public class Reticle : MonoBehaviour {
 	}
 
     public void SetPosition(Vector3 worldPosition) {
+        if (SceneController.isPaused) {
+            return;
+        }
+
         this.transform.position = CameraController.clampPosition(worldPosition);
     }
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class PlayerCharacterController : AbstractCharacterController {
+public class PlayerCharacterController : BaseCharacterController {
 
     public bool isPlayerInputEnabled;
     private float _horizontalInput;

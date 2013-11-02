@@ -12,12 +12,12 @@ public class MoveableObject : MonoBehaviour {
 
     public Vector3 velocity;
 
-    protected AbstractCharacterController _characterController;
-    protected AbstractCollisionHandler _collisionHandler;
+    protected BaseCharacterController _characterController;
+    protected BaseCollisionHandler _collisionHandler;
 
     void Awake() {
-        _characterController = GetComponent<AbstractCharacterController>();
-        _collisionHandler = GetComponent<AbstractCollisionHandler>();
+        _characterController = GetComponent<BaseCharacterController>();
+        _collisionHandler = GetComponent<BaseCollisionHandler>();
     }
 
     public bool isMovingRight {

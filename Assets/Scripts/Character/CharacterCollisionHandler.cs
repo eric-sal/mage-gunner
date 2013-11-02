@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class CharacterCollisionHandler : AbstractCollisionHandler {
+public class CharacterCollisionHandler : BaseCollisionHandler {
 
     protected MoveableObject _moveable;
 

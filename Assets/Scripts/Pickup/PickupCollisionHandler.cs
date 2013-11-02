@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class PickupCollisionHandler : AbstractCollisionHandler {
+public class PickupCollisionHandler : BaseCollisionHandler {
 
     public override void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance, Vector3 normal, float deltaTime) {
 

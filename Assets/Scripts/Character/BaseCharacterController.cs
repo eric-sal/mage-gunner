@@ -11,7 +11,7 @@ using System.Collections;
 ///
 /// Sub-classes should modify character state in the 'Act' function.
 /// </summary>
-public abstract class AbstractCharacterController : MonoBehaviour {
+public abstract class BaseCharacterController : MonoBehaviour {
 
     protected CharacterState _character;
     protected Sprite _sprite;

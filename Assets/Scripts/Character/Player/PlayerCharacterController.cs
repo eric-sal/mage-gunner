@@ -9,14 +9,20 @@ public class PlayerCharacterController : BaseCharacterController {
 	private float _verticalInput;
 
     protected override void Act() {
-        var velocity = new Vector2(_horizontalInput, _verticalInput) * _character.maxWalkSpeed;
-        _character.velocity = Vector2.ClampMagnitude(velocity, _character.maxWalkSpeed);
+        var velocity = new Vector2(_horizontalInput, _verticalInput);
+        _character.velocity = Vector2.ClampMagnitude(velocity, 1) * _character.maxWalkSpeed;
         _moveable.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
     }
 
     protected override void Aim() {
         var mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         _reticle.SetPosition(_reticle.transform.position + mouseDelta);
+    }
+
+    protected void Fire() {
+        Vector3 bulletVector = _reticle.transform.position - this.transform.position;
+        Vector3 recoil = equippedFirearm.Fire(bulletVector);
+        _reticle.ApplyRecoil(recoil);
     }
 
     public void Update() {
@@ -28,10 +34,10 @@ public class PlayerCharacterController : BaseCharacterController {
             Aim();
 
             if (equippedFirearm != null) {
-                if (Input.GetButton("Fire1")) {
-                    Vector3 bulletVector = _reticle.transform.position - this.transform.position;
-                    Vector3 recoil = equippedFirearm.Fire(bulletVector);
-                    _reticle.ApplyRecoil(recoil);
+                if (equippedFirearm.fullAuto && Input.GetButton("Fire1")) {
+                    Fire();
+                } else if (!equippedFirearm.fullAuto && Input.GetButtonDown("Fire1")) {
+                    Fire();
                 } else if (Input.GetButton("Reload")) {
                     equippedFirearm.Reload();
                 }

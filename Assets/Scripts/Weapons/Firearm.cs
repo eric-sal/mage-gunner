@@ -12,6 +12,7 @@ public class Firearm : MonoBehaviour {
 
     private float _cycleTime; // time per bullet (inverse of rate of fire)
     private float _elapsed;
+    private int _roundsFired;
 
     private static GameObject _bulletBucket;
     private static GameObject _bulletPrefab;
@@ -49,7 +50,7 @@ public class Firearm : MonoBehaviour {
     /// The direction we're firing in.
     /// </param>
 	public Vector3 Fire(Vector3 direction) {
-        if (_elapsed <= _cycleTime) {
+        if (_elapsed <= _cycleTime || _roundsFired >= magazineSize) {
             return Vector3.zero;
         }
 
@@ -64,16 +65,16 @@ public class Firearm : MonoBehaviour {
             y *= -1;
         }
 
-        Debug.Log(string.Format("Bullet velocity : {0}, {1}", x, y));
-
         GameObject bullet = (GameObject)Instantiate(_bulletPrefab, this.transform.position, _bulletPrefab.transform.rotation);
-
-        Debug.Log(bullet);
-
         bullet.transform.parent = _bulletBucket.transform;
         var bulletState = bullet.GetComponent<MoveableObject>();
         bulletState.velocity = new Vector3(x, y, 0);
+        _roundsFired += 1;
 
         return new Vector3(randomRecoil, randomRecoil);
+    }
+
+    public void Reload() {
+        _roundsFired = 0;
     }
 }

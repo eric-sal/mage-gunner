@@ -27,13 +27,14 @@ public class PlayerCharacterController : BaseCharacterController {
 
             Aim();
 
-            if (equippedFirearm != null && Input.GetMouseButton(0)) {
-
-                Debug.Log("BANG!");
-
-                Vector3 bulletVector = _reticle.transform.position - this.transform.position;
-                Vector3 recoil = equippedFirearm.Fire(bulletVector);
-                _reticle.ApplyRecoil(recoil);
+            if (equippedFirearm != null) {
+                if (Input.GetButton("Fire1")) {
+                    Vector3 bulletVector = _reticle.transform.position - this.transform.position;
+                    Vector3 recoil = equippedFirearm.Fire(bulletVector);
+                    _reticle.ApplyRecoil(recoil);
+                } else if (Input.GetButton("Reload")) {
+                    equippedFirearm.Reload();
+                }
             }
         }
     }

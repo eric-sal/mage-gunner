@@ -25,7 +25,7 @@ public class Firearm : MonoBehaviour {
 
 	void Start() {
         if (rateOfFire <= 0) {
-            throw new InvalidOperationException("rateOfFire must be >= 0!");
+            throw new InvalidOperationException("rateOfFire must be > 0!");
         }
 
         if (_bulletPrefab == null) {
@@ -64,13 +64,13 @@ public class Firearm : MonoBehaviour {
 
         switch (scatter) {
         case Scatter.Standard:
-            fireStandardScatter(direction);
+            FireStandardScatter(direction);
             break;
         case Scatter.Spray:
-            fireSprayScatter(direction);
+            FireSprayScatter(direction);
             break;
         case Scatter.Spread:
-            fireSpreadScatter(direction);
+            FireSpreadScatter(direction);
             break;
         }
 
@@ -88,13 +88,13 @@ public class Firearm : MonoBehaviour {
     // direction if the player isn't proficient enough in the weapon.
     // Standard gun fire.
     // ex: pistol, SMG, assault rifle
-    private void fireStandardScatter(Vector3 direction) {
-        spawnBullet(direction);
+    private void FireStandardScatter(Vector3 direction) {
+        SpawnBullet(direction);
     }
 
     // Buckshot-like spray.
     // ex: shotgun
-    private void fireSprayScatter(Vector3 direction) {
+    private void FireSprayScatter(Vector3 direction) {
         float scatterAmount;
 
         // If we weren't in a top-down (x, y plane) view, I *think* we would use a
@@ -103,13 +103,13 @@ public class Firearm : MonoBehaviour {
 
         for (int i = 0; i < numProjectiles; i++) {
             scatterAmount = UnityEngine.Random.Range(-scatterVariation, scatterVariation);
-            spawnBullet(quato * Quaternion.Euler(0, scatterAmount, 0) * Vector3.forward);
+            SpawnBullet(quato * Quaternion.Euler(0, scatterAmount, 0) * Vector3.forward);
         }
     }
 
     // A spread shot.
     // ex: the "Spread" gun from Contra.
-    private void fireSpreadScatter(Vector3 direction) {
+    private void FireSpreadScatter(Vector3 direction) {
         Quaternion newQuato;
 
         // If we weren't in a top-down (x, y plane) view, I *think* we would use a
@@ -117,11 +117,11 @@ public class Firearm : MonoBehaviour {
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         for (int i = (int)Mathf.Floor(numProjectiles / 2f) * -1; i < (int)Mathf.Ceil(numProjectiles / 2f); i++) {
-            spawnBullet(quato * Quaternion.Euler(0, scatterVariation * i, 0) * Vector3.forward);
+            SpawnBullet(quato * Quaternion.Euler(0, scatterVariation * i, 0) * Vector3.forward);
         }
     }
 
-    private void spawnBullet(Vector3 direction) {
+    private void SpawnBullet(Vector3 direction) {
         GameObject bullet = (GameObject)Instantiate(_bulletPrefab, this.transform.position, _bulletPrefab.transform.rotation);
         bullet.transform.parent = _bulletBucket.transform;
 

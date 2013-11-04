@@ -6,15 +6,13 @@ using System.Collections;
 /// </summary>
 public class CharacterState : MonoBehaviour {
 
-    public Vector2 position;
     public Vector2 facing;
-    public Vector2 velocity;
-    public float maxWalkSpeed;
     public int health;
     public bool isWalking;
-
+    public float maxWalkSpeed;
+    public Vector2 position;
     public int strength;
-
+    public Vector2 velocity;
 
     public bool isMovingRight {
         get { return velocity.x > 0; }
@@ -33,8 +31,19 @@ public class CharacterState : MonoBehaviour {
     }
 
     // TODO: pass in some kind of parameter for weapon?
-    public float getRecoilReduction() {
+    public float GetRecoilReduction() {
         return strength * 0.05f;
     }
 
+    public void TakeDamage(int damage) {
+        health -= damage;
+
+        if (health < 0) {
+            Die();
+        }
+    }
+
+    public void Die() {
+        Destroy(this.gameObject);
+    }
 }

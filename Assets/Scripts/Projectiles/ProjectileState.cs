@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BulletState : MonoBehaviour {
+public class ProjectileState : MonoBehaviour {
     public int damage;
 
     private MoveableObject _moveableObject;

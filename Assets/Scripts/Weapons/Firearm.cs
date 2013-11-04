@@ -149,7 +149,7 @@ public class Firearm : MonoBehaviour {
         GameObject bullet = (GameObject)Instantiate(_bulletPrefab, this.transform.position, _bulletPrefab.transform.rotation);
         bullet.transform.parent = _bulletBucket.transform;
 
-        BulletState bulletState = bullet.GetComponent<BulletState>();
+        ProjectileState bulletState = bullet.GetComponent<ProjectileState>();
         bulletState.velocity = Vector3.ClampMagnitude(direction, 1) * this.bulletSpeed;
         bulletState.damage = RollForDamage();
     }

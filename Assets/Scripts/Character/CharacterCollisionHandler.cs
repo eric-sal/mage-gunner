@@ -3,10 +3,12 @@ using System.Collections;
 
 public class CharacterCollisionHandler : BaseCollisionHandler {
 
+    protected CharacterState _character;
     protected MoveableObject _moveable;
 
     public override void Awake() {
         base.Awake();
+        _character = GetComponent<CharacterState>();
         _moveable = GetComponent<MoveableObject>();
     }
 
@@ -39,6 +41,15 @@ public class CharacterCollisionHandler : BaseCollisionHandler {
             Vector3 oppositeVector = impactVelocity + adjacentVector;
 
             _moveable.Move(oppositeVector, remainingTime);
+        }
+    }
+
+    public override void HandleCollision(ProjectileCollisionHandler other, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
+        // TODO: Handle other types of projectiles - grenades, missiles, magic spells, etc.
+        ProjectileState projectile = other.GetComponent<ProjectileState>();
+
+        if (projectile.damage > 0) {
+            _character.TakeDamage(projectile.damage);
         }
     }
 }

@@ -53,6 +53,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
             _moveable.Move(_character.velocity, Time.deltaTime);
         }
 
-        _reticle.ReduceRecoil(_character.getRecoilReduction());
+        _reticle.ReduceRecoil(_character.GetRecoilReduction());
     }
 }

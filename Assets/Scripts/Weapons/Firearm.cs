@@ -6,16 +6,18 @@ public class Firearm : MonoBehaviour {
 
     public enum FireType { Standard, Spray, Spread, Burst }
 
+    public int ammoConsumed = 1;    // How many rounds does this use up when fired? Burst fire weapons and double-barreled shotguns would have a value > 1.
+    public AudioSource audioSource;
+    public float bulletSpeed;
     public FireType fireType;
-    public float scatterVariation;  // In degrees. Closer to 0 is less scatter.
+    public bool fullAuto;
+    public int magazineSize;
+    public int maxDamage = 1;   // per projectile
+    public int minDamage = 1;   // per projectile
     public int numProjectiles = 1;  // How many bullets do we spawn when the trigger is pulled? Defaults to 1. Different than ammoConsumed. Buckshot spawns many projectiles but consumes 1 round.
     public float rateOfFire;
-    public int magazineSize;
-    public int ammoConsumed = 1;    // How many rounds does this use up when fired? Burst fire weapons and double-barreled shotguns would have a value > 1.
     public float recoil;
-    public bool fullAuto;
-    public float bulletSpeed;
-    public AudioSource audioSource;
+    public float scatterVariation;  // In degrees. Closer to 0 is less scatter.
 
     private float _cycleTime; // Time per bullet (inverse of rate of fire).
     private float _elapsed;
@@ -27,6 +29,10 @@ public class Firearm : MonoBehaviour {
 	void Start() {
         if (rateOfFire <= 0) {
             throw new InvalidOperationException("rateOfFire must be > 0!");
+        }
+
+        if (minDamage > maxDamage) {
+            throw new InvalidOperationException("minDamage must be < maxDamage!");
         }
 
         if (_bulletPrefab == null) {
@@ -143,7 +149,12 @@ public class Firearm : MonoBehaviour {
         GameObject bullet = (GameObject)Instantiate(_bulletPrefab, this.transform.position, _bulletPrefab.transform.rotation);
         bullet.transform.parent = _bulletBucket.transform;
 
-        MoveableObject bulletState = bullet.GetComponent<MoveableObject>();
+        BulletState bulletState = bullet.GetComponent<BulletState>();
         bulletState.velocity = Vector3.ClampMagnitude(direction, 1) * this.bulletSpeed;
+        bulletState.damage = RollForDamage();
+    }
+
+    private int RollForDamage() {
+        return Mathf.RoundToInt(UnityEngine.Random.Range(minDamage, maxDamage));
     }
 }

@@ -4,13 +4,14 @@ using System.Collections;
 
 public class Firearm : MonoBehaviour {
 
-    public enum Scatter { Standard, Spray, Spread }
+    public enum FireType { Standard, Spray, Spread, Burst }
 
-    public Scatter scatter;
+    public FireType fireType;
     public float scatterVariation;  // In degrees. Closer to 0 is less scatter.
-    public int numProjectiles = 1;  // How many bullets do we spawn when the trigger is pulled? Defaults to 1.
+    public int numProjectiles = 1;  // How many bullets do we spawn when the trigger is pulled? Defaults to 1. Different than ammoConsumed. Buckshot spawns many projectiles but consumes 1 round.
     public float rateOfFire;
     public int magazineSize;
+    public int ammoConsumed = 1;    // How many rounds does this use up when fired? Burst fire weapons and double-barreled shotguns would have a value > 1.
     public float recoil;
     public bool fullAuto;
     public float bulletSpeed;
@@ -62,25 +63,31 @@ public class Firearm : MonoBehaviour {
 
         _elapsed = 0;
 
-        switch (scatter) {
-        case Scatter.Standard:
-            FireStandardScatter(direction);
+        switch (fireType) {
+        case FireType.Standard:
+            FireStandardShot(direction);
             break;
-        case Scatter.Spray:
-            FireSprayScatter(direction);
+        case FireType.Spray:
+            FireSprayShot(direction);
             break;
-        case Scatter.Spread:
-            FireSpreadScatter(direction);
+        case FireType.Spread:
+            FireSpreadShot(direction);
+            break;
+        case FireType.Burst:
+            StartCoroutine("FireBurstShot", direction);
             break;
         }
 
-        _roundsFired += 1;
+        _roundsFired += ammoConsumed;
 
         return new Vector3(randomRecoil, randomRecoil);
     }
 
     public void Reload() {
-        _roundsFired = 0;
+        // We can't reload while we're firing.
+        if (_elapsed > _cycleTime) {
+            _roundsFired = 0;
+        }
     }
 
     // TODO: Maybe accuracy can be affected by the player's proficiency?
@@ -88,17 +95,16 @@ public class Firearm : MonoBehaviour {
     // direction if the player isn't proficient enough in the weapon.
     // Standard gun fire.
     // ex: pistol, SMG, assault rifle
-    private void FireStandardScatter(Vector3 direction) {
-        SpawnBullet(direction);
+    private void FireStandardShot(Vector3 direction) {
+        for (int i = 0; i < ammoConsumed; i ++) {
+            SpawnBullet(direction);
+        }
     }
 
     // Buckshot-like spray.
     // ex: shotgun
-    private void FireSprayScatter(Vector3 direction) {
+    private void FireSprayShot(Vector3 direction) {
         float scatterAmount;
-
-        // If we weren't in a top-down (x, y plane) view, I *think* we would use a
-        // different vector than Vector3.forward <0, 0, 1> as the 2nd param here.
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         for (int i = 0; i < numProjectiles; i++) {
@@ -109,15 +115,27 @@ public class Firearm : MonoBehaviour {
 
     // A spread shot.
     // ex: the "Spread" gun from Contra.
-    private void FireSpreadScatter(Vector3 direction) {
-        Quaternion newQuato;
-
+    private void FireSpreadShot(Vector3 direction) {
         // If we weren't in a top-down (x, y plane) view, I *think* we would use a
         // different vector than Vector3.forward <0, 0, 1> as the 2nd param here.
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         for (int i = (int)Mathf.Floor(numProjectiles / 2f) * -1; i < (int)Mathf.Ceil(numProjectiles / 2f); i++) {
             SpawnBullet(quato * Quaternion.Euler(0, scatterVariation * i, 0) * Vector3.forward);
+        }
+    }
+
+    // Fires 3 bullets in one pull of the trigger.
+    // Includes a bit of a recoil effect.
+    private IEnumerator FireBurstShot(Vector3 direction) {
+        Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
+
+        SpawnBullet(direction);
+        for (int i = 0; i < ammoConsumed - 1; i++) {
+            yield return new WaitForSeconds(_cycleTime);
+
+            _elapsed = 0;   // Set _elapsed to 0 so we can't fire the weapon again while this coroutine is running.
+            SpawnBullet(quato * Quaternion.Euler(0, scatterVariation, 0) * Vector3.forward);
         }
     }
 

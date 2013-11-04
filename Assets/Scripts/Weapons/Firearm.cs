@@ -7,8 +7,8 @@ public class Firearm : MonoBehaviour {
     public enum Scatter { Standard, Spray, Spread }
 
     public Scatter scatter;
-    public float scatterVariation;  // Closer to 0 is less scatter. In degrees for Scatter.Spread (& eventually Scatter.Spray).
-    public int numProjectiles = 1; // How many bullets do we spawn when the trigger is pulled? Defaults to 1.
+    public float scatterVariation;  // In degrees. Closer to 0 is less scatter.
+    public int numProjectiles = 1;  // How many bullets do we spawn when the trigger is pulled? Defaults to 1.
     public float rateOfFire;
     public int magazineSize;
     public float recoil;
@@ -92,42 +92,32 @@ public class Firearm : MonoBehaviour {
         spawnBullet(direction);
     }
 
-    // TODO: Should mimic the fireSpreadScatter method, except the offset should be randomized
-    // within +/- scatterVariation.
     // Buckshot-like spray.
     // ex: shotgun
     private void fireSprayScatter(Vector3 direction) {
-        float offsetAmount;
-        Vector3 offset;
+        float scatterAmount;
+
+        // If we weren't in a top-down (x, y plane) view, I *think* we would use a
+        // different vector than Vector3.forward <0, 0, 1> as the 2nd param here.
+        Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         for (int i = 0; i < numProjectiles; i++) {
-            offsetAmount = UnityEngine.Random.Range(-scatterVariation, scatterVariation);
-            offset = new Vector3(offsetAmount, offsetAmount);
-            spawnBullet(direction - offset);
+            scatterAmount = UnityEngine.Random.Range(-scatterVariation, scatterVariation);
+            spawnBullet(quato * Quaternion.Euler(0, scatterAmount, 0) * Vector3.forward);
         }
     }
 
-    // TODO: Make this work right...
-    // The bullets should be spawned scatterVariation degrees apart with an equal
-    // number of projectiles on either side of the direction vector.
     // A spread shot.
     // ex: the "Spread" gun from Contra.
     private void fireSpreadScatter(Vector3 direction) {
-        float radians;
-        Vector3 offset;
+        Quaternion newQuato;
 
-        // Using Vector3.right isn't right, but this is on the right track.
-        float directionAngle = Vector3.Angle(direction, Vector3.right) * Mathf.Deg2Rad;
+        // If we weren't in a top-down (x, y plane) view, I *think* we would use a
+        // different vector than Vector3.forward <0, 0, 1> as the 2nd param here.
+        Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
-        Debug.Log(string.Format("Direction: {0}, {1}", direction.x, direction.y));
         for (int i = (int)Mathf.Floor(numProjectiles / 2f) * -1; i < (int)Mathf.Ceil(numProjectiles / 2f); i++) {
-            radians = scatterVariation * i * Mathf.Deg2Rad;
-
-            // Inspiration: http://answers.unity3d.com/questions/170413/position-objects-around-other-object-forming-a-cir.html
-            offset = new Vector3(Mathf.Sin(directionAngle + radians), Mathf.Cos(directionAngle + radians));
-
-            Debug.Log(string.Format("New Direction: {0}, {1}", offset.x, offset.y));
-            spawnBullet(offset);
+            spawnBullet(quato * Quaternion.Euler(0, scatterVariation * i, 0) * Vector3.forward);
         }
     }
 

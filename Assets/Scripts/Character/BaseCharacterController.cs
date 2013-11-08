@@ -14,14 +14,16 @@ using System.Collections;
 public abstract class BaseCharacterController : MonoBehaviour {
 
     protected CharacterState _character;
-    protected Sprite _sprite;
+    protected Inventory _inventory;
     protected MoveableObject _moveable;
     protected ReticleController _reticle;
+    protected Sprite _sprite;
 
     public virtual void Awake() {
         _character = GetComponent<CharacterState>();
-        _sprite = GetComponent<Sprite>();
+        _inventory = GetComponent<Inventory>();
         _moveable = GetComponent<MoveableObject>();
+        _sprite = GetComponent<Sprite>();
 
         GameObject reticlePrefab = (GameObject)Resources.Load("Prefabs/Reticle");
         Vector3 spawnPosition = _character.transform.position + new Vector3(0, 2);

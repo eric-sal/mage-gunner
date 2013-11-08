@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PlayerCharacterController : BaseCharacterController {
 
-    public Firearm equippedFirearm;
+    public Firearm equippedFirearm;     // Seems like this should be on the BaseCharacterController
     public bool isPlayerInputEnabled;
     private float _horizontalInput;
 	private float _verticalInput;
@@ -29,7 +29,7 @@ public class PlayerCharacterController : BaseCharacterController {
 		
         if (this.isPlayerInputEnabled) {
             _horizontalInput = Input.GetAxis("Horizontal"); // -1.0 to 1.0
-			_verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
+            _verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
 
             Aim();
 
@@ -41,6 +41,12 @@ public class PlayerCharacterController : BaseCharacterController {
                 } else if (Input.GetButton("Reload")) {
                     equippedFirearm.Reload();
                 }
+            }
+
+            if (Input.GetButtonDown("Next Weapon")) {
+                _inventory.NextWeapon();
+            } else if (Input.GetButtonDown("Previous Weapon")) {
+                _inventory.PreviousWeapon();
             }
         }
     }

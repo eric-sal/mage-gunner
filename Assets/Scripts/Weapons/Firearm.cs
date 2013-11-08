@@ -134,6 +134,7 @@ public class Firearm : MonoBehaviour {
     // Fires 3 bullets in one pull of the trigger.
     // Includes a bit of a recoil effect.
     private IEnumerator FireBurstShot(Vector3 direction) {
+        float scatterAmount;
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         SpawnBullet(direction);
@@ -141,7 +142,8 @@ public class Firearm : MonoBehaviour {
             yield return new WaitForSeconds(_cycleTime);
 
             _elapsed = 0;   // Set _elapsed to 0 so we can't fire the weapon again while this coroutine is running.
-            SpawnBullet(quato * Quaternion.Euler(0, scatterVariation, 0) * Vector3.forward);
+            scatterAmount = UnityEngine.Random.Range(-scatterVariation, scatterVariation);
+            SpawnBullet(quato * Quaternion.Euler(0, scatterAmount, 0) * Vector3.forward);
         }
     }
 

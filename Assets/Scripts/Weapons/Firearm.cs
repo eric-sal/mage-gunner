@@ -19,6 +19,7 @@ public class Firearm : MonoBehaviour {
     public float recoil;
     public float scatterVariation;  // In degrees. Closer to 0 is less scatter.
 
+    private CharacterState _character;
     private float _cycleTime; // Time per bullet (inverse of rate of fire).
     private float _elapsed;
     private int _roundsFired;
@@ -42,6 +43,10 @@ public class Firearm : MonoBehaviour {
         if (_bulletBucket == null) {
             _bulletBucket = GameObject.Find("BulletBucket");
         }
+
+        // Belongs here instead of Awake, because the object is instantiated dynamically,
+        // and the parent is set after instantiation.
+        _character = this.transform.parent.parent.GetComponentInChildren<CharacterState>();
 
         _cycleTime = 60 / rateOfFire;
         _elapsed = _cycleTime; // so we can shoot right away
@@ -148,7 +153,7 @@ public class Firearm : MonoBehaviour {
     }
 
     private void SpawnBullet(Vector3 direction) {
-        GameObject bullet = (GameObject)Instantiate(_bulletPrefab, this.transform.position, _bulletPrefab.transform.rotation);
+        GameObject bullet = (GameObject)Instantiate(_bulletPrefab, _character.transform.position, _bulletPrefab.transform.rotation);
         bullet.transform.parent = _bulletBucket.transform;
 
         ProjectileState bulletState = bullet.GetComponent<ProjectileState>();

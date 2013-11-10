@@ -16,7 +16,7 @@ public class Inventory : MonoBehaviour {
     private int _currentWeaponIndex = 0;
 
     public void Awake() {
-        _controller = GetComponent<PlayerCharacterController>();
+        _controller = this.transform.parent.GetComponentInChildren<PlayerCharacterController>();
     }
 
     // Stitch the dictionary together

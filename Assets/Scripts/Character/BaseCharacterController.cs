@@ -21,13 +21,14 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     public virtual void Awake() {
         _character = GetComponent<CharacterState>();
-        _inventory = GetComponent<Inventory>();
+        _inventory = this.transform.parent.gameObject.GetComponentInChildren<Inventory>();
         _moveable = GetComponent<MoveableObject>();
         _sprite = GetComponent<Sprite>();
 
         GameObject reticlePrefab = (GameObject)Resources.Load("Prefabs/Reticle");
         Vector3 spawnPosition = _character.transform.position + new Vector3(0, 2);
         GameObject reticleInstance = (GameObject)Instantiate(reticlePrefab, spawnPosition, reticlePrefab.transform.rotation);
+        reticleInstance.transform.parent = this.transform.parent;
         _reticle = reticleInstance.GetComponent<ReticleController>();
     }
 

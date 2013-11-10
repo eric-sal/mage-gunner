@@ -3,7 +3,6 @@ using System.Collections;
 
 public class PlayerCharacterController : BaseCharacterController {
 
-    public Firearm equippedFirearm;     // Seems like this should be on the BaseCharacterController
     public bool isPlayerInputEnabled;
     private float _horizontalInput;
 	private float _verticalInput;

@@ -9,14 +9,14 @@ public class Inventory : MonoBehaviour {
     public List<string> keys;
     public List<InventoryItem> values;
 
-    private PlayerCharacterController _controller;
+    private BaseCharacterController _controller;
     private Dictionary<string,InventoryItem> _inventory;
 
     // probably not the best place for this, but this is only a proof of concept dealy
     private int _currentWeaponIndex = 0;
 
     public void Awake() {
-        _controller = this.transform.parent.GetComponentInChildren<PlayerCharacterController>();
+        _controller = this.transform.parent.GetComponentInChildren<BaseCharacterController>();
     }
 
     // Stitch the dictionary together

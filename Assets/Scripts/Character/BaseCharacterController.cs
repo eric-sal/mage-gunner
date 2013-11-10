@@ -13,6 +13,8 @@ using System.Collections;
 /// </summary>
 public abstract class BaseCharacterController : MonoBehaviour {
 
+    public Firearm equippedFirearm;
+
     protected CharacterState _character;
     protected Inventory _inventory;
     protected MoveableObject _moveable;

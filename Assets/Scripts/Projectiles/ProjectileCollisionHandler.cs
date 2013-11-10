@@ -9,7 +9,6 @@ public class ProjectileCollisionHandler : BaseCollisionHandler {
         float speed = impactVelocity.magnitude;
         float timeSpentMoving = distance / speed;
         Vector3 tempDistance = impactVelocity * timeSpentMoving;
-        Debug.Log(tempDistance);
         Vector3 p = this.transform.position;
         this.transform.position = new Vector3(p.x + tempDistance.x, p.y + tempDistance.y);
 

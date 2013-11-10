@@ -56,8 +56,11 @@ public class Firearm : MonoBehaviour {
         _elapsed += Time.deltaTime;
     }
 
-    public float randomRecoil {
-        get { return UnityEngine.Random.Range(-recoil, recoil); }
+    public Vector3 randomRecoil() {
+        float x = UnityEngine.Random.Range(-1f, 1f);
+        float y = UnityEngine.Random.Range(-1f, 1f);
+        var direction = new Vector3(x, y).normalized;
+        return direction * this.recoil;
     }
 
     /// <summary>
@@ -91,7 +94,7 @@ public class Firearm : MonoBehaviour {
 
         _roundsFired += ammoConsumed;
 
-        return new Vector3(randomRecoil, randomRecoil);
+        return randomRecoil();
     }
 
     public void Reload() {

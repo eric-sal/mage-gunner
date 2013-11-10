@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PickupCollisionHandler : BaseCollisionHandler {
 
-    public override void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance, Vector3 normal, float deltaTime) {
+    public override void HandleCollision(Collider collidedWith, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
 
         AudioSource pickupSound = this.GetComponent<AudioSource>();
         if (pickupSound != null) {

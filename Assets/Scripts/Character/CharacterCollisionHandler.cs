@@ -16,6 +16,9 @@ public class CharacterCollisionHandler : BaseCollisionHandler {
     /// Stop the character's movement in the direction the collision came from.
     /// </summary>
     public override void HandleCollision(Collider collidedWith, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
+        if (_moveable == null) {
+            return;
+        }
 
         // only move the distance until we hit another collider
         float speed = impactVelocity.magnitude;

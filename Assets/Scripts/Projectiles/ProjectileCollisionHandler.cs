@@ -4,8 +4,17 @@ using System.Collections;
 public class ProjectileCollisionHandler : BaseCollisionHandler {
  
     public override void HandleCollision(Collider collidedWith, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
-        //Debug.Log(string.Format("{0} collided with {1}", this.name, collidedWith.name));
-        Destroy(this.gameObject);
+
+        // only move the distance until we hit the other collider
+        float speed = impactVelocity.magnitude;
+        float timeSpentMoving = distance / speed;
+        Vector3 tempDistance = impactVelocity * timeSpentMoving;
+        Debug.Log(tempDistance);
+        Vector3 p = this.transform.position;
+        this.transform.position = new Vector3(p.x + tempDistance.x, p.y + tempDistance.y);
+
+        Destroy(this.gameObject, 0.02f);
+        this.enabled = false;
     }
 
     public override void HandleCollision(CharacterCollisionHandler other, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {

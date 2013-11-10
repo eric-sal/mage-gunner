@@ -30,13 +30,8 @@ public abstract class BaseCharacterController : MonoBehaviour {
         GameObject reticlePrefab = (GameObject)Resources.Load("Prefabs/Reticle");
         Vector3 spawnPosition = _character.transform.position + new Vector3(0, 2);
         GameObject reticleInstance = (GameObject)Instantiate(reticlePrefab, spawnPosition, reticlePrefab.transform.rotation);
-        reticleInstance.transform.parent = this.transform.parent;
+        reticleInstance.transform.parent = _character.transform;
         _reticle = reticleInstance.GetComponent<ReticleController>();
-    }
-
-    public virtual void Start() {
-        _character.position.x = this.transform.position.x;
-        _character.position.y = this.transform.position.y;
     }
 
     /// <summary>
@@ -49,6 +44,12 @@ public abstract class BaseCharacterController : MonoBehaviour {
     protected abstract void Act();
 
     protected abstract void Aim();
+
+    protected void Fire() {
+        Vector3 bulletVector = _reticle.transform.position - this.transform.position;
+        Vector3 recoil = equippedFirearm.Fire(bulletVector);
+        _reticle.ApplyRecoil(recoil);
+    }
 
     public virtual void FixedUpdate() {
         // Let player or AI modify character state first

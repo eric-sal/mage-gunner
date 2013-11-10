@@ -33,6 +33,10 @@ public class ProjectileCollisionHandler : BaseCollisionHandler {
 
     public override void HandleCollision(ProjectileCollisionHandler other, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
         // ignore collisions with other projectiles
-        return;
+        Debug.Log("A bullet hit another bullet");
+
+        Vector3 p = this.transform.position;
+        Vector3 d = _projectile.velocity * deltaTime;
+        this.transform.position = new Vector3(p.x + d.x, p.y + d.y);
     }
 }

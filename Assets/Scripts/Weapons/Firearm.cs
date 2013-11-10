@@ -97,6 +97,12 @@ public class Firearm : MonoBehaviour {
         return randomRecoil();
     }
 
+    public bool IsEmpty {
+        get {
+            return _roundsFired >= this.magazineSize;
+        }
+    }
+
     public void Reload() {
         // We can't reload while we're firing.
         if (_elapsed > _cycleTime) {

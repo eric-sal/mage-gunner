@@ -6,13 +6,12 @@ using System.Collections;
 /// </summary>
 public class CharacterState : MonoBehaviour {
 
-    public Vector2 facing;
+    public Vector3 facing;
     public int health;
     public bool isWalking;
     public float maxWalkSpeed;
-    public Vector2 position;
     public int strength;
-    public Vector2 velocity;
+    public Vector3 velocity;
 
     public bool isMovingRight {
         get { return velocity.x > 0; }

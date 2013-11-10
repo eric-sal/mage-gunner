@@ -36,7 +36,7 @@ public class CharacterView : MonoBehaviour {
                  //iTween.MoveTo(gameObject, {'path': [apex, currentPosition], 'easetype': 'linear', 'time': 1, 'oncomplete': 'Respawn' });
             }
         } else {
-            if (_character.facing == Vector2.right) {
+            if (_character.facing == Vector3.right) {
                 if (_character.isWalking) {
                     if (_currentAnimation != Animations.WalkRight) {
                         _currentAnimation = Animations.WalkRight;

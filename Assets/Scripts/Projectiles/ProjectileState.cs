@@ -3,6 +3,7 @@ using System.Collections;
 
 public class ProjectileState : MonoBehaviour {
     public int damage;
+    public GameObject spawner;  // GameObject that spawned the projectile
 
     private MoveableObject _moveableObject;
 

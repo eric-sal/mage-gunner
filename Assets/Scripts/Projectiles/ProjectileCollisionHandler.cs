@@ -2,6 +2,12 @@
 using System.Collections;
 
 public class ProjectileCollisionHandler : BaseCollisionHandler {
+    private ProjectileState _projectile;
+
+    public override void Awake() {
+        base.Awake();
+        _projectile = GetComponent<ProjectileState>();
+    }
  
     public override void HandleCollision(Collider collidedWith, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
 
@@ -17,8 +23,8 @@ public class ProjectileCollisionHandler : BaseCollisionHandler {
     }
 
     public override void HandleCollision(CharacterCollisionHandler other, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
-        if (other.gameObject.name == "Player") {
-            // ignore collisions with the player for now
+        if (Object.ReferenceEquals(other.gameObject, _projectile.spawner)) {
+            // ignore collisions with the GameObject that spawned this projectile
             return;
         }
      

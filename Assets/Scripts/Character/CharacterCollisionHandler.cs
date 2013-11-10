@@ -48,6 +48,10 @@ public class CharacterCollisionHandler : BaseCollisionHandler {
         // TODO: Handle other types of projectiles - grenades, missiles, magic spells, etc.
         ProjectileState projectile = other.GetComponent<ProjectileState>();
 
+        if (Object.ReferenceEquals(projectile.spawner, gameObject)) {
+            return;
+        }
+
         if (projectile.damage > 0) {
             _character.TakeDamage(projectile.damage);
         }

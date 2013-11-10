@@ -153,10 +153,13 @@ public class Firearm : MonoBehaviour {
     }
 
     private void SpawnBullet(Vector3 direction) {
+        // _character.transform.position isn't quite right. Might want to figure
+        // out where the character will be in the NEXT frame and use that position.
         GameObject bullet = (GameObject)Instantiate(_bulletPrefab, _character.transform.position, _bulletPrefab.transform.rotation);
         bullet.transform.parent = _bulletBucket.transform;
 
         ProjectileState bulletState = bullet.GetComponent<ProjectileState>();
+        bulletState.spawner = _character.gameObject;
         bulletState.velocity = Vector3.ClampMagnitude(direction, 1) * this.bulletSpeed;
         bulletState.damage = RollForDamage();
     }

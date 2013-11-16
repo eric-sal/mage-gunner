@@ -22,6 +22,15 @@ public class ReticleController : MonoBehaviour {
         this.transform.position = CameraController.clampPosition(worldPosition);
     }
 
+    public void LerpPosition(Vector3 worldPosition, float speed = 1) {
+        if (SceneController.isPaused) {
+            return;
+        }
+
+        Vector3 position = CameraController.clampPosition(worldPosition);
+        this.transform.position = Vector3.Lerp(transform.position, position, Time.deltaTime * speed);
+    }
+
     public void ApplyRecoil(Vector3 recoil) {
         _recoil += recoil;
     }

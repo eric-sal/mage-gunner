@@ -4,7 +4,7 @@ using System.Collections;
 /// <summary>
 /// The Character state is modified by a class that inherits from BaseCharacterController.
 /// </summary>
-public class CharacterState : MonoBehaviour {
+public abstract class BaseCharacterState : MonoBehaviour {
 
     public Vector3 facing;
     public int health;

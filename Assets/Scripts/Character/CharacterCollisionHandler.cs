@@ -3,12 +3,12 @@ using System.Collections;
 
 public class CharacterCollisionHandler : BaseCollisionHandler {
 
-    protected CharacterState _character;
+    protected BaseCharacterState _character;
     protected MoveableObject _moveable;
 
     public override void Awake() {
         base.Awake();
-        _character = GetComponent<CharacterState>();
+        _character = GetComponent<BaseCharacterState>();
         _moveable = GetComponent<MoveableObject>();
     }
 

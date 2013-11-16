@@ -6,12 +6,12 @@ public class CharacterView : MonoBehaviour {
 
     public enum Animations { StandRight, SlideRight, WalkRight, StandLeft, SlideLeft, WalkLeft, PlayerDeath };
 
-    protected CharacterState _character;
+    protected BaseCharacterState _character;
     protected AnimatedSprite _sprite;
     protected Animations _currentAnimation;
 
     public void Awake() {
-        _character = this.GetComponent<CharacterState>();
+        _character = this.GetComponent<BaseCharacterState>();
         _sprite = this.GetComponent<AnimatedSprite>();
     }
 

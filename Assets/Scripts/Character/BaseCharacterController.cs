@@ -15,14 +15,14 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     public Firearm equippedFirearm;
 
-    protected CharacterState _character;
+    protected BaseCharacterState _character;
     protected Inventory _inventory;
     protected MoveableObject _moveable;
     protected ReticleController _reticle;
     protected Sprite _sprite;
 
     public virtual void Awake() {
-        _character = GetComponent<CharacterState>();
+        _character = GetComponent<BaseCharacterState>();
         _inventory = this.transform.parent.gameObject.GetComponentInChildren<Inventory>();
         _moveable = GetComponent<MoveableObject>();
         _sprite = GetComponent<Sprite>();

@@ -19,7 +19,7 @@ public class Firearm : MonoBehaviour {
     public float recoil;
     public float scatterVariation;  // In degrees. Closer to 0 is less scatter.
 
-    private CharacterState _character;
+    private BaseCharacterState _character;
     private float _cycleTime; // Time per bullet (inverse of rate of fire).
     private float _elapsed;
     private int _roundsFired;
@@ -46,7 +46,7 @@ public class Firearm : MonoBehaviour {
 
         // Belongs here instead of Awake, because the object is instantiated dynamically,
         // and the parent is set after instantiation.
-        _character = this.transform.parent.parent.GetComponentInChildren<CharacterState>();
+        _character = this.transform.parent.parent.GetComponentInChildren<BaseCharacterState>();
 
         _cycleTime = 60 / rateOfFire;
         _elapsed = _cycleTime; // so we can shoot right away

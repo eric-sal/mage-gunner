@@ -6,17 +6,21 @@ public class EnemyCharacterController : BaseCharacterController {
     protected EnemyState _enemyState;
     protected PlayerState _playerState;
 
+    protected Vector3 _previousPlayerPosition = Vector3.zero;
+    protected Vector3 _estimatedPlayerVelocity;
+
     public void Start() {
         _enemyState = GetComponent<EnemyState>();
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
     }
 
     protected override void Act() {
-        Aim();
-
         if (!CanSeePlayer() || _playerState.health <= 0) {
             return;
         }
+
+        EstimatePlayerVelocity();
+        Aim();
 
         var gun = this.equippedFirearm;
         if (gun != null) {
@@ -29,7 +33,8 @@ public class EnemyCharacterController : BaseCharacterController {
     }
 
     protected override void Aim() {
-        _reticle.LerpPosition(_playerState.transform.position, _enemyState.lookSpeed);
+        Vector3 playerPosition = _playerState.transform.position + _estimatedPlayerVelocity;
+        _reticle.LerpPosition(playerPosition, _enemyState.lookSpeed);
     }
 
     protected bool CanSeePlayer() {
@@ -46,5 +51,21 @@ public class EnemyCharacterController : BaseCharacterController {
         }
 
         return false;
+    }
+
+    protected void EstimatePlayerVelocity() {
+        if (_enemyState.anticipatePlayerMovement && CanSeePlayer()) {
+            Vector3 currentPlayerPosition = _playerState.transform.position;
+
+            if (_previousPlayerPosition != Vector3.zero) {
+                Vector3 deltaPosition = currentPlayerPosition - _previousPlayerPosition;
+                _estimatedPlayerVelocity = Vector3.ClampMagnitude(deltaPosition / Time.deltaTime, 1);
+            }
+
+            _previousPlayerPosition = currentPlayerPosition;
+        } else {
+            _previousPlayerPosition = Vector3.zero;
+            _estimatedPlayerVelocity = Vector3.zero;
+        }
     }
 }

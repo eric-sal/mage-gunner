@@ -15,16 +15,14 @@ public class EnemyCharacterController : BaseCharacterController {
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
     }
 
-    public void Update() {
+    protected override void CaptureInput() {
         FindPlayer();
-    }
+        EstimatePlayerVelocity();
 
-    protected override void Act() {
         if (!_canSeePlayer || _playerState.health <= 0) {
             return;
         }
 
-        EstimatePlayerVelocity();
         Aim();
 
         var gun = this.equippedFirearm;
@@ -32,9 +30,14 @@ public class EnemyCharacterController : BaseCharacterController {
             if (gun.IsEmpty) {
                 gun.Reload();
             } else {
+                Debug.Log("Fire");
                 Fire();
             }
         }
+    }
+
+    protected override void Act() {
+        // No physics calculations for this enemy
     }
 
     protected override void Aim() {

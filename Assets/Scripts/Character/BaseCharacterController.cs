@@ -35,6 +35,12 @@ public abstract class BaseCharacterController : MonoBehaviour {
     }
 
     /// <summary>
+    /// This is to be defined by subclasses. This method is called from
+    /// Update. It should capture character input.
+    /// </summary>
+    protected abstract void CaptureInput();
+
+    /// <summary>
     /// This is to be defined by subclasses.  This method is called from
     /// FixedUpdate before any physics calculations have been performed.
     /// Here would be where player inputs would get recorded and the
@@ -49,6 +55,10 @@ public abstract class BaseCharacterController : MonoBehaviour {
         Vector3 bulletVector = _reticle.transform.position - this.transform.position;
         Vector3 recoil = equippedFirearm.Fire(bulletVector);
         _reticle.ApplyRecoil(recoil);
+    }
+
+    public virtual void Update() {
+        CaptureInput();
     }
 
     public virtual void FixedUpdate() {

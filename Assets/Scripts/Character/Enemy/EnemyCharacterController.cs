@@ -3,6 +3,7 @@ using System.Collections;
 
 public class EnemyCharacterController : BaseCharacterController {
 
+    protected bool _canSeePlayer;
     protected EnemyState _enemyState;
     protected PlayerState _playerState;
 
@@ -14,8 +15,12 @@ public class EnemyCharacterController : BaseCharacterController {
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
     }
 
+    public void Update() {
+        FindPlayer();
+    }
+
     protected override void Act() {
-        if (!CanSeePlayer() || _playerState.health <= 0) {
+        if (!_canSeePlayer || _playerState.health <= 0) {
             return;
         }
 
@@ -37,7 +42,8 @@ public class EnemyCharacterController : BaseCharacterController {
         _reticle.LerpPosition(playerPosition, _enemyState.lookSpeed);
     }
 
-    protected bool CanSeePlayer() {
+    protected void FindPlayer() {
+        _canSeePlayer =  false;
 
         RaycastHit hitInfo;
         Vector3 direction = _playerState.transform.position - _enemyState.transform.position;
@@ -46,15 +52,13 @@ public class EnemyCharacterController : BaseCharacterController {
 
         if (Physics.Raycast(_enemyState.transform.position, direction, out hitInfo, 20)) {
             if (hitInfo.collider == _playerState.gameObject.collider) {
-                return true;
+                _canSeePlayer =  true;
             }
         }
-
-        return false;
     }
 
     protected void EstimatePlayerVelocity() {
-        if (_enemyState.anticipatePlayerMovement && CanSeePlayer()) {
+        if (_enemyState.anticipatePlayerMovement && _canSeePlayer) {
             Vector3 currentPlayerPosition = _playerState.transform.position;
 
             if (_previousPlayerPosition != Vector3.zero) {

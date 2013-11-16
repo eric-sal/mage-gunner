@@ -5,6 +5,7 @@ public class EnemyCharacterController : BaseCharacterController {
 
     protected bool _canSeePlayer;
     protected EnemyState _enemyState;
+    protected int _layerMask;
     protected PlayerState _playerState;
 
     protected Vector3 _previousPlayerPosition = Vector3.zero;
@@ -13,6 +14,11 @@ public class EnemyCharacterController : BaseCharacterController {
     public void Start() {
         _enemyState = GetComponent<EnemyState>();
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
+
+        // When checking to see if we can see the player, we want the ray to ignore projectiles.
+        _layerMask = ((1 << LayerMask.NameToLayer("Players"))
+                    | (1 << LayerMask.NameToLayer("Obstacles"))
+                    | (1 << LayerMask.NameToLayer("Enemies")));
     }
 
     protected override void CaptureInput() {
@@ -25,12 +31,12 @@ public class EnemyCharacterController : BaseCharacterController {
 
         Aim();
 
+
         var gun = this.equippedFirearm;
         if (gun != null) {
             if (gun.IsEmpty) {
                 gun.Reload();
             } else {
-                Debug.Log("Fire");
                 Fire();
             }
         }
@@ -46,14 +52,14 @@ public class EnemyCharacterController : BaseCharacterController {
     }
 
     protected void FindPlayer() {
-        _canSeePlayer =  false;
+        _canSeePlayer = false;
 
         RaycastHit hitInfo;
         Vector3 direction = _playerState.transform.position - _enemyState.transform.position;
 
         Debug.DrawRay(_enemyState.transform.position, direction);
 
-        if (Physics.Raycast(_enemyState.transform.position, direction, out hitInfo, 20)) {
+        if (Physics.Raycast(_enemyState.transform.position, direction, out hitInfo, 20, _layerMask)) {
             if (hitInfo.collider == _playerState.gameObject.collider) {
                 _canSeePlayer =  true;
             }

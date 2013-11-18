@@ -22,7 +22,7 @@ public class ReticleController : MonoBehaviour {
         this.transform.position = CameraController.clampPosition(worldPosition);
     }
 
-    public void LerpPosition(Vector3 worldPosition, float speed = 1) {
+    public void LerpTo(Vector3 worldPosition, float speed = 1) {
         if (SceneController.isPaused) {
             return;
         }

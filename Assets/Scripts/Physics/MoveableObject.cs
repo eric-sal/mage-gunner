@@ -143,8 +143,8 @@ public class MoveableObject : MonoBehaviour {
         float x = startPoint.x;
         float y = startPoint.y;
 
-        // float rayLengthX = rayDirection.x * rayLength;
-        // float rayLengthY = rayDirection.y * rayLength;
+        float rayLengthX = rayDirection.x * rayLength;
+        float rayLengthY = rayDirection.y * rayLength;
 
         RaycastHit lastHit = new RaycastHit();
         float lastDistance = float.MaxValue;
@@ -152,8 +152,8 @@ public class MoveableObject : MonoBehaviour {
         for (y = startPoint.y; y <= endPoint.y; y += RAY_GAP) {
 
             var start = new Vector3(x, y);
-            // var end = new Vector3(start.x + rayLengthX, start.y + rayLengthY);
-            // Debug.DrawLine(start, end, Color.cyan, 0.25f);
+            var end = new Vector3(start.x + rayLengthX, start.y + rayLengthY);
+            Debug.DrawLine(start, end, Color.cyan, 0.25f);
 
             if (Physics.Raycast(start, rayDirection, out hitInfo, rayLength) && hitInfo.distance < lastDistance) {
                 lastDistance = hitInfo.distance;
@@ -164,9 +164,9 @@ public class MoveableObject : MonoBehaviour {
         if (y != endPoint.y) {
             // we didn't cast a ray originating from the given 'endPoint', do so now
 
-            // var start = new Vector3(x, endPoint.y);
-            // var end = new Vector3(start.x + rayLengthX, start.y + rayLengthY);
-            // Debug.DrawLine(start, end, Color.blue, 0.25f);
+            var start = new Vector3(x, endPoint.y);
+            var end = new Vector3(start.x + rayLengthX, start.y + rayLengthY);
+            Debug.DrawLine(start, end, Color.blue, 0.25f);
 
             if (Physics.Raycast(endPoint, rayDirection, out hitInfo, rayLength) && hitInfo.distance < lastDistance) {
                 lastDistance = hitInfo.distance;
@@ -195,8 +195,8 @@ public class MoveableObject : MonoBehaviour {
         float x = startPoint.x;
         float y = startPoint.y;
 
-        // float rayLengthX = rayDirection.x * rayLength;
-        // float rayLengthY = rayDirection.y * rayLength;
+        float rayLengthX = rayDirection.x * rayLength;
+        float rayLengthY = rayDirection.y * rayLength;
 
         RaycastHit lastHit = new RaycastHit();
         float lastDistance = float.MaxValue;
@@ -204,8 +204,8 @@ public class MoveableObject : MonoBehaviour {
         for (x = startPoint.x; x <= endPoint.x; x += RAY_GAP) {
 
             var start = new Vector3(x, y);
-            // var end = new Vector3(start.x + rayLengthX, start.y + rayLengthY);
-            // Debug.DrawLine(start, end, Color.red, 0.25f);
+            var end = new Vector3(start.x + rayLengthX, start.y + rayLengthY);
+            Debug.DrawLine(start, end, Color.red, 0.25f);
 
             if (Physics.Raycast(start, rayDirection, out hitInfo, rayLength) && hitInfo.distance < lastDistance) {
                 lastDistance = hitInfo.distance;
@@ -216,9 +216,9 @@ public class MoveableObject : MonoBehaviour {
         if (x != endPoint.x) {
             // we didn't cast a ray originating from the given 'endPoint', do so now
 
-            // var start = new Vector3(endPoint.x, y);
-            // var end = new Vector3(start.x + rayLengthX, start.y + rayLengthY);
-            // Debug.DrawLine(start, end, Color.blue, 0.25f);
+            var start = new Vector3(endPoint.x, y);
+            var end = new Vector3(start.x + rayLengthX, start.y + rayLengthY);
+            Debug.DrawLine(start, end, Color.blue, 0.25f);
 
             if (Physics.Raycast(endPoint, rayDirection, out hitInfo, rayLength) && hitInfo.distance < lastDistance) {
                 lastDistance = hitInfo.distance;

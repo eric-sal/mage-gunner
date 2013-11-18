@@ -37,7 +37,7 @@ public class CharacterCollisionHandler : BaseCollisionHandler {
 
         // If the wall or floor we've just run into is close enough to exactly opposite
         // to our velocity vector, then we'll just just stop our forward progress.
-        if (theta <= 160f) {
+        if (theta <= 180f) {
             float radians = theta * Mathf.Deg2Rad;
             float adjacentVectorMagnitude = speed * Mathf.Abs(Mathf.Cos(radians));
             Vector3 adjacentVector = normal * adjacentVectorMagnitude;

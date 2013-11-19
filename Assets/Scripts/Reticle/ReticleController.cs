@@ -19,7 +19,7 @@ public class ReticleController : MonoBehaviour {
             return;
         }
 
-        this.transform.position = CameraController.clampPosition(worldPosition);
+        this.transform.position = CameraController.ConstrainPositionToScreen(worldPosition);
     }
 
     public void LerpTo(Vector3 worldPosition, float speed = 1) {
@@ -27,7 +27,7 @@ public class ReticleController : MonoBehaviour {
             return;
         }
 
-        Vector3 position = CameraController.clampPosition(worldPosition);
+        Vector3 position = CameraController.ConstrainPositionToScreen(worldPosition);
         this.transform.position = Vector3.Lerp(transform.position, position, Time.deltaTime * speed);
     }
 

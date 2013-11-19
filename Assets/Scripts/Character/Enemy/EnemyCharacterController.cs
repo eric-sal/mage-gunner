@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class EnemyCharacterController : BaseCharacterController {
 
-    protected AstarAI _npcAI;
+    protected PathfinderAI _npcAI;
     protected bool _canSeePlayer;
     protected EnemyState _myState;
     protected int _layerMask;
@@ -12,7 +12,7 @@ public class EnemyCharacterController : BaseCharacterController {
     protected Vector3 _estimatedPlayerVelocity;
 
     public void Start() {
-        _npcAI = GetComponent<AstarAI>();
+        _npcAI = GetComponent<PathfinderAI>();
         _myState = (EnemyState)_character;
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
 

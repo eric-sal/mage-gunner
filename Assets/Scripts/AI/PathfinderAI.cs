@@ -5,11 +5,10 @@ using System.Collections;
 //This line should always be present at the top of scripts which use pathfinding
 using Pathfinding;
 
-public class AstarAI : MonoBehaviour {
+public class PathfinderAI : MonoBehaviour {
     //The point to move to
     public Vector3 targetPosition;
     private Seeker _seeker;
-    private EnemyCharacterController _controller;
  
     //The calculated path
     public Path path;
@@ -22,7 +21,6 @@ public class AstarAI : MonoBehaviour {
  
     public void Start() {
         _seeker = GetComponent<Seeker>();
-        _controller = GetComponent<EnemyCharacterController>();
         
         //Start a new path to the targetPosition, return the result to the OnPathComplete function
         _seeker.StartPath(transform.position, targetPosition, OnPathComplete);

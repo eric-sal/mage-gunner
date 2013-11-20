@@ -8,17 +8,16 @@ using System.Collections.Generic;
 /// </summary>
 public abstract class BaseCollisionHandler : MonoBehaviour {
 
-    // to cache the reflected type name
-    public string typeName;
-    
-    // so we can reuse the same block of memory when dispatching the collision handlers
-    private System.Object[] _args;
+    /* *** Member Variables *** */
 
-    // to confine population of _methodInfoTable to a single thread
-    private static object _theConch = new System.Object();
+    public string typeName; // to cache the reflected type name
 
-    // so we can dispatch to the correct overloads based on the run-time types of the collision handlers
-    private static Dictionary<string, Dictionary<string, MethodInfo>> _methodInfoTable;
+    private System.Object[] _args;  // so we can reuse the same block of memory when dispatching the collision handlers
+
+    private static object _theConch = new System.Object();  // to confine population of _methodInfoTable to a single thread
+    private static Dictionary<string, Dictionary<string, MethodInfo>> _methodInfoTable; // so we can dispatch to the correct overloads based on the run-time types of the collision handlers
+
+    /* *** Constructors *** */
 
     public virtual void Awake() {
         this.typeName = this.GetType().Name;
@@ -26,6 +25,7 @@ public abstract class BaseCollisionHandler : MonoBehaviour {
         BuildMethodInfoTable();
     }
 
+    /* *** Public Methods *** */
 
     /// <summary>
     /// Create a table mapping sublcasses of BaseCollisionHandler to the correct HandleCollision method.
@@ -138,14 +138,4 @@ public abstract class BaseCollisionHandler : MonoBehaviour {
     public virtual void HandleCollision(ProjectileCollisionHandler other, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
         DefaultHandleCollision(other, impactVelocity, distance, normal, deltaTime);
     }
-
-	/* Left here as an example
-    public virtual void HandleCollision(MarioTwinCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal) {
-        DefaultHandleCollision(other, fromDirection, distance);
-    }
-
-    public virtual void HandleCollision(PickupCollisionHandler other, Vector3 fromDirection, float distance, Vector3 normal) {
-        DefaultHandleCollision(other, fromDirection, distance);
-    }
-    */
 }

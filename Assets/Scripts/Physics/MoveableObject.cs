@@ -10,43 +10,53 @@ public class MoveableObject : MonoBehaviour {
     const float RAY_GAP = 0.2f;
     const float SKIN_THICKNESS = 0.02f;
 
+    /* *** Member Variables *** */
+
     public Vector3 velocity;
 
     protected BaseCharacterController _characterController;
     protected BaseCollisionHandler _collisionHandler;
+
+    /* *** Properties *** */
+
+    public bool IsMovingRight {
+        get { return this.velocity.x > 0; }
+    }
+
+    public bool IsMovingLeft {
+        get { return this.velocity.x < 0; }
+    }
+
+    public bool IsMovingUp {
+        get { return this.velocity.y > 0; }
+    }
+
+    public bool IsMovingDown {
+        get { return this.velocity.y < 0; }
+    }
+
+    public Vector3 Position {
+        get { return this.transform.position; }
+    }
+
+    /* *** Constructors *** */
 
     void Awake() {
         _characterController = GetComponent<BaseCharacterController>();
         _collisionHandler = GetComponent<BaseCollisionHandler>();
     }
 
-    public bool isMovingRight {
-        get { return this.velocity.x > 0; }
-    }
-
-    public bool isMovingLeft {
-        get { return this.velocity.x < 0; }
-    }
-
-    public bool isMovingUp {
-        get { return this.velocity.y > 0; }
-    }
-
-    public bool isMovingDown {
-        get { return this.velocity.y < 0; }
-    }
-
-    public Vector3 position {
-        get { return this.transform.position; }
-    }
+    /* *** MonoBehaviour Methods *** */
 
     public virtual void FixedUpdate() {
         if (_characterController == null) {
             // this is an "uncontrolled" moveable object
             float dt = Time.deltaTime;
-            Move(velocity, dt);
+            Move(this.velocity, dt);
         }
     }
+
+    /* *** Public Methods *** */
 
     /// <summary>
     /// Move this object at the given velocity for the given amount of time
@@ -86,17 +96,17 @@ public class MoveableObject : MonoBehaviour {
 
         RaycastHit hHitInfo = new RaycastHit();
         bool hadHorzCollision = false;
-        if (this.isMovingRight) {
+        if (this.IsMovingRight) {
             hadHorzCollision = VerticalSweep(bottomRight, topRight, velocity, out hHitInfo, rayLength);
-        } else if (this.isMovingLeft) {
+        } else if (this.IsMovingLeft) {
             hadHorzCollision = VerticalSweep(bottomLeft, topLeft, velocity, out hHitInfo, rayLength);
         }
 
         RaycastHit vHitInfo = new RaycastHit();
         bool hadVertCollision = false;
-        if (this.isMovingUp) {
+        if (this.IsMovingUp) {
             hadVertCollision = HorizontalSweep(topLeft, topRight, velocity, out vHitInfo, rayLength);
-        } else if (this.isMovingDown) {
+        } else if (this.IsMovingDown) {
             hadVertCollision = HorizontalSweep(bottomLeft, bottomRight, velocity, out vHitInfo, rayLength);
         }
 
@@ -124,9 +134,14 @@ public class MoveableObject : MonoBehaviour {
                 _collisionHandler.OnCollision(hitInfo.collider, velocity, 0f, hitInfo.normal, deltaTime);
             }
         }
-
     }
 
+    /// <summary>
+    /// Increase our velocity by 'v'.
+    /// </summary>
+    /// <param name='v'>
+    /// The velocity vector to add.
+    /// </param>
     protected void AddVelocity(Vector2 v) {
         this.velocity = new Vector3(this.velocity.x + v.x, this.velocity.y + v.y);
     }
@@ -234,6 +249,4 @@ public class MoveableObject : MonoBehaviour {
         hitInfo = new RaycastHit();
         return false;
     }
-
 }
-

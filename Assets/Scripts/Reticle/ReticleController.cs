@@ -25,17 +25,13 @@ public class ReticleController : MonoBehaviour {
     /* *** Public Methods *** */
 
     /// <summary>
-    /// Sets the position of the reticle on the screen.
+    /// Moves the reticle by adding the delta vector.
     /// </summary>
-    /// <param name='worldPosition'>
-    /// The position of the player's cursor in world space.
+    /// <param name='delta'>
+    /// The offset vector to move by.
     /// </param>
-    public void SetPosition(Vector3 worldPosition) {
-        if (SceneController.isPaused) {
-            return;
-        }
-
-        this.transform.position = CameraController.ConstrainPositionToScreen(worldPosition);
+    public void MoveBy(Vector3 worldPositionDelta) {
+        SetPosition(this.transform.position + worldPositionDelta);
     }
 
     /// <summary>
@@ -54,6 +50,20 @@ public class ReticleController : MonoBehaviour {
 
         Vector3 position = CameraController.ConstrainPositionToScreen(worldPosition);
         this.transform.position = Vector3.Lerp(transform.position, position, Time.deltaTime * speed);
+    }
+
+    /// <summary>
+    /// Sets the position of the reticle on the screen.
+    /// </summary>
+    /// <param name='worldPosition'>
+    /// The position of the player's cursor in world space.
+    /// </param>
+    public void SetPosition(Vector3 worldPosition) {
+        if (SceneController.isPaused) {
+            return;
+        }
+
+        this.transform.position = CameraController.ConstrainPositionToScreen(worldPosition);
     }
 
     /// <summary>

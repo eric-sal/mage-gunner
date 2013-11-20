@@ -11,7 +11,7 @@ public class PlayerCharacterController : BaseCharacterController {
     public bool isPlayerInputEnabled;
 
     private float _horizontalInput;
-	private float _verticalInput;
+    private float _verticalInput;
 
     /* *** Protected Methods *** */
 

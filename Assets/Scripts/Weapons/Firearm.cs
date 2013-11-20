@@ -43,7 +43,7 @@ public class Firearm : MonoBehaviour {
 
     /* *** Constructors *** */
 
-	void Start() {
+    void Start() {
         if (rateOfFire <= 0) {
             throw new InvalidOperationException("rateOfFire must be > 0!");
         }
@@ -96,7 +96,7 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-	public Vector3 Fire(Vector3 direction) {
+    public Vector3 Fire(Vector3 direction) {
         if (_elapsed <= _cycleTime || _roundsFired >= magazineSize) {
             return Vector3.zero;
         }

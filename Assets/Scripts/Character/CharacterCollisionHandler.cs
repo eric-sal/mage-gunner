@@ -1,10 +1,18 @@
 using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Character collision handler.
+/// Inherits from BaseCollisionHandler.
+/// </summary>
 public class CharacterCollisionHandler : BaseCollisionHandler {
+
+    /* *** Member Variables *** */
 
     protected BaseCharacterState _character;
     protected MoveableObject _moveable;
+
+    /* *** Constructors *** */
 
     public override void Awake() {
         base.Awake();
@@ -13,6 +21,7 @@ public class CharacterCollisionHandler : BaseCollisionHandler {
     }
 
     /// <summary>
+    /// Default collision handler.
     /// Stop the character's movement in the direction the collision came from.
     /// </summary>
     public override void HandleCollision(Collider collidedWith, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
@@ -23,9 +32,9 @@ public class CharacterCollisionHandler : BaseCollisionHandler {
         // only move the distance until we hit another collider
         float speed = impactVelocity.magnitude;
         float timeSpentMoving = distance / speed;
-        Vector3 tempDistance = impactVelocity * timeSpentMoving;
+        Vector3 d = impactVelocity * timeSpentMoving;
         Vector3 p = this.transform.position;
-        this.transform.position = new Vector3(p.x + tempDistance.x, p.y + tempDistance.y);
+        this.transform.position = new Vector3(p.x + d.x, p.y + d.y);
 
         float remainingTime = deltaTime - timeSpentMoving;
         if (remainingTime <= 0f) {
@@ -37,7 +46,7 @@ public class CharacterCollisionHandler : BaseCollisionHandler {
 
         // If the wall or floor we've just run into is close enough to exactly opposite
         // to our velocity vector, then we'll just just stop our forward progress.
-        if (theta <= 180f) {
+        if (theta <= 160f) {
             float radians = theta * Mathf.Deg2Rad;
             float adjacentVectorMagnitude = speed * Mathf.Abs(Mathf.Cos(radians));
             Vector3 adjacentVector = normal * adjacentVectorMagnitude;
@@ -47,11 +56,14 @@ public class CharacterCollisionHandler : BaseCollisionHandler {
         }
     }
 
+    /// <summary>
+    /// Handle collisions with projectiles.
+    /// </summary>
     public override void HandleCollision(ProjectileCollisionHandler other, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
         // TODO: Handle other types of projectiles - grenades, missiles, magic spells, etc.
         ProjectileState projectile = other.GetComponent<ProjectileState>();
 
-        if (Object.ReferenceEquals(projectile.spawner, gameObject)) {
+        if (Object.ReferenceEquals(projectile.spawner, this.gameObject)) {
             return;
         }
 

@@ -2,30 +2,46 @@
 using System;
 using System.Collections;
 
+/// <summary>
+/// Customizable firearm class. Add as a component to a firearm GameObject.
+/// </summary>
+/// <exception cref='InvalidOperationException'>
+/// Thrown when rateOfFire <= 0 or when minDamage < maxDamage.
+/// </exception>
 public class Firearm : MonoBehaviour {
 
     public enum FireType { Standard, Spray, Spread, Burst }
 
+    /* *** Member Variables *** */
+
     public int ammoConsumed = 1;    // How many rounds does this use up when fired? Burst fire weapons and double-barreled shotguns would have a value > 1.
     public AudioSource audioSource;
-    public float bulletSpeed;
+    public float bulletSpeed;   // How fast the projectile travels.
     public FireType fireType;
-    public bool fullAuto;
-    public int magazineSize;
+    public bool fullAuto;       // Does this weapon fire in full auto mode?
+    public int magazineSize;    // The number of rounds the weapon holds per magazine.
     public int maxDamage = 1;   // per projectile
     public int minDamage = 1;   // per projectile
     public int numProjectiles = 1;  // How many bullets do we spawn when the trigger is pulled? Defaults to 1. Different than ammoConsumed. Buckshot spawns many projectiles but consumes 1 round.
-    public float rateOfFire;
-    public float recoil;
+    public float rateOfFire;        // The number of rounds per minute.
+    public float recoil;            // Closer to 0 is less recoil.
     public float scatterVariation;  // In degrees. Closer to 0 is less scatter.
 
     private BaseCharacterState _character;
     private float _cycleTime; // Time per bullet (inverse of rate of fire).
-    private float _elapsed;
-    private int _roundsFired;
+    private float _elapsed;   // How much time has elapsed since the last time the weapon was fired.
+    private int _roundsFired; // The number of rounds the weapon has fired so far.
 
-    private static GameObject _bulletBucket;
+    private static GameObject _bulletBucket;    // Empty GameObject for keeping spawned bullets.
     private static GameObject _bulletPrefab;
+
+    /* *** Properties *** */
+
+    public bool IsEmpty {
+        get { return _roundsFired >= this.magazineSize; }
+    }
+
+    /* *** Constructors *** */
 
 	void Start() {
         if (rateOfFire <= 0) {
@@ -48,15 +64,25 @@ public class Firearm : MonoBehaviour {
         // and the parent is set after instantiation.
         _character = this.transform.parent.parent.GetComponentInChildren<BaseCharacterState>();
 
-        _cycleTime = 60 / rateOfFire;
+        _cycleTime = 60 / this.rateOfFire;
         _elapsed = _cycleTime; // so we can shoot right away
-	}
+    }
+
+    /* *** MonoBehaviour Methods *** */
 
     void Update() {
         _elapsed += Time.deltaTime;
     }
 
-    public Vector3 randomRecoil() {
+    /* *** Public Methods *** */
+
+    /// <summary>
+    /// Generates a random vector representing an offset amount to move the character's reticle.
+    /// </summary>
+    /// <returns>
+    /// A Vector3.
+    /// </returns>
+    public Vector3 RandomRecoil() {
         float x = UnityEngine.Random.Range(-1f, 1f);
         float y = UnityEngine.Random.Range(-1f, 1f);
         var direction = new Vector3(x, y).normalized;
@@ -68,7 +94,7 @@ public class Firearm : MonoBehaviour {
     /// Returns a Vector3 representing the degree of recoil.
     /// </summary>
     /// <param name='direction'>
-    /// The direction we're firing in.
+    /// The direction in which we're firing.
     /// </param>
 	public Vector3 Fire(Vector3 direction) {
         if (_elapsed <= _cycleTime || _roundsFired >= magazineSize) {
@@ -77,7 +103,7 @@ public class Firearm : MonoBehaviour {
 
         _elapsed = 0;
 
-        switch (fireType) {
+        switch (this.fireType) {
         case FireType.Standard:
             FireStandardShot(direction);
             break;
@@ -92,17 +118,14 @@ public class Firearm : MonoBehaviour {
             break;
         }
 
-        _roundsFired += ammoConsumed;
+        _roundsFired += this.ammoConsumed;
 
-        return randomRecoil();
+        return RandomRecoil();
     }
 
-    public bool IsEmpty {
-        get {
-            return _roundsFired >= this.magazineSize;
-        }
-    }
-
+    /// <summary>
+    /// Reload the weapon.
+    /// </summary>
     public void Reload() {
         // We can't reload while we're firing.
         if (_elapsed > _cycleTime) {
@@ -110,49 +133,75 @@ public class Firearm : MonoBehaviour {
         }
     }
 
-    // TODO: Maybe accuracy can be affected by the player's proficiency?
-    // So a shot fired in a specific direction won't necessarily travel *exactly* in that
-    // direction if the player isn't proficient enough in the weapon.
-    // Standard gun fire.
-    // ex: pistol, SMG, assault rifle
+    /* *** Private Methods *** */
+
+    /// <summary>
+    /// Fires the standard shot.
+    /// TODO: Maybe accuracy can be affected by the player's proficiency?
+    /// So a shot fired in a specific direction won't necessarily travel *exactly* in that
+    /// direction if the player isn't proficient enough in the weapon.
+    /// Standard gun fire.
+    /// ex: pistol, SMG, assault rifle
+    /// </summary>
+    /// <param name='direction'>
+    /// The direction in which we're firing.
+    /// </param>
     private void FireStandardShot(Vector3 direction) {
-        for (int i = 0; i < ammoConsumed; i ++) {
+        for (int i = 0; i < this.ammoConsumed; i ++) {
             SpawnBullet(direction);
         }
     }
 
-    // Buckshot-like spray.
-    // ex: shotgun
+    /// <summary>
+    /// Fires the spray shot.
+    /// Buckshot-like spray.
+    /// ex: shotgun
+    /// </summary>
+    /// <param name='direction'>
+    /// The direction in which we're firing.
+    /// </param>
     private void FireSprayShot(Vector3 direction) {
         float scatterAmount;
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
-        for (int i = 0; i < numProjectiles; i++) {
+        for (int i = 0; i < this.numProjectiles; i++) {
             scatterAmount = UnityEngine.Random.Range(-scatterVariation, scatterVariation);
             SpawnBullet(quato * Quaternion.Euler(0, scatterAmount, 0) * Vector3.forward);
         }
     }
 
-    // A spread shot.
-    // ex: the "Spread" gun from Contra.
+    /// <summary>
+    /// Fires the spread shot.
+    /// A spread shot.
+    /// ex: the "Spread" gun from Contra.
+    /// </summary>
+    /// <param name='direction'>
+    /// The direction in which we're firing.
+    /// </param>
     private void FireSpreadShot(Vector3 direction) {
         // If we weren't in a top-down (x, y plane) view, I *think* we would use a
         // different vector than Vector3.forward <0, 0, 1> as the 2nd param here.
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
-        for (int i = (int)Mathf.Floor(numProjectiles / 2f) * -1; i < (int)Mathf.Ceil(numProjectiles / 2f); i++) {
+        for (int i = (int)Mathf.Floor(this.numProjectiles / 2f) * -1; i < (int)Mathf.Ceil(this.numProjectiles / 2f); i++) {
             SpawnBullet(quato * Quaternion.Euler(0, scatterVariation * i, 0) * Vector3.forward);
         }
     }
 
-    // Fires 3 bullets in one pull of the trigger.
-    // Includes a bit of a recoil effect.
+    /// <summary>
+    /// Fires the burst shot.
+    /// Fires 3 bullets in one pull of the trigger.
+    /// Includes a bit of a recoil effect per round.
+    /// </summary>
+    /// <param name='direction'>
+    /// The direction in which we're firing.
+    /// </param>
     private IEnumerator FireBurstShot(Vector3 direction) {
         float scatterAmount;
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         SpawnBullet(direction);
-        for (int i = 0; i < ammoConsumed - 1; i++) {
+        for (int i = 0; i < this.ammoConsumed - 1; i++) {
             yield return new WaitForSeconds(_cycleTime);
 
             _elapsed = 0;   // Set _elapsed to 0 so we can't fire the weapon again while this coroutine is running.
@@ -161,6 +210,12 @@ public class Firearm : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Spawns a bullet.
+    /// </summary>
+    /// <param name='direction'>
+    /// The direction in which we're firing.
+    /// </param>
     private void SpawnBullet(Vector3 direction) {
         // _character.transform.position isn't quite right. Might want to figure
         // out where the character will be in the NEXT frame and use that position.
@@ -173,7 +228,13 @@ public class Firearm : MonoBehaviour {
         bulletState.damage = RollForDamage();
     }
 
+    /// <summary>
+    /// Picks a random number between minDamage and maxDamage.
+    /// </summary>
+    /// <returns>
+    /// The amount of damage the bullet should do.
+    /// </returns>
     private int RollForDamage() {
-        return Mathf.RoundToInt(UnityEngine.Random.Range(minDamage, maxDamage));
+        return Mathf.RoundToInt(UnityEngine.Random.Range(this.minDamage, this.maxDamage));
     }
 }

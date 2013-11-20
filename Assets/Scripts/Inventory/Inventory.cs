@@ -1,80 +1,117 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// This class represents a character's inventory.
+/// </summary>
 public class Inventory : MonoBehaviour {
-    public int maxItems;
 
-    // These are public because that's how they get serialized.
-    public List<string> keys;
-    public List<InventoryItem> values;
+    /* *** Member Variables *** */
+
+    public int maxItems;    // The max number of items this inventory can hold.
 
     private BaseCharacterController _controller;
+    private int _currentFirearmIndex = 0;
+    private List<InventoryItem> _firearms;  // All inventory items classified as Firearms
+
+    // The _inventory variable is a Dictionary where the keys are the names of prefabs in the inventory.
+    // Dictionary types aren't serialized by Unity, so we extract them into two separate lists - one
+    // for the keys and one for the values.
+    public List<string> keys;
+    public List<InventoryItem> values;
     private Dictionary<string,InventoryItem> _inventory;
 
-    // probably not the best place for this, but this is only a proof of concept dealy
-    private int _currentWeaponIndex = 0;
+    /* *** Constructors *** */
 
     public void Awake() {
+        if (keys.Count != values.Count) {
+            throw new InvalidOperationException("The number of elements in the list of keys must match the number of elements in the list of values.");
+        }
+
         _controller = this.transform.parent.GetComponentInChildren<BaseCharacterController>();
     }
 
-    // Stitch the dictionary together
+    /* *** MonoBehaviour Methods *** */
+
+    /// <summary>
+    /// Stitch the inventory Dictionary together.
+    /// </summary>
     public void OnEnable() {
-        if (_inventory == null) {
+        if (_inventory == null && keys.Count > 0 && values.Count > 0) {
             _inventory = new Dictionary<string, InventoryItem>();
+            _firearms = new List<InventoryItem>();
 
             string key;
             InventoryItem inventoryItem;
             for (int i = 0; i < keys.Count; i++) {
                 key = keys[i];
                 inventoryItem = values[i];
-
                 inventoryItem.Instantiate(transform);
-
                 _inventory[key] = inventoryItem;
+
+                if (inventoryItem.classification == InventoryItem.Classification.Firearm) {
+                    _firearms.Add(inventoryItem);
+                }
             }
 
-            // Hacky-hacky!
-            _controller.equippedFirearm = values[0].instance.GetComponent<Firearm>();
+            if (_firearms.Count > 0) {
+                SetWeapon(_currentFirearmIndex);
+            }
 
             keys.Clear();
             values.Clear();
         }
     }
 
-    // Extract dictionary to the lists
+    /// <summary>
+    /// Extract the inventory Dictionary to the lists.
+    /// </summary>
     public void OnDisable() {
         if (!Application.isPlaying) {
             foreach (var item in _inventory) {
                 keys.Add(item.Key);
                 values.Add(item.Value);
             }
-    
+
             _inventory.Clear();
         }
     }
 
+    /* *** Public Methods *** */
+
+    /// <summary>
+    /// Cycle to the next weapon.
+    /// </summary>
     public void NextWeapon() {
-        _currentWeaponIndex += 1;
-        if (_currentWeaponIndex >= _inventory.Values.Count) {
-            _currentWeaponIndex = 0;
+        _currentFirearmIndex += 1;
+        if (_currentFirearmIndex >= _firearms.Count) {
+            _currentFirearmIndex = 0;
         }
 
-        SetWeapon(_currentWeaponIndex);
+        SetWeapon(_currentFirearmIndex);
     }
 
+    /// <summary>
+    /// Cycle to the previous weapon.
+    /// </summary>
     public void PreviousWeapon() {
-        _currentWeaponIndex -= 1;
-        if (_currentWeaponIndex < 0) {
-            _currentWeaponIndex = _inventory.Values.Count - 1;
+        _currentFirearmIndex -= 1;
+        if (_currentFirearmIndex < 0) {
+            _currentFirearmIndex = _firearms.Count - 1;
         }
 
-        SetWeapon(_currentWeaponIndex);
+        SetWeapon(_currentFirearmIndex);
     }
 
+    /// <summary>
+    /// Cycle to the weapon at the specified index.
+    /// </summary>
+    /// <param name='index'>
+    /// The index of the weapon to use.
+    /// </param>
     public void SetWeapon(int index) {
-        List<InventoryItem> weapons = new List<InventoryItem>(_inventory.Values);
-        _controller.equippedFirearm = weapons[index].instance.GetComponent<Firearm>();
+        _controller.equippedFirearm = _firearms[index].instance.GetComponent<Firearm>();
     }
 }

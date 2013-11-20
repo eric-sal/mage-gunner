@@ -1,12 +1,23 @@
 using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Player character controller.
+/// </summary>
 public class PlayerCharacterController : BaseCharacterController {
 
+    /* *** Member Variables *** */
+
     public bool isPlayerInputEnabled;
+
     private float _horizontalInput;
 	private float _verticalInput;
 
+    /* *** Protected Methods *** */
+
+    /// <summary>
+    /// Captures the input from the player.
+    /// </summary>
     protected override void CaptureInput() {
         if (this.isPlayerInputEnabled) {
             _horizontalInput = Input.GetAxis("Horizontal"); // -1.0 to 1.0
@@ -15,9 +26,10 @@ public class PlayerCharacterController : BaseCharacterController {
             Aim();
 
             if (equippedFirearm != null) {
-                if (equippedFirearm.fullAuto && Input.GetButton("Fire1")) {
-                    Fire();
-                } else if (!equippedFirearm.fullAuto && Input.GetButtonDown("Fire1")) {
+                if (equippedFirearm.fullAuto && Input.GetButton("Fire1") ||
+                    !equippedFirearm.fullAuto && Input.GetButtonDown("Fire1")) {
+                    // If full-auto is enabled and the player is holding down the fire button, or
+                    // if the firearm only allows for semi-auto fire, and the player clicks the fire button.
                     Fire();
                 } else if (Input.GetButton("Reload")) {
                     equippedFirearm.Reload();
@@ -32,14 +44,19 @@ public class PlayerCharacterController : BaseCharacterController {
         }
     }
 
+    /// <summary>
+    /// Update the player's velocity.
+    /// </summary>
     protected override void Act() {
         var velocity = new Vector3(_horizontalInput, _verticalInput);
-        _character.velocity = Vector3.ClampMagnitude(velocity, 1) * _character.maxWalkSpeed;
-        _moveable.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
+        _moveable.velocity = Vector3.ClampMagnitude(velocity, 1) * _character.maxWalkSpeed;
     }
 
+    /// <summary>
+    /// Move the player's reticle.
+    /// </summary>
     protected override void Aim() {
         var mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        _reticle.SetPosition(_reticle.transform.position + mouseDelta);
+        _reticle.MoveBy(mouseDelta);
     }
 }

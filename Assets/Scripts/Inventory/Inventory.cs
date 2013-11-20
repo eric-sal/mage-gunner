@@ -39,7 +39,7 @@ public class Inventory : MonoBehaviour {
     /// Stitch the inventory Dictionary together.
     /// </summary>
     public void OnEnable() {
-        if (_inventory == null && keys.Count > 0 && values.Count > 0) {
+        if (_inventory == null) {
             _inventory = new Dictionary<string, InventoryItem>();
             _firearms = new List<InventoryItem>();
 

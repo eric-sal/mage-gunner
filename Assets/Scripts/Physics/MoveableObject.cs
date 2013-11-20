@@ -51,12 +51,18 @@ public class MoveableObject : MonoBehaviour {
     public virtual void FixedUpdate() {
         if (_characterController == null) {
             // this is an "uncontrolled" moveable object
-            float dt = Time.deltaTime;
-            Move(this.velocity, dt);
+            Move(Time.deltaTime);
         }
     }
 
     /* *** Public Methods *** */
+
+    /// <summary>
+    /// Move this object at its current velocity.
+    /// </summary>
+    public virtual void Move(float deltaTime) {
+        Move(this.velocity, deltaTime);
+    }
 
     /// <summary>
     /// Move this object at the given velocity for the given amount of time
@@ -134,16 +140,6 @@ public class MoveableObject : MonoBehaviour {
                 _collisionHandler.OnCollision(hitInfo.collider, velocity, 0f, hitInfo.normal, deltaTime);
             }
         }
-    }
-
-    /// <summary>
-    /// Increase our velocity by 'v'.
-    /// </summary>
-    /// <param name='v'>
-    /// The velocity vector to add.
-    /// </param>
-    protected void AddVelocity(Vector2 v) {
-        this.velocity = new Vector3(this.velocity.x + v.x, this.velocity.y + v.y);
     }
 
     /// <summary>

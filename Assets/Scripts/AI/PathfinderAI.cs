@@ -13,7 +13,6 @@ public class PathfinderAI : MonoBehaviour {
 
     public Vector3 targetPosition;  //The end-point to move toward
 
-    private BaseCharacterState _character;
     private int _currentWaypoint = 0; //The waypoint we are currently moving toward
     private MoveableObject _moveable;
     private Path _path;   //The calculated path
@@ -22,7 +21,6 @@ public class PathfinderAI : MonoBehaviour {
     /* *** Constructors *** */
 
     public void Start() {
-        _character = GetComponent<BaseCharacterState>();
         _moveable = GetComponent<MoveableObject>();
         _seeker = GetComponent<Seeker>();
         
@@ -46,15 +44,13 @@ public class PathfinderAI : MonoBehaviour {
 
         if (_currentWaypoint >= _path.vectorPath.Count) {
             // Debug.Log("End Of Path Reached");
-            _character.velocity = Vector3.zero;
             _moveable.velocity = Vector3.zero;
             return;
         }
 
         //Direction to the next waypoint
         Vector3 velocity = (_path.vectorPath[_currentWaypoint] - this.transform.position);
-        _character.velocity = Vector3.ClampMagnitude(velocity, 1) * speed;
-        _moveable.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
+        _moveable.velocity = Vector3.ClampMagnitude(velocity, 1) * speed;
 
         //Check if we are close enough to the next waypoint
         //If we are, proceed to follow the next waypoint

@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Controls the main camera centered on the player.
+/// </summary>
 public class CameraController : MonoBehaviour {
 
     /* *** Member Variables *** */

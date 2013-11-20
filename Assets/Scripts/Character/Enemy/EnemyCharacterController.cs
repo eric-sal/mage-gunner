@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EnemyCharacterController : BaseCharacterController {
 
-    protected PathfinderAI _npcAI;
+    protected PathfinderAI _pathfinderAI;
     protected bool _canSeePlayer;
     protected EnemyState _myState;
     protected int _layerMask;
@@ -12,7 +12,7 @@ public class EnemyCharacterController : BaseCharacterController {
     protected Vector3 _estimatedPlayerVelocity;
 
     public void Start() {
-        _npcAI = GetComponent<PathfinderAI>();
+        _pathfinderAI = GetComponent<PathfinderAI>();
         _myState = (EnemyState)_character;
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
 
@@ -44,27 +44,7 @@ public class EnemyCharacterController : BaseCharacterController {
     }
 
     protected override void Act() {
-        if (_npcAI.path == null) {
-            //We have no path to move after yet
-            return;
-        }
-
-        if (_npcAI.currentWaypoint >= _npcAI.path.vectorPath.Count) {
-            Debug.Log("End Of Path Reached");
-            return;
-        }
-
-        //Direction to the next waypoint
-        Vector3 velocity = (_npcAI.path.vectorPath[_npcAI.currentWaypoint] - transform.position);
-        _myState.velocity = Vector3.ClampMagnitude(velocity, 1) * _myState.maxWalkSpeed;
-        _moveable.velocity = new Vector3(_myState.velocity.x, _myState.velocity.y);
-
-        //Check if we are close enough to the next waypoint
-        //If we are, proceed to follow the next waypoint
-        if (Vector3.Distance(transform.position, _npcAI.path.vectorPath[_npcAI.currentWaypoint]) < _npcAI.nextWaypointDistance) {
-            _npcAI.currentWaypoint++;
-            return;
-        }
+        _pathfinderAI.MoveAlongPath(_myState.maxWalkSpeed);
     }
 
     protected override void Aim() {
@@ -74,7 +54,7 @@ public class EnemyCharacterController : BaseCharacterController {
 
     protected void FindPlayer() {
         _canSeePlayer = false;
-        _npcAI.targetPosition = _playerState.transform.position;
+        _pathfinderAI.targetPosition = _playerState.transform.position;
 
         RaycastHit hitInfo;
         Vector3 direction = _playerState.transform.position - _myState.transform.position;

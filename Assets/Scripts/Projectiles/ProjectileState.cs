@@ -1,19 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Projectile state.
+/// </summary>
 public class ProjectileState : MonoBehaviour {
-    public int damage;
+
+    /* *** Member Variables *** */
+
+    public int damage;          // The amount of damage this projectile does if it collides with an object that takes damage. Set when it's spawned.
     public GameObject spawner;  // GameObject that spawned the projectile
 
     private MoveableObject _moveableObject;
 
-    public void Awake() {
-        _moveableObject = GetComponent<MoveableObject>();
-    }
+    /* *** Properties *** */
 
     public Vector3 velocity {
         get { return _moveableObject.velocity;  }
 
         set { _moveableObject.velocity = value; }
+    }
+
+    /* *** Constructors *** */
+
+    public void Awake() {
+        _moveableObject = GetComponent<MoveableObject>();
     }
 }

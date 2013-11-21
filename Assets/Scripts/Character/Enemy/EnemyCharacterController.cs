@@ -29,19 +29,22 @@ public class EnemyCharacterController : BaseCharacterController {
                       (1 << LayerMask.NameToLayer("Enemies")));
     }
 
-    /* *** Member Methods *** */
+    /* *** MonoBehaviour Methods *** */
 
     /// <summary>
-    /// Simulated player input.
-    /// Called from Update in BaseCharacterController.
+    /// Simulated player input for aiming and firing.
     /// </summary>
-    protected override void _CaptureInput() {
+    public override void Update() {
+        // If we can't see the player, then there's nothing to aim or fire.
         if (!_canSeePlayer || _playerState.health <= 0) {
             return;
         }
 
-        _Aim();
+        // Aim at the player
+        Vector3 playerPosition = _playerState.transform.position + _estimatedPlayerVelocity;
+        _reticle.LerpTo(playerPosition, _myState.lookSpeed);
 
+        // Fire the equipped weapon
         var gun = this.equippedFirearm;
         if (gun != null) {
             if (gun.IsEmpty) {
@@ -53,24 +56,20 @@ public class EnemyCharacterController : BaseCharacterController {
     }
 
     /// <summary>
-    /// Modify the NPC's movement.
+    /// Move the NPC.
     /// Perform additional functionality that should happen at fixed
     /// intervals in FixedUpdate().
     /// </summary>
-    protected override void _Act() {
+    public override void FixedUpdate() {
         _FindPlayer();
         _EstimatePlayerVelocity();
 
         _pathfinderAI.MoveAlongPath(_myState.maxWalkSpeed);
+
+        base.FixedUpdate();
     }
 
-    /// <summary>
-    /// Simulated reticle aiming.
-    /// </summary>
-    protected override void _Aim() {
-        Vector3 playerPosition = _playerState.transform.position + _estimatedPlayerVelocity;
-        _reticle.LerpTo(playerPosition, _myState.lookSpeed);
-    }
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Try to find the player in the NPC's field of vision.

@@ -40,12 +40,9 @@ public abstract class BaseCharacterController : MonoBehaviour {
     /* *** MonoBehaviour Methods *** */
 
     public virtual void Update() {
-        _CaptureInput();
     }
 
     public virtual void FixedUpdate() {
-        _Act(); // Let player or AI modify character state first
-
         if (_moveable != null) {
             _moveable.Move(Time.deltaTime);
         }
@@ -54,26 +51,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
     }
 
     /* *** Member Methods *** */
-
-    /// <summary>
-    /// This is to be defined by subclasses. This method is called
-    /// from Update. It should capture character input.
-    /// </summary>
-    protected abstract void _CaptureInput();
-
-    /// <summary>
-    /// This is to be defined by subclasses. This method is called
-    /// from FixedUpdate before any physics calculations have been
-    /// performed. Here would be where player inputs would get
-    /// recorded and the character state would get modified.  For
-    /// enemies, the AI would alter the state instead.
-    /// </summary>
-    protected abstract void _Act();
-
-    /// <summary>
-    /// Define in subclasses. Handles aiming the character's reticle.
-    /// </summary>
-    protected abstract void _Aim();
 
     /// <summary>
     /// Fires the currently equipped firearm, and applies the recoil

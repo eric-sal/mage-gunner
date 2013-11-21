@@ -13,18 +13,22 @@ public class PlayerCharacterController : BaseCharacterController {
     private float _horizontalInput;
     private float _verticalInput;
 
-    /* *** Member Methods *** */
+    /* *** MonoBehaviour Methods *** */
 
     /// <summary>
-    /// Captures the input from the player.
+    /// Capture input from the player.
     /// </summary>
-    protected override void _CaptureInput() {
+    public override void Update() {
         if (this.isPlayerInputEnabled) {
+            // Get player input from the keyboard or joystick
             _horizontalInput = Input.GetAxis("Horizontal"); // -1.0 to 1.0
             _verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
 
-            _Aim();
+            // Move the player's reticle.
+            var mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+            _reticle.MoveBy(mouseDelta);
 
+            // Fire the equipped weapon
             if (equippedFirearm != null) {
                 if (equippedFirearm.fullAuto && Input.GetButton("Fire1") ||
                     !equippedFirearm.fullAuto && Input.GetButtonDown("Fire1")) {
@@ -36,27 +40,24 @@ public class PlayerCharacterController : BaseCharacterController {
                 }
             }
 
+            // Cycle through weapons
             if (Input.GetButtonDown("Next Weapon")) {
                 _inventory.NextWeapon();
             } else if (Input.GetButtonDown("Previous Weapon")) {
                 _inventory.PreviousWeapon();
             }
         }
+
+        base.Update();
     }
 
     /// <summary>
     /// Update the player's velocity.
     /// </summary>
-    protected override void _Act() {
+    public override void FixedUpdate() {
         var velocity = new Vector3(_horizontalInput, _verticalInput);
         _moveable.velocity = Vector3.ClampMagnitude(velocity, 1) * _character.maxWalkSpeed;
-    }
 
-    /// <summary>
-    /// Move the player's reticle.
-    /// </summary>
-    protected override void _Aim() {
-        var mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        _reticle.MoveBy(mouseDelta);
+        base.FixedUpdate();
     }
 }

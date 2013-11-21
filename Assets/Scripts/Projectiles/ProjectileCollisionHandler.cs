@@ -17,7 +17,7 @@ public class ProjectileCollisionHandler : BaseCollisionHandler {
         _projectile = GetComponent<ProjectileState>();
     }
 
-    /* *** Public Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Default collision handler.

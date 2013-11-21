@@ -28,7 +28,7 @@ public class InventoryItem {
         get { return _instance; }
     }
 
-    /* *** Public Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Instantiate the actual GameObjects from the prefabs here.

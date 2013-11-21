@@ -20,6 +20,8 @@ public class CharacterCollisionHandler : BaseCollisionHandler {
         _moveable = GetComponent<MoveableObject>();
     }
 
+    /* *** Member Methods *** */
+
     /// <summary>
     /// Default collision handler.
     /// Stop the character's movement in the direction the collision came from.

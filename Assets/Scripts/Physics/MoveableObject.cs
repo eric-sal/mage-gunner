@@ -48,14 +48,14 @@ public class MoveableObject : MonoBehaviour {
 
     /* *** MonoBehaviour Methods *** */
 
-    public virtual void FixedUpdate() {
+    void FixedUpdate() {
         if (_characterController == null) {
             // this is an "uncontrolled" moveable object
             Move(Time.deltaTime);
         }
     }
 
-    /* *** Public Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Move this object at its current velocity.
@@ -103,17 +103,17 @@ public class MoveableObject : MonoBehaviour {
         RaycastHit hHitInfo = new RaycastHit();
         bool hadHorzCollision = false;
         if (this.IsMovingRight) {
-            hadHorzCollision = VerticalSweep(bottomRight, topRight, velocity, out hHitInfo, rayLength);
+            hadHorzCollision = _VerticalSweep(bottomRight, topRight, velocity, out hHitInfo, rayLength);
         } else if (this.IsMovingLeft) {
-            hadHorzCollision = VerticalSweep(bottomLeft, topLeft, velocity, out hHitInfo, rayLength);
+            hadHorzCollision = _VerticalSweep(bottomLeft, topLeft, velocity, out hHitInfo, rayLength);
         }
 
         RaycastHit vHitInfo = new RaycastHit();
         bool hadVertCollision = false;
         if (this.IsMovingUp) {
-            hadVertCollision = HorizontalSweep(topLeft, topRight, velocity, out vHitInfo, rayLength);
+            hadVertCollision = _HorizontalSweep(topLeft, topRight, velocity, out vHitInfo, rayLength);
         } else if (this.IsMovingDown) {
-            hadVertCollision = HorizontalSweep(bottomLeft, bottomRight, velocity, out vHitInfo, rayLength);
+            hadVertCollision = _HorizontalSweep(bottomLeft, bottomRight, velocity, out vHitInfo, rayLength);
         }
 
         if (!hadHorzCollision && !hadVertCollision) {
@@ -149,7 +149,7 @@ public class MoveableObject : MonoBehaviour {
     /// <returns>
     /// True if any ray hits a collider
     /// </returns>
-    private bool VerticalSweep(Vector3 startPoint, Vector3 endPoint, Vector3 rayDirection, out RaycastHit hitInfo, float rayLength) {
+    private bool _VerticalSweep(Vector3 startPoint, Vector3 endPoint, Vector3 rayDirection, out RaycastHit hitInfo, float rayLength) {
 
         float x = startPoint.x;
         float y = startPoint.y;
@@ -201,7 +201,7 @@ public class MoveableObject : MonoBehaviour {
     /// <returns>
     /// True if any ray hits a collider
     /// </returns>
-    private bool HorizontalSweep(Vector3 startPoint, Vector3 endPoint, Vector3 rayDirection, out RaycastHit hitInfo, float rayLength) {
+    private bool _HorizontalSweep(Vector3 startPoint, Vector3 endPoint, Vector3 rayDirection, out RaycastHit hitInfo, float rayLength) {
 
         float x = startPoint.x;
         float y = startPoint.y;

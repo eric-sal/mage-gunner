@@ -23,7 +23,7 @@ public class ProjectileState : MonoBehaviour {
 
     /* *** Constructors *** */
 
-    public void Awake() {
+    void Awake() {
         _moveableObject = GetComponent<MoveableObject>();
     }
 }

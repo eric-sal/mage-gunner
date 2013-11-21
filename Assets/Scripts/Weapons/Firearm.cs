@@ -74,7 +74,7 @@ public class Firearm : MonoBehaviour {
         _elapsed += Time.deltaTime;
     }
 
-    /* *** Public Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Generates a random vector representing an offset amount to move the character's reticle.
@@ -105,16 +105,16 @@ public class Firearm : MonoBehaviour {
 
         switch (this.fireType) {
         case FireType.Standard:
-            FireStandardShot(direction);
+            _FireStandardShot(direction);
             break;
         case FireType.Spray:
-            FireSprayShot(direction);
+            _FireSprayShot(direction);
             break;
         case FireType.Spread:
-            FireSpreadShot(direction);
+            _FireSpreadShot(direction);
             break;
         case FireType.Burst:
-            StartCoroutine("FireBurstShot", direction);
+            StartCoroutine("_FireBurstShot", direction);
             break;
         }
 
@@ -133,8 +133,6 @@ public class Firearm : MonoBehaviour {
         }
     }
 
-    /* *** Private Methods *** */
-
     /// <summary>
     /// Fires the standard shot.
     /// TODO: Maybe accuracy can be affected by the player's proficiency?
@@ -146,9 +144,9 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void FireStandardShot(Vector3 direction) {
+    private void _FireStandardShot(Vector3 direction) {
         for (int i = 0; i < this.ammoConsumed; i ++) {
-            SpawnBullet(direction);
+            _SpawnBullet(direction);
         }
     }
 
@@ -160,13 +158,13 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void FireSprayShot(Vector3 direction) {
+    private void _FireSprayShot(Vector3 direction) {
         float scatterAmount;
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         for (int i = 0; i < this.numProjectiles; i++) {
             scatterAmount = UnityEngine.Random.Range(-scatterVariation, scatterVariation);
-            SpawnBullet(quato * Quaternion.Euler(0, scatterAmount, 0) * Vector3.forward);
+            _SpawnBullet(quato * Quaternion.Euler(0, scatterAmount, 0) * Vector3.forward);
         }
     }
 
@@ -178,13 +176,13 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void FireSpreadShot(Vector3 direction) {
+    private void _FireSpreadShot(Vector3 direction) {
         // If we weren't in a top-down (x, y plane) view, I *think* we would use a
         // different vector than Vector3.forward <0, 0, 1> as the 2nd param here.
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         for (int i = (int)Mathf.Floor(this.numProjectiles / 2f) * -1; i < (int)Mathf.Ceil(this.numProjectiles / 2f); i++) {
-            SpawnBullet(quato * Quaternion.Euler(0, scatterVariation * i, 0) * Vector3.forward);
+            _SpawnBullet(quato * Quaternion.Euler(0, scatterVariation * i, 0) * Vector3.forward);
         }
     }
 
@@ -196,17 +194,17 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private IEnumerator FireBurstShot(Vector3 direction) {
+    private IEnumerator _FireBurstShot(Vector3 direction) {
         float scatterAmount;
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
-        SpawnBullet(direction);
+        _SpawnBullet(direction);
         for (int i = 0; i < this.ammoConsumed - 1; i++) {
             yield return new WaitForSeconds(_cycleTime);
 
             _elapsed = 0;   // Set _elapsed to 0 so we can't fire the weapon again while this coroutine is running.
             scatterAmount = UnityEngine.Random.Range(-scatterVariation, scatterVariation);
-            SpawnBullet(quato * Quaternion.Euler(0, scatterAmount, 0) * Vector3.forward);
+            _SpawnBullet(quato * Quaternion.Euler(0, scatterAmount, 0) * Vector3.forward);
         }
     }
 
@@ -216,7 +214,7 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void SpawnBullet(Vector3 direction) {
+    private void _SpawnBullet(Vector3 direction) {
         // _character.transform.position isn't quite right. Might want to figure
         // out where the character will be in the NEXT frame and use that position.
         GameObject bullet = (GameObject)Instantiate(_bulletPrefab, _character.transform.position, _bulletPrefab.transform.rotation);
@@ -225,7 +223,7 @@ public class Firearm : MonoBehaviour {
         ProjectileState bulletState = bullet.GetComponent<ProjectileState>();
         bulletState.spawner = _character.gameObject;
         bulletState.velocity = Vector3.ClampMagnitude(direction, 1) * this.bulletSpeed;
-        bulletState.damage = RollForDamage();
+        bulletState.damage = _RollForDamage();
     }
 
     /// <summary>
@@ -234,7 +232,7 @@ public class Firearm : MonoBehaviour {
     /// <returns>
     /// The amount of damage the bullet should do.
     /// </returns>
-    private int RollForDamage() {
+    private int _RollForDamage() {
         return Mathf.RoundToInt(UnityEngine.Random.Range(this.minDamage, this.maxDamage));
     }
 }

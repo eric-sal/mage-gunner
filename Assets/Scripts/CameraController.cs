@@ -12,18 +12,19 @@ public class CameraController : MonoBehaviour {
 
     private Camera _camera;
 
-
-    /* *** MonoBehaviour Methods *** */
+    /* *** Constructors *** */
 
     void Awake() {
         _camera = Camera.main;
     }
 
+    /* *** MonoBehaviour Methods *** */
+
     void Update() {
         _camera.transform.position = new Vector3(player.position.x, player.position.y, _camera.transform.position.z);
     }
 
-    /* *** Public Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Constrains the position to screen.

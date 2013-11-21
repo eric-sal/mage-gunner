@@ -16,7 +16,7 @@ public abstract class BaseCharacterState : MonoBehaviour {
     public float maxWalkSpeed;
     public int strength;
 
-    /* *** Public Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Gets the recoil reduction amount.
@@ -40,15 +40,13 @@ public abstract class BaseCharacterState : MonoBehaviour {
 
         if (this.health < 0) {
             // If the player doesn't have any more health, they're dead.
-            Die();
+            _Die();
         }
     }
-
-    /* *** Protected Methods *** */
 
     /// <summary>
     /// Define in subclasses.
     /// Handle what happens to the character when they die.
     /// </summary>
-    protected abstract void Die();
+    protected abstract void _Die();
 }

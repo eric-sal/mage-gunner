@@ -14,7 +14,6 @@ public abstract class BaseCollisionHandler : MonoBehaviour {
 
     private System.Object[] _args;  // so we can reuse the same block of memory when dispatching the collision handlers
 
-    private static object _theConch = new System.Object();  // to confine population of _methodInfoTable to a single thread
     private static Dictionary<string, Dictionary<string, MethodInfo>> _methodInfoTable; // so we can dispatch to the correct overloads based on the run-time types of the collision handlers
 
     /* *** Constructors *** */
@@ -22,45 +21,41 @@ public abstract class BaseCollisionHandler : MonoBehaviour {
     public virtual void Awake() {
         this.typeName = this.GetType().Name;
         _args = new System.Object[5];
-        BuildMethodInfoTable();
+        _BuildMethodInfoTable();
     }
 
-    /* *** Public Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Create a table mapping sublcasses of BaseCollisionHandler to the correct HandleCollision method.
     /// Inspiration: http://www.arcadianvisions.com/downloads/MultipleDispatch/multiDispatch.html
     /// </summary>
-    private void BuildMethodInfoTable() {
+    private void _BuildMethodInfoTable() {
+        if (_methodInfoTable != null) {
+            // another instance already built the table earlier
+            return;
+        }
 
-        lock (_theConch) {
+        _methodInfoTable = new Dictionary<string, Dictionary<string, MethodInfo>>();
+        Type baseType = System.Type.GetType("BaseCollisionHandler");
 
-            if (_methodInfoTable != null) {
-                // another instance already built the table earlier
-                return;
+        foreach (Type t in Assembly.GetCallingAssembly().GetTypes()) {
+
+            // skip any Type that does not inherit from baseType
+            if (!t.IsSubclassOf(baseType)) {
+                continue;
             }
 
-            _methodInfoTable = new Dictionary<string, Dictionary<string, MethodInfo>>();
-            Type baseType = System.Type.GetType("BaseCollisionHandler");
+            // create an entry in our table for this type
+            string thisName = t.Name;
+            _methodInfoTable.Add(thisName, new Dictionary<string, MethodInfo>());
 
-            foreach (Type t in Assembly.GetCallingAssembly().GetTypes()) {
-
-                // skip any Type that does not inherit from baseType
-                if (!t.IsSubclassOf(baseType)) {
-                    continue;
-                }
-
-                // create an entry in our table for this type
-                string thisName = t.Name;
-                _methodInfoTable.Add(thisName, new Dictionary<string, MethodInfo>());
-
-                foreach (MethodInfo mi in t.GetMethods()) {
-                    if (mi.Name == "HandleCollision") {
-                        // add this method to our table
-                        ParameterInfo[] pars = mi.GetParameters();
-                        string otherName = pars[0].ParameterType.Name;
-                        _methodInfoTable[thisName].Add(otherName, mi);
-                    }
+            foreach (MethodInfo mi in t.GetMethods()) {
+                if (mi.Name == "HandleCollision") {
+                    // add this method to our table
+                    ParameterInfo[] pars = mi.GetParameters();
+                    string otherName = pars[0].ParameterType.Name;
+                    _methodInfoTable[thisName].Add(otherName, mi);
                 }
             }
         }
@@ -70,7 +65,6 @@ public abstract class BaseCollisionHandler : MonoBehaviour {
     /// Calls the appropriate overload of HandleCollision for this.gameObject and collidedWith.gameObject
     /// </summary>
     public void OnCollision(Collider collidedWith, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
-
         if (collidedWith == null) {
             // this is indicative of a bug in the code that invoked this method
             throw new ArgumentNullException("collidedWith", "Cannot call OnCollision without providing a collider");

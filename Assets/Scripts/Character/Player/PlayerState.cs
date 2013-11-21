@@ -6,13 +6,13 @@ using System.Collections;
 /// </summary>
 public class PlayerState : BaseCharacterState {
 
-    /* *** Protected Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Handle player death.
     /// TODO: We probably don't want to just destroy the instance.
     /// </summary>
-    protected override void Die() {
+    protected override void _Die() {
         Destroy(this.gameObject);
     }
 }

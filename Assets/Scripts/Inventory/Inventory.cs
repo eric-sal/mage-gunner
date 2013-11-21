@@ -25,7 +25,7 @@ public class Inventory : MonoBehaviour {
 
     /* *** Constructors *** */
 
-    public void Awake() {
+    void Awake() {
         if (keys.Count != values.Count) {
             throw new InvalidOperationException("The number of elements in the list of keys must match the number of elements in the list of values.");
         }
@@ -38,7 +38,7 @@ public class Inventory : MonoBehaviour {
     /// <summary>
     /// Stitch the inventory Dictionary together.
     /// </summary>
-    public void OnEnable() {
+    void OnEnable() {
         if (_inventory == null) {
             _inventory = new Dictionary<string, InventoryItem>();
             _firearms = new List<InventoryItem>();
@@ -68,7 +68,7 @@ public class Inventory : MonoBehaviour {
     /// <summary>
     /// Extract the inventory Dictionary to the lists.
     /// </summary>
-    public void OnDisable() {
+    void OnDisable() {
         if (!Application.isPlaying) {
             foreach (var item in _inventory) {
                 keys.Add(item.Key);
@@ -79,7 +79,7 @@ public class Inventory : MonoBehaviour {
         }
     }
 
-    /* *** Public Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Cycle to the next weapon.

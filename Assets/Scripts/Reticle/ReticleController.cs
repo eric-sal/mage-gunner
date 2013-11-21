@@ -22,7 +22,7 @@ public class ReticleController : MonoBehaviour {
         SetPosition(this.transform.position + _recoil);
     }
 
-    /* *** Public Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Moves the reticle by adding the delta vector.

@@ -18,7 +18,7 @@ public class EnemyCharacterController : BaseCharacterController {
 
     /* *** Constructors *** */
 
-    public void Start() {
+    void Start() {
         _myState = (EnemyState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
@@ -29,25 +29,25 @@ public class EnemyCharacterController : BaseCharacterController {
                       (1 << LayerMask.NameToLayer("Enemies")));
     }
 
-    /* *** Protected Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Simulated player input.
     /// Called from Update in BaseCharacterController.
     /// </summary>
-    protected override void CaptureInput() {
+    protected override void _CaptureInput() {
         if (!_canSeePlayer || _playerState.health <= 0) {
             return;
         }
 
-        Aim();
+        _Aim();
 
         var gun = this.equippedFirearm;
         if (gun != null) {
             if (gun.IsEmpty) {
                 gun.Reload();
             } else {
-                Fire();
+                _Fire();
             }
         }
     }
@@ -57,9 +57,9 @@ public class EnemyCharacterController : BaseCharacterController {
     /// Perform additional functionality that should happen at fixed
     /// intervals in FixedUpdate().
     /// </summary>
-    protected override void Act() {
-        FindPlayer();
-        EstimatePlayerVelocity();
+    protected override void _Act() {
+        _FindPlayer();
+        _EstimatePlayerVelocity();
 
         _pathfinderAI.MoveAlongPath(_myState.maxWalkSpeed);
     }
@@ -67,7 +67,7 @@ public class EnemyCharacterController : BaseCharacterController {
     /// <summary>
     /// Simulated reticle aiming.
     /// </summary>
-    protected override void Aim() {
+    protected override void _Aim() {
         Vector3 playerPosition = _playerState.transform.position + _estimatedPlayerVelocity;
         _reticle.LerpTo(playerPosition, _myState.lookSpeed);
     }
@@ -75,7 +75,7 @@ public class EnemyCharacterController : BaseCharacterController {
     /// <summary>
     /// Try to find the player in the NPC's field of vision.
     /// </summary>
-    protected void FindPlayer() {
+    protected void _FindPlayer() {
         _canSeePlayer = false;
         _pathfinderAI.targetPosition = _playerState.transform.position;
 
@@ -93,7 +93,7 @@ public class EnemyCharacterController : BaseCharacterController {
     /// Estimates the player's movement velocity.
     /// Used in anticipating the player's movement when aiming.
     /// </summary>
-    protected void EstimatePlayerVelocity() {
+    protected void _EstimatePlayerVelocity() {
         if (_myState.anticipatePlayerMovement && _canSeePlayer) {
             Vector3 currentPlayerPosition = _playerState.transform.position;
 

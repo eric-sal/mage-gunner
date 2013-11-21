@@ -20,7 +20,7 @@ public class PathfinderAI : MonoBehaviour {
 
     /* *** Constructors *** */
 
-    public void Start() {
+    void Start() {
         _moveable = GetComponent<MoveableObject>();
         _seeker = GetComponent<Seeker>();
         
@@ -28,7 +28,7 @@ public class PathfinderAI : MonoBehaviour {
         _path = _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);
     }
 
-    /* *** Public Methods *** */
+    /* *** Member Methods *** */
 
     /// <summary>
     /// Move the NPC along the calculated path.

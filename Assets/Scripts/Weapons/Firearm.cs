@@ -15,9 +15,10 @@ public class Firearm : MonoBehaviour {
     /* *** Member Variables *** */
 
     public int ammoConsumed = 1;    // How many rounds does this use up when fired? Burst fire weapons and double-barreled shotguns would have a value > 1.
-    public AudioSource audioSource;
     public float bulletSpeed;   // How fast the projectile travels.
+    public AudioClip dryFireSound; // The sound clip to play when firing but the magazine is empty
     public FireType fireType;
+    public AudioClip[] firingSounds; // Different sound clips to play when firing a bullet from this firearm
     public bool fullAuto;       // Does this weapon fire in full auto mode?
     public int magazineSize;    // The number of rounds the weapon holds per magazine.
     public int maxDamage = 1;   // per projectile
@@ -25,8 +26,10 @@ public class Firearm : MonoBehaviour {
     public int numProjectiles = 1;  // How many bullets do we spawn when the trigger is pulled? Defaults to 1. Different than ammoConsumed. Buckshot spawns many projectiles but consumes 1 round.
     public float rateOfFire;        // The number of rounds per minute.
     public float recoil;            // Closer to 0 is less recoil.
+    public AudioClip reloadSound; // The sound clip to play when reloading
     public float scatterVariation;  // In degrees. Closer to 0 is less scatter.
 
+    private AudioSource _audioSource;
     private BaseCharacterState _character;
     private float _cycleTime; // Time per bullet (inverse of rate of fire).
     private float _elapsed;   // How much time has elapsed since the last time the weapon was fired.
@@ -59,10 +62,11 @@ public class Firearm : MonoBehaviour {
         if (_bulletBucket == null) {
             _bulletBucket = GameObject.Find("BulletBucket");
         }
-
+        
         // Belongs here instead of Awake, because the object is instantiated dynamically,
         // and the parent is set after instantiation.
         _character = this.transform.parent.parent.GetComponentInChildren<BaseCharacterState>();
+        _audioSource = this.GetComponent<AudioSource>();
 
         _cycleTime = 60 / this.rateOfFire;
         _elapsed = _cycleTime; // so we can shoot right away
@@ -97,11 +101,16 @@ public class Firearm : MonoBehaviour {
     /// The direction in which we're firing.
     /// </param>
     public Vector3 Fire(Vector3 direction) {
-        if (_elapsed <= _cycleTime || _roundsFired >= magazineSize) {
+        
+        if (_elapsed <= _cycleTime) {
             return Vector3.zero;
         }
-
         _elapsed = 0;
+        
+        if (this.IsEmpty) {
+            _audioSource.PlayOneShot(this.dryFireSound);
+            return Vector3.zero;
+        }
 
         switch (this.fireType) {
         case FireType.Standard:
@@ -117,10 +126,17 @@ public class Firearm : MonoBehaviour {
             StartCoroutine("_FireBurstShot", direction);
             break;
         }
-
+        
+        _audioSource.PlayOneShot(_GetRandomFireSound());
+        
         _roundsFired += this.ammoConsumed;
 
         return RandomRecoil();
+    }
+    
+    private AudioClip _GetRandomFireSound() {
+        int index = UnityEngine.Random.Range(0, this.firingSounds.Length - 1);
+        return this.firingSounds[index];
     }
 
     /// <summary>

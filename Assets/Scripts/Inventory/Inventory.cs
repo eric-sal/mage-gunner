@@ -30,7 +30,7 @@ public class Inventory : MonoBehaviour {
             throw new InvalidOperationException("The number of elements in the list of keys must match the number of elements in the list of values.");
         }
 
-        _controller = this.transform.parent.GetComponentInChildren<BaseCharacterController>();
+        _controller = this.transform.parent.GetComponent<BaseCharacterController>();
     }
 
     /* *** MonoBehaviour Methods *** */

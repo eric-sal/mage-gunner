@@ -65,8 +65,8 @@ public class Firearm : MonoBehaviour {
         
         // Belongs here instead of Awake, because the object is instantiated dynamically,
         // and the parent is set after instantiation.
-        _character = this.transform.parent.parent.GetComponentInChildren<BaseCharacterState>();
-        _audioSource = this.GetComponent<AudioSource>();
+        _character = this.transform.parent.parent.GetComponent<BaseCharacterState>();
+        _audioSource = GetComponent<AudioSource>();
 
         _cycleTime = 60 / this.rateOfFire;
         _elapsed = _cycleTime; // so we can shoot right away

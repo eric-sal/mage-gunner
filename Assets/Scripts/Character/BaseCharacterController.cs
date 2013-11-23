@@ -26,7 +26,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     public virtual void Awake() {
         _character = GetComponent<BaseCharacterState>();
-        _inventory = this.transform.parent.gameObject.GetComponentInChildren<Inventory>();
+        _inventory = GetComponentInChildren<Inventory>();
         _moveable = GetComponent<MoveableObject>();
 
         // Create a reticle for this character.

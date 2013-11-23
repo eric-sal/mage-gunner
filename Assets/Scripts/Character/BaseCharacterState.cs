@@ -12,11 +12,22 @@ public abstract class BaseCharacterState : MonoBehaviour {
 
     /* *** Member Variables *** */
 
+    public Vector3 lookDirection;  // Direction the character is looking.
     public int health;
     public float maxWalkSpeed;
     public int strength;
 
     /* *** Member Methods *** */
+
+    /// <summary>
+    /// Looks at position.
+    /// </summary>
+    /// <param name='position'>
+    /// Position to look at.
+    /// </param>
+    public void LookAt(Vector3 position) {
+        this.lookDirection = position - this.transform.position;
+    }
 
     /// <summary>
     /// Gets the recoil reduction amount.

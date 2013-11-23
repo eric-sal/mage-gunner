@@ -40,9 +40,7 @@ public class EnemyCharacterController : BaseCharacterController {
             return;
         }
 
-        // Aim at the player
-        Vector3 playerPosition = _playerState.transform.position + _estimatedPlayerVelocity;
-        _reticle.LerpTo(playerPosition, _myState.lookSpeed);
+        _Aim();
 
         // Fire the equipped weapon
         var gun = this.equippedFirearm;
@@ -50,7 +48,7 @@ public class EnemyCharacterController : BaseCharacterController {
             if (gun.IsEmpty) {
                 gun.Reload();
             } else {
-                _Fire();
+                //_Fire();
             }
         }
     }
@@ -106,5 +104,15 @@ public class EnemyCharacterController : BaseCharacterController {
             _previousPlayerPosition = Vector3.zero;
             _estimatedPlayerVelocity = Vector3.zero;
         }
+    }
+
+    /// <summary>
+    /// Aim at the player.
+    /// </summary>
+    protected override void _Aim() {
+        Vector3 playerPosition = _playerState.transform.position + _estimatedPlayerVelocity;
+        _reticle.LerpTo(playerPosition, _myState.lookSpeed);
+
+        base._Aim();
     }
 }

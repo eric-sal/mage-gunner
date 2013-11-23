@@ -24,9 +24,7 @@ public class PlayerCharacterController : BaseCharacterController {
             _horizontalInput = Input.GetAxis("Horizontal"); // -1.0 to 1.0
             _verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
 
-            // Move the player's reticle.
-            var mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-            _reticle.MoveBy(mouseDelta);
+            _Aim();
 
             // Fire the equipped weapon
             if (equippedFirearm != null) {
@@ -59,5 +57,17 @@ public class PlayerCharacterController : BaseCharacterController {
         _moveable.velocity = Vector3.ClampMagnitude(velocity, 1) * _character.maxWalkSpeed;
 
         base.FixedUpdate();
+    }
+
+    /* *** Member Methods *** */
+
+    /// <summary>
+    /// Move the player's reticle.
+    /// </summary>
+    protected override void _Aim() {
+        var mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        _reticle.MoveBy(mouseDelta);
+
+        base._Aim();
     }
 }

@@ -31,7 +31,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
         // Create a reticle for this character.
         GameObject reticlePrefab = (GameObject)Resources.Load("Prefabs/Reticle");
-        Vector3 spawnPosition = _character.transform.position + new Vector3(0, 2);
+        Vector3 spawnPosition = _character.transform.position + _character.lookDirection;
         GameObject reticleInstance = (GameObject)Instantiate(reticlePrefab, spawnPosition, reticlePrefab.transform.rotation);
         reticleInstance.transform.parent = _character.transform;
         _reticle = reticleInstance.GetComponent<ReticleController>();
@@ -51,6 +51,14 @@ public abstract class BaseCharacterController : MonoBehaviour {
     }
 
     /* *** Member Methods *** */
+
+    /// <summary>
+    /// Update the transform of the reticle as well as the character's lookDirection.
+    /// Should be overridden in subclass.
+    /// </summary>
+    protected virtual void _Aim() {
+        _character.LookAt(_reticle.transform.position);
+    }
 
     /// <summary>
     /// Fires the currently equipped firearm, and applies the recoil

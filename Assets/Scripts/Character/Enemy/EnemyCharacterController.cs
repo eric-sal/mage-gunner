@@ -35,6 +35,8 @@ public class EnemyCharacterController : BaseCharacterController {
     /// Simulated player input for aiming and firing.
     /// </summary>
     public override void Update() {
+        base.Update();
+
         // If we can't see the player, then there's nothing to aim or fire.
         if (!_canSeePlayer || _playerState.health <= 0) {
             return;
@@ -74,14 +76,20 @@ public class EnemyCharacterController : BaseCharacterController {
     /// </summary>
     protected void _FindPlayer() {
         _canSeePlayer = false;
-        _pathfinderAI.targetPosition = _playerState.transform.position;
+        //_pathfinderAI.targetPosition = _playerState.transform.position;
 
         RaycastHit hitInfo;
-        Vector3 direction = _playerState.transform.position - _myState.transform.position;
+        Quaternion quato = Quaternion.LookRotation(_myState.lookDirection, Vector3.forward);
 
-        if (Physics.Raycast(_myState.transform.position, direction, out hitInfo, 20, _layerMask)) {
-            if (hitInfo.collider == _playerState.gameObject.collider) {
-                _canSeePlayer = true;
+        for (int i = _myState.fieldOfVision / 2 * -1; i < _myState.fieldOfVision / 2; i++) {
+            Vector3 direction = quato * Quaternion.Euler(0, i, 0) * Vector3.forward;
+            Debug.DrawRay(this.transform.position, direction * _myState.sightDistance);
+
+            if (Physics.Raycast(this.transform.position, direction, out hitInfo, _myState.sightDistance, _layerMask)) {
+                if (hitInfo.collider == _playerState.gameObject.collider) {
+                    _canSeePlayer = true;
+                    break;
+                }
             }
         }
     }
@@ -112,7 +120,5 @@ public class EnemyCharacterController : BaseCharacterController {
     protected override void _Aim() {
         Vector3 playerPosition = _playerState.transform.position + _estimatedPlayerVelocity;
         _reticle.LerpTo(playerPosition, _myState.lookSpeed);
-
-        base._Aim();
     }
 }

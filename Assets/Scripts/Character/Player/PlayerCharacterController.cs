@@ -13,12 +13,20 @@ public class PlayerCharacterController : BaseCharacterController {
     private float _horizontalInput;
     private float _verticalInput;
 
+    /* *** Constructors *** */
+
+    public void Start() {
+        _reticle.constrainToScreen = true;
+    }
+
     /* *** MonoBehaviour Methods *** */
 
     /// <summary>
     /// Capture input from the player.
     /// </summary>
     public override void Update() {
+        base.Update();
+
         if (this.isPlayerInputEnabled) {
             // Get player input from the keyboard or joystick
             _horizontalInput = Input.GetAxis("Horizontal"); // -1.0 to 1.0
@@ -45,8 +53,6 @@ public class PlayerCharacterController : BaseCharacterController {
                 _inventory.PreviousWeapon();
             }
         }
-
-        base.Update();
     }
 
     /// <summary>
@@ -67,7 +73,5 @@ public class PlayerCharacterController : BaseCharacterController {
     protected override void _Aim() {
         var mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
         _reticle.MoveBy(mouseDelta);
-
-        base._Aim();
     }
 }

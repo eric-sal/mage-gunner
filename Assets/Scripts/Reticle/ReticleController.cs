@@ -8,6 +8,8 @@ public class ReticleController : MonoBehaviour {
 
     /* *** Member Variables *** */
 
+    public bool constrainToScreen = false;
+
     private Vector3 _recoil;
 
 	/* *** Constructors *** */
@@ -48,7 +50,11 @@ public class ReticleController : MonoBehaviour {
             return;
         }
 
-        Vector3 position = CameraController.ConstrainPositionToScreen(worldPosition);
+        Vector3 position = worldPosition;
+        if (this.constrainToScreen) {
+            position = CameraController.ConstrainPositionToScreen(worldPosition);
+        }
+
         this.transform.position = Vector3.Lerp(transform.position, position, Time.deltaTime * speed);
     }
 
@@ -63,7 +69,12 @@ public class ReticleController : MonoBehaviour {
             return;
         }
 
-        this.transform.position = CameraController.ConstrainPositionToScreen(worldPosition);
+        Vector3 position = worldPosition;
+        if (this.constrainToScreen) {
+            position = CameraController.ConstrainPositionToScreen(worldPosition);
+        }
+
+        this.transform.position = position;
     }
 
     /// <summary>

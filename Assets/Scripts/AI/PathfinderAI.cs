@@ -7,7 +7,7 @@ using Pathfinding;
 /// </summary>
 public class PathfinderAI : MonoBehaviour {
 
-    const float NEXT_WAYPOINT_DISTANCE = 0.1f;  //The max distance from the AI to a waypoint for it to continue to the next waypoint
+    const float NEXT_WAYPOINT_DISTANCE = 1f;  //The max distance from the AI to a waypoint for it to continue to the next waypoint
 
     /* *** Member Variables *** */
 

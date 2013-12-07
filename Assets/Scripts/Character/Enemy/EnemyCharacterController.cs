@@ -111,7 +111,7 @@ public class EnemyCharacterController : BaseCharacterController {
     }
 
     /// <summary>
-    /// Aim at the player if we can see them or if not, in the direction we're moving.
+    /// Aim at the player if we can see them, or if not, in the direction we're moving.
     /// </summary>
     protected override void _Aim() {
         if (_canSeePlayer) {
@@ -121,27 +121,14 @@ public class EnemyCharacterController : BaseCharacterController {
         } else {
             // If we can't see the player, aim in the direction we're moving.
             if (_moveable.velocity != Vector3.zero) {
-                // We want our two vectors to have the same starting position, so we translate the
-                // reticle position by the transform's position in world space. This, in effect,
-                // puts the reticle position vector at the origin - the same as our velocity vector.
-                Vector3 reticleRelativeToOrigin = _reticle.transform.position - this.transform.position;
-
-                // With both vectors describing vectors relative to the origin, we can determine the
-                // angle of rotation between them.
-                float angle = Vector3.Angle(_moveable.velocity, reticleRelativeToOrigin);
-
-                // We find the new reticle position by rotating our current reticle position by the angle.
-                Quaternion reticleRotation = Quaternion.LookRotation(reticleRelativeToOrigin, Vector3.forward);
-                Quaternion newReticleRotation = reticleRotation * Quaternion.Euler(0, angle, 0);
-
-                // Since we subtracted the enemy position from the reticle position earlier, we have
-                // to add the enemy position back into the reticle position.
+                // Because the velocity vector describes a unit vector from the origin, we have to
+                // translate it to the enemy's current position.
                 // NOTE: The 2 is an arbitrary scalar. Should that value be _myState.sightDistance?
                 // Or can we keep it as a unit vector? How does the distance of the reticle from the
                 // enemy affect the speed with which they aim at the player? My hunch is that by using
                 // Vector3.Lerp, it makes no difference. If we were to move the the reticle by setting
                 // a velocity though, the distance would make a difference.
-                _reticle.LerpTo(this.transform.position + newReticleRotation * Vector3.forward * 2, _myState.lookSpeed);
+                _reticle.LerpTo(this.transform.position + _moveable.velocity * 2, _myState.lookSpeed);
             }
         }
     }

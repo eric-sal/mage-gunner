@@ -108,7 +108,10 @@ public class Firearm : MonoBehaviour {
         _elapsed = 0;
         
         if (this.IsEmpty) {
-            _audioSource.PlayOneShot(this.dryFireSound);
+            if (this.dryFireSound != null) {
+                _audioSource.PlayOneShot(this.dryFireSound);
+            }
+
             return Vector3.zero;
         }
 
@@ -126,8 +129,10 @@ public class Firearm : MonoBehaviour {
             StartCoroutine("_FireBurstShot", direction);
             break;
         }
-        
-        _audioSource.PlayOneShot(_GetRandomFireSound());
+
+        if (this.firingSounds.Length < 0) {
+            _audioSource.PlayOneShot(_GetRandomFireSound());
+        }
         
         _roundsFired += this.ammoConsumed;
 

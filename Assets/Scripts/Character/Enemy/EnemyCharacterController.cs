@@ -46,7 +46,7 @@ public class EnemyCharacterController : BaseCharacterController {
                 gun.Reload();
             } else if (_canSeePlayer) {
                 // If we can't see the player, then there's nothing to fire at.
-                //_Fire();
+                _Fire();
             }
         }
     }

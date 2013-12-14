@@ -126,11 +126,11 @@ public class Firearm : MonoBehaviour {
             _FireSpreadShot(direction);
             break;
         case FireType.Burst:
-            StartCoroutine("_FireBurstShot", direction);
+            StartCoroutine(_FireBurstShot(direction));
             break;
         }
 
-        if (this.firingSounds.Length < 0) {
+        if (this.firingSounds.Length > 0) {
             _audioSource.PlayOneShot(_GetRandomFireSound());
         }
         

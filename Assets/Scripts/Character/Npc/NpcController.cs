@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// Enemy character controller.
+/// NPC controller.
 /// </summary>
-public class EnemyCharacterController : BaseCharacterController {
+public class NpcController : BaseCharacterController {
 
     /* *** Member Variables *** */
 
@@ -12,14 +12,14 @@ public class EnemyCharacterController : BaseCharacterController {
     protected Vector3 _estimatedPlayerVelocity;
     protected PathfinderAI _pathfinderAI;
     protected int _layerMask;
-    protected EnemyState _myState;
+    protected NpcState _myState;
     protected PlayerState _playerState;
     protected Vector3 _previousPlayerPosition = Vector3.zero;
 
     /* *** Constructors *** */
 
     void Start() {
-        _myState = (EnemyState)_character;
+        _myState = (NpcState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
 
@@ -122,10 +122,10 @@ public class EnemyCharacterController : BaseCharacterController {
             // If we can't see the player, aim in the direction we're moving.
             if (_moveable.velocity != Vector3.zero) {
                 // Because the velocity vector describes a unit vector from the origin, we have to
-                // translate it to the enemy's current position.
+                // translate it to the NPC's current position.
                 // NOTE: The 2 is an arbitrary scalar. Should that value be _myState.sightDistance?
                 // Or can we keep it as a unit vector? How does the distance of the reticle from the
-                // enemy affect the speed with which they aim at the player? My hunch is that by using
+                // NPC affect the speed with which they aim at the player? My hunch is that by using
                 // Vector3.Lerp, it makes no difference. If we were to move the the reticle by setting
                 // a velocity though, the distance would make a difference.
                 _reticle.LerpTo(this.transform.position + _moveable.velocity * 2, _myState.lookSpeed);

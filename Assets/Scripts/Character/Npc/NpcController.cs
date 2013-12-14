@@ -8,17 +8,34 @@ public class NpcController : BaseCharacterController {
 
     /* *** Member Variables *** */
 
-    protected bool _canSeePlayer;
     protected Vector3 _estimatedPlayerVelocity;
+    protected INpcBehavior _currentBehavior;
     protected PathfinderAI _pathfinderAI;
     protected int _layerMask;
     protected NpcState _myState;
     protected PlayerState _playerState;
     protected Vector3 _previousPlayerPosition = Vector3.zero;
 
+    public Vector3 estimatedPlayerVelocity {
+        get { return _estimatedPlayerVelocity; }
+    }
+
+    public NpcState myState {
+        get { return _myState; }
+    }
+
+    public PathfinderAI pathfinderAI {
+        get { return _pathfinderAI; }
+    }
+
+    public PlayerState playerState {
+        get { return _playerState; }
+    }
+
     /* *** Constructors *** */
 
     void Start() {
+        _currentBehavior = new IdleBehavior();
         _myState = (NpcState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
@@ -37,18 +54,14 @@ public class NpcController : BaseCharacterController {
     public override void Update() {
         base.Update();
 
-        _Aim();
-
-        // Fire the equipped weapon
-        var gun = this.equippedFirearm;
-        if (gun != null) {
-            if (gun.IsEmpty) {
-                gun.Reload();
-            } else if (_canSeePlayer) {
-                // If we can't see the player, then there's nothing to fire at.
-                _Fire();
-            }
+        if (_myState.canSeePlayer) {
+            _currentBehavior = new AttackBehavior(this);
+        } else {
+            //_currentBehavior = new IdleBehavior();
+            _currentBehavior = new PatrolBehavior(this);
         }
+
+        _currentBehavior.doUpdate();
     }
 
     /// <summary>
@@ -60,8 +73,7 @@ public class NpcController : BaseCharacterController {
         _FindPlayer();
         _EstimatePlayerVelocity();
 
-        _pathfinderAI.MoveAlongPath(_myState.maxWalkSpeed);
-
+        _currentBehavior.doFixedUpdate();
         base.FixedUpdate();
     }
 
@@ -71,7 +83,7 @@ public class NpcController : BaseCharacterController {
     /// Try to find the player in the NPC's field of vision.
     /// </summary>
     protected void _FindPlayer() {
-        _canSeePlayer = false;
+        _myState.canSeePlayer = false;
         //_pathfinderAI.targetPosition = _playerState.transform.position;
 
         RaycastHit hitInfo;
@@ -83,7 +95,7 @@ public class NpcController : BaseCharacterController {
 
             if (Physics.Raycast(this.transform.position, direction, out hitInfo, _myState.sightDistance, _layerMask)) {
                 if (hitInfo.collider == _playerState.gameObject.collider) {
-                    _canSeePlayer = true;
+                    _myState.canSeePlayer = true;
                     break;
                 }
             }
@@ -95,7 +107,7 @@ public class NpcController : BaseCharacterController {
     /// Used in anticipating the player's movement when aiming.
     /// </summary>
     protected void _EstimatePlayerVelocity() {
-        if (_myState.anticipatePlayerMovement && _canSeePlayer) {
+        if (_myState.anticipatePlayerMovement && _myState.canSeePlayer) {
             Vector3 currentPlayerPosition = _playerState.transform.position;
 
             if (_previousPlayerPosition != Vector3.zero) {
@@ -107,29 +119,6 @@ public class NpcController : BaseCharacterController {
         } else {
             _previousPlayerPosition = Vector3.zero;
             _estimatedPlayerVelocity = Vector3.zero;
-        }
-    }
-
-    /// <summary>
-    /// Aim at the player if we can see them, or if not, in the direction we're moving.
-    /// </summary>
-    protected override void _Aim() {
-        if (_canSeePlayer) {
-            // If we can see the player, then aim at him.
-            Vector3 playerPosition = _playerState.transform.position + _estimatedPlayerVelocity;
-            _reticle.LerpTo(playerPosition, _myState.lookSpeed);
-        } else {
-            // If we can't see the player, aim in the direction we're moving.
-            if (_moveable.velocity != Vector3.zero) {
-                // Because the velocity vector describes a unit vector from the origin, we have to
-                // translate it to the NPC's current position.
-                // NOTE: The 2 is an arbitrary scalar. Should that value be _myState.sightDistance?
-                // Or can we keep it as a unit vector? How does the distance of the reticle from the
-                // NPC affect the speed with which they aim at the player? My hunch is that by using
-                // Vector3.Lerp, it makes no difference. If we were to move the the reticle by setting
-                // a velocity though, the distance would make a difference.
-                _reticle.LerpTo(this.transform.position + _moveable.velocity * 2, _myState.lookSpeed);
-            }
         }
     }
 }

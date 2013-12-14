@@ -112,6 +112,6 @@ public class Inventory : MonoBehaviour {
     /// The index of the weapon to use.
     /// </param>
     public void SetWeapon(int index) {
-        _controller.equippedFirearm = _firearms[index].instance.GetComponent<Firearm>();
+        _controller.character.equippedFirearm = _firearms[index].instance.GetComponent<Firearm>();
     }
 }

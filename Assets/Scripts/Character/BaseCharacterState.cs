@@ -12,8 +12,9 @@ public abstract class BaseCharacterState : MonoBehaviour {
 
     /* *** Member Variables *** */
 
-    public Vector3 lookDirection;  // Direction the character is looking.
+    public Firearm equippedFirearm;
     public int health;
+    public Vector3 lookDirection;  // Direction the character is looking.
     public float maxWalkSpeed;
     public int strength;
 

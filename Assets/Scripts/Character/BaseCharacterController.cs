@@ -15,12 +15,26 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     /* *** Member Variables *** */
 
-    public Firearm equippedFirearm;
-
     protected BaseCharacterState _character;
     protected Inventory _inventory;
     protected MoveableObject _moveable;
     protected ReticleController _reticle;
+
+    public BaseCharacterState character {
+        get { return _character; }
+    }
+
+    public Inventory inventory {
+        get { return _inventory; }
+    }
+
+    public MoveableObject moveable {
+        get { return _moveable; }
+    }
+
+    public ReticleController reticle {
+        get { return _reticle; }
+    }
 
     /* *** Constructors *** */
 
@@ -55,18 +69,16 @@ public abstract class BaseCharacterController : MonoBehaviour {
     /* *** Member Methods *** */
 
     /// <summary>
-    /// Update the transform of the reticle.
-    /// Should be overridden in subclass.
-    /// </summary>
-    protected abstract void _Aim();
-
-    /// <summary>
     /// Fires the currently equipped firearm, and applies the recoil
     /// to the reticle.
     /// </summary>
+    public void Fire() {
+        _Fire();
+    }
+
     protected void _Fire() {
         Vector3 bulletVector = _reticle.transform.position - this.transform.position;
-        Vector3 recoil = equippedFirearm.Fire(bulletVector);
+        Vector3 recoil = _character.equippedFirearm.Fire(bulletVector);
         _reticle.ApplyRecoil(recoil);
     }
 }

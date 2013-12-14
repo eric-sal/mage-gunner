@@ -12,6 +12,7 @@ public class NpcState : BaseCharacterState {
     public int fieldOfVision;   // In degrees
 	public int lookSpeed = 2;   // How quickly the NPC looks at the player.
     public float sightDistance;  // How far can the NPC see? TODO: distance is affected by NPC state. ie: see "further" when actively searching vs passive state.
+    public bool canSeePlayer;    // Can we see the player?
 
     /* *** Member Methods *** */
 

@@ -3,9 +3,8 @@ using System.Collections;
 
 /// <summary>
 /// Character collision handler.
-/// Inherits from BaseCollisionHandler.
 /// </summary>
-public class CharacterCollisionHandler : BaseCollisionHandler {
+public class CharacterCollisionHandler : MonoBehaviour {
 
     /* *** Member Variables *** */
 
@@ -13,28 +12,36 @@ public class CharacterCollisionHandler : BaseCollisionHandler {
 
     /* *** Constructors *** */
 
-    public override void Awake() {
-        base.Awake();
+    public void Awake() {
         _character = GetComponent<BaseCharacterState>();
+    }
+
+    /* *** MonoBehaviour Methods *** */
+
+    public virtual void OnCollisionEnter2D(Collision2D collision) {
+//        Debug.Log(string.Format("{0} hit {1}", gameObject.name, collision.gameObject.name));
+    }
+
+    public virtual void OnTriggerEnter2D(Collider2D other) {
+//        Debug.Log(string.Format("{0} triggered {1}", gameObject.name, other.gameObject.name));
+
+        switch (other.gameObject.tag) {
+        case "Projectiles":
+            var projectile = other.gameObject.GetComponent<ProjectileState>();
+            HandleCollision(projectile);
+            break;
+        default:
+            throw new System.NotImplementedException(string.Format("No handler for tag {0} on gameObject {1}!", other.gameObject.tag, other.gameObject.name));
+        }
     }
 
     /* *** Member Methods *** */
 
     /// <summary>
-    /// Default collision handler.
-    /// Stop the character's movement in the direction the collision came from.
-    /// </summary>
-    public override void HandleCollision(Collider collidedWith, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
-        throw new System.NotImplementedException("Was not expecting this to be called!");
-    }
-
-    /// <summary>
     /// Handle collisions with projectiles.
     /// </summary>
-    public override void HandleCollision(ProjectileCollisionHandler other, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
+    public void HandleCollision(ProjectileState projectile) {
         // TODO: Handle other types of projectiles - grenades, missiles, magic spells, etc.
-        ProjectileState projectile = other.GetComponent<ProjectileState>();
-
         if (Object.ReferenceEquals(projectile.spawner, this.gameObject)) {
             return;
         }

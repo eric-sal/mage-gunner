@@ -4,7 +4,10 @@ using System.Collections;
 /// <summary>
 /// Projectile collision handler.
 /// </summary>
-public class ProjectileCollisionHandler : BaseCollisionHandler {
+public class ProjectileCollisionHandler : MonoBehaviour {
+
+    /* *** Class Variables *** */
+    private static int _layerMask = ~(1 << LayerMask.NameToLayer("Projectiles"));
 
     /* *** Member Variables *** */
 
@@ -12,93 +15,34 @@ public class ProjectileCollisionHandler : BaseCollisionHandler {
 
     /* *** Constructors *** */
 
-    public override void Awake() {
-        base.Awake();
+    public void Awake() {
         _projectile = GetComponent<ProjectileState>();
     }
 
-    /* *** Member Methods *** */
+    /* *** MonoBehaviour Methods *** */
 
-    /// <summary>
-    /// Default collision handler.
-    /// </summary>
-    /// <param name='collidedWith'>
-    /// The collider we hit.
-    /// </param>
-    /// <param name='impactVelocity'>
-    /// Impact velocity.
-    /// </param>
-    /// <param name='distance'>
-    /// Distance from the other collider's origin to the impact point.
-    /// </param>
-    /// <param name='normal'>
-    /// Normal of the surface the ray hit.
-    /// </param>
-    /// <param name='deltaTime'>
-    /// Delta time.
-    /// </param>
-    public override void HandleCollision(Collider collidedWith, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
+    public void FixedUpdate() {
+        LayerMask spawnerLayer = _layerMask;
 
-        // only move the distance until we hit the other collider
-        float speed = impactVelocity.magnitude;
-        float timeSpentMoving = distance / speed;
-        Vector3 d = impactVelocity * timeSpentMoving;
-        Vector3 p = this.transform.position;
-        this.transform.position = new Vector3(p.x + d.x, p.y + d.y);
-
-        Destroy(this.gameObject, 0.02f);
-        this.enabled = false;
-    }
-
-    /// <summary>
-    /// Handles collisions with a Character.
-    /// </summary>
-    /// <param name='collidedWith'>
-    /// The collider we hit.
-    /// </param>
-    /// <param name='impactVelocity'>
-    /// Impact velocity.
-    /// </param>
-    /// <param name='distance'>
-    /// Distance from the other collider's origin to the impact point.
-    /// </param>
-    /// <param name='normal'>
-    /// Normal of the surface the ray hit.
-    /// </param>
-    /// <param name='deltaTime'>
-    /// Delta time.
-    /// </param>
-    public override void HandleCollision(CharacterCollisionHandler other, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
-        if (Object.ReferenceEquals(other.gameObject, _projectile.spawner)) {
-            // ignore collisions with the GameObject that spawned this projectile
-            return;
+        if (_projectile.spawner != null) {
+            // We want to ignore the gameObject that spawned the projectile, so temporarily put
+            // that gameObject on our "Projectiles" layer.
+            spawnerLayer = _projectile.spawner.layer;
+            _projectile.spawner.layer = LayerMask.NameToLayer("Projectiles");
         }
-     
-        DefaultHandleCollision(other, impactVelocity, distance, normal, deltaTime);
-    }
 
-    /// <summary>
-    /// Handles collisions with other projectiles.
-    /// </summary>
-    /// <param name='collidedWith'>
-    /// The collider we hit.
-    /// </param>
-    /// <param name='impactVelocity'>
-    /// Impact velocity.
-    /// </param>
-    /// <param name='distance'>
-    /// Distance from the other collider's origin to the impact point.
-    /// </param>
-    /// <param name='normal'>
-    /// Normal of the surface the ray hit.
-    /// </param>
-    /// <param name='deltaTime'>
-    /// Delta time.
-    /// </param>
-    public override void HandleCollision(ProjectileCollisionHandler other, Vector3 impactVelocity, float distance, Vector3 normal, float deltaTime) {
-        // ignore collisions with other projectiles
-        Vector3 p = this.transform.position;
-        Vector3 d = _projectile.velocity * deltaTime;
-        this.transform.position = new Vector3(p.x + d.x, p.y + d.y);
+        float distance = Mathf.Abs(_projectile.velocity.magnitude * Time.fixedDeltaTime);
+        RaycastHit2D hitInfo = Physics2D.Raycast(this.transform.position.Vector2D(), _projectile.velocity, distance, _layerMask);
+        if (hitInfo.collider != null) {
+            _projectile.transform.position = hitInfo.point.Vector3D();
+            _projectile.velocity = Vector2.zero;
+        }
+
+        if (_projectile.spawner != null) {
+            // If we have a non-null spawner, then set its layer back to the original layer.
+            _projectile.spawner.layer = spawnerLayer;
+        }
+
+        this.rigidbody2D.velocity = _projectile.velocity;
     }
 }

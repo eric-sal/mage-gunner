@@ -32,7 +32,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
     }
 
     /* *** Constructors *** */
-
     public virtual void Awake() {
         _character = GetComponent<BaseCharacterState>();
         _inventory = GetComponentInChildren<Inventory>();
@@ -45,6 +44,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
         _reticle = reticleInstance.GetComponent<ReticleController>();
         _character.LookAt(_reticle.transform.position);
     }
+
 
     /* *** MonoBehaviour Methods *** */
 

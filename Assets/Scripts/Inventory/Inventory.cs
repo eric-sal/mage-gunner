@@ -33,6 +33,12 @@ public class Inventory : MonoBehaviour {
         _controller = this.transform.parent.GetComponent<BaseCharacterController>();
     }
 
+    void Start() {
+        if (_firearms.Count > 0) {
+            SetWeapon(_currentFirearmIndex);
+        }
+    }
+
     /* *** MonoBehaviour Methods *** */
 
     /// <summary>
@@ -54,10 +60,6 @@ public class Inventory : MonoBehaviour {
                 if (inventoryItem.classification == InventoryItem.Classification.Firearm) {
                     _firearms.Add(inventoryItem);
                 }
-            }
-
-            if (_firearms.Count > 0) {
-                SetWeapon(_currentFirearmIndex);
             }
 
             keys.Clear();

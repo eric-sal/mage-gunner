@@ -15,7 +15,8 @@ public class PlayerCharacterController : BaseCharacterController {
 
     /* *** Constructors *** */
 
-    public void Start() {
+    public override void Awake() {
+        base.Awake();
         _reticle.constrainToScreen = true;
     }
 

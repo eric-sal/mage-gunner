@@ -27,10 +27,12 @@ public class PathfinderAI : MonoBehaviour {
 
     /* *** Constructors *** */
 
-    void Start() {
+    void Awake() {
         _character = GetComponent<BaseCharacterState>();
         _seeker = GetComponent<Seeker>();
+    }
 
+    void Start() {
         if (this.patrolRoute != null) {
             _waypoints = this.patrolRoute.GetComponentsInChildren<Waypoint>();
             Array.Sort<Waypoint>(_waypoints, new Waypoint.Comparer());
@@ -38,7 +40,7 @@ public class PathfinderAI : MonoBehaviour {
         }
 
         //Start a new path to the targetPosition, return the result to the OnPathComplete function
-        _path = _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);
+        _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);
     }
 
     protected Waypoint _CurrentWaypoint {
@@ -74,7 +76,6 @@ public class PathfinderAI : MonoBehaviour {
         }
 
         if (_currentNode >= _path.vectorPath.Count) {
-            Debug.Log(string.Format("Waypoint {0} reached", _CurrentWaypoint));
             _UpdateTargetPosition();
             _path = null;
             _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);

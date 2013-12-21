@@ -34,7 +34,8 @@ public class NpcController : BaseCharacterController {
 
     /* *** Constructors *** */
 
-    void Start() {
+    public override void Awake() {
+        base.Awake();
         _currentBehavior = new IdleBehavior();
         _myState = (NpcState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();

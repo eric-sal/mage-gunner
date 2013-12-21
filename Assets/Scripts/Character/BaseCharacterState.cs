@@ -17,6 +17,7 @@ public abstract class BaseCharacterState : MonoBehaviour {
     public Vector3 lookDirection;  // Direction the character is looking.
     public float maxWalkSpeed;
     public int strength;
+    public Vector2 velocity;
 
     /* *** Member Methods *** */
 

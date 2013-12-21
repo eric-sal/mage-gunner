@@ -10,20 +10,11 @@ public class ProjectileState : MonoBehaviour {
 
     public int damage;          // The amount of damage this projectile does if it collides with an object that takes damage. Set when it's spawned.
     public GameObject spawner;  // GameObject that spawned the projectile
+    public Vector2 velocity;
 
-    private MoveableObject _moveableObject;
+    /* *** MonoBehaviour Methods *** */
 
-    /* *** Properties *** */
-
-    public Vector3 velocity {
-        get { return _moveableObject.velocity;  }
-
-        set { _moveableObject.velocity = value; }
-    }
-
-    /* *** Constructors *** */
-
-    void Awake() {
-        _moveableObject = GetComponent<MoveableObject>();
+    void FixedUpdate() {
+        this.rigidbody2D.velocity = this.velocity;
     }
 }

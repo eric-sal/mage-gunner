@@ -17,7 +17,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     protected BaseCharacterState _character;
     protected Inventory _inventory;
-    protected MoveableObject _moveable;
     protected ReticleController _reticle;
 
     public BaseCharacterState character {
@@ -26,10 +25,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     public Inventory inventory {
         get { return _inventory; }
-    }
-
-    public MoveableObject moveable {
-        get { return _moveable; }
     }
 
     public ReticleController reticle {
@@ -41,7 +36,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
     public virtual void Awake() {
         _character = GetComponent<BaseCharacterState>();
         _inventory = GetComponentInChildren<Inventory>();
-        _moveable = GetComponent<MoveableObject>();
 
         // Create a reticle for this character.
         GameObject reticlePrefab = (GameObject)Resources.Load("Prefabs/Reticle");
@@ -59,9 +53,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
     }
 
     public virtual void FixedUpdate() {
-        if (_moveable != null) {
-            _moveable.Move(Time.deltaTime);
-        }
+        this.rigidbody2D.velocity = new Vector2(_character.velocity.x, _character.velocity.y);
 
         _reticle.ReduceRecoil(_character.GetRecoilReduction());
     }

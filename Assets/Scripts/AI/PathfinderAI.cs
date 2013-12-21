@@ -17,10 +17,10 @@ public class PathfinderAI : MonoBehaviour {
     public GameObject patrolRoute;  //Contains waypoint GameObjects
     public Vector3 targetPosition;  //The end-point to move toward
 
+    private BaseCharacterState _character;
     private int _currentNode = 0; //The node in the A-star pathfinding graph we are currently moving toward
     private int _currentWaypoint = 0; //The waypoint object we are currently moving toward
     private int _direction = FORWARD; //A 1 indicates we are moving "forwards" on the route and a -1 indicates "backwards"
-    private MoveableObject _moveable;
     private Path _path;   //The calculated path
     private Seeker _seeker;
     private Waypoint[] _waypoints;
@@ -28,7 +28,7 @@ public class PathfinderAI : MonoBehaviour {
     /* *** Constructors *** */
 
     void Start() {
-        _moveable = GetComponent<MoveableObject>();
+        _character = GetComponent<BaseCharacterState>();
         _seeker = GetComponent<Seeker>();
 
         if (this.patrolRoute != null) {
@@ -78,13 +78,13 @@ public class PathfinderAI : MonoBehaviour {
             _UpdateTargetPosition();
             _path = null;
             _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);
-            _moveable.velocity = Vector3.zero;
+            _character.velocity = Vector3.zero;
             return;
         }
 
         //Direction to the next waypoint
         Vector3 velocity = (_path.vectorPath[_currentNode] - this.transform.position);
-        _moveable.velocity = Vector3.ClampMagnitude(velocity, 1) * speed;
+        _character.velocity = Vector3.ClampMagnitude(velocity, 1) * speed;
 
         //Check if we are close enough to the next waypoint
         //If we are, proceed to follow the next waypoint

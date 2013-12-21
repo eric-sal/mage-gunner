@@ -31,6 +31,6 @@ public class AttackBehavior : INpcBehavior {
     }
 
     public void doFixedUpdate() {
-        _controller.moveable.velocity = Vector3.zero;
+        _controller.character.velocity = Vector3.zero;
     }
 }

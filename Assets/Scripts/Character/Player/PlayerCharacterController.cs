@@ -63,7 +63,7 @@ public class PlayerCharacterController : BaseCharacterController {
     /// </summary>
     public override void FixedUpdate() {
         var velocity = new Vector3(_horizontalInput, _verticalInput);
-        _moveable.velocity = Vector3.ClampMagnitude(velocity, 1) * _character.maxWalkSpeed;
+        _character.velocity = Vector3.ClampMagnitude(velocity, 1) * _character.maxWalkSpeed;
 
         base.FixedUpdate();
     }

@@ -83,23 +83,31 @@ public class NpcController : BaseCharacterController {
     /// Try to find the player in the NPC's field of vision.
     /// </summary>
     protected void _FindPlayer() {
+        // Since the raycast starts inside our enemy, we want to ignore ourself when casting the ray to find the player.
+        LayerMask myLayer = gameObject.layer;
+        gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+
         _myState.canSeePlayer = false;
         //_pathfinderAI.targetPosition = _playerState.transform.position;
 
-        RaycastHit hitInfo;
+        RaycastHit2D hitInfo;
         Quaternion quato = Quaternion.LookRotation(_myState.lookDirection, Vector3.forward);
 
         for (int i = _myState.fieldOfVision / 2 * -1; i < _myState.fieldOfVision / 2; i++) {
             Vector3 direction = quato * Quaternion.Euler(0, i, 0) * Vector3.forward;
+            Vector2 direction2D = new Vector2(direction.x, direction.y);
             Debug.DrawRay(this.transform.position, direction * _myState.sightDistance);
 
-            if (Physics.Raycast(this.transform.position, direction, out hitInfo, _myState.sightDistance, _layerMask)) {
-                if (hitInfo.collider == _playerState.gameObject.collider) {
-                    _myState.canSeePlayer = true;
-                    break;
-                }
+            Vector2 position2D = new Vector2(this.transform.position.x, this.transform.position.y);
+            hitInfo = Physics2D.Raycast(position2D, direction2D, _myState.sightDistance, _layerMask);
+
+            if (hitInfo.collider == _playerState.gameObject.collider2D) {
+                _myState.canSeePlayer = true;
+                break;
             }
         }
+
+        gameObject.layer = myLayer;
     }
 
     /// <summary>

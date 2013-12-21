@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using Pathfinding;
 
 /// <summary>
@@ -14,7 +15,7 @@ public class PathfinderAI : MonoBehaviour {
 
     /* *** Member Variables *** */
 
-    public GameObject patrolRoute;  //Contains waypoint GameObjects
+    public Waypoint firstWaypoint;  //The first waypoint to calculate the path to
     public Vector3 targetPosition;  //The end-point to move toward
 
     private BaseCharacterState _character;
@@ -23,19 +24,26 @@ public class PathfinderAI : MonoBehaviour {
     private int _direction = FORWARD; //A 1 indicates we are moving "forwards" on the route and a -1 indicates "backwards"
     private Path _path;   //The calculated path
     private Seeker _seeker;
-    private Waypoint[] _waypoints;
+    private List<Waypoint> _waypoints;
 
     /* *** Constructors *** */
 
     void Awake() {
         _character = GetComponent<BaseCharacterState>();
         _seeker = GetComponent<Seeker>();
+        _waypoints = new List<Waypoint>();
     }
 
     void Start() {
-        if (this.patrolRoute != null) {
-            _waypoints = this.patrolRoute.GetComponentsInChildren<Waypoint>();
-            Array.Sort<Waypoint>(_waypoints, new Waypoint.Comparer());
+
+        if (this.firstWaypoint != null) {
+
+            Waypoint next = this.firstWaypoint;
+            while (next != null) {
+                _waypoints.Add(next);
+                next = next.next;
+            }
+
             this.targetPosition = _waypoints[_currentWaypoint].transform.position;
         }
 
@@ -52,7 +60,7 @@ public class PathfinderAI : MonoBehaviour {
     protected Waypoint _NextWaypoint {
         get {
             int nextWaypoint = _currentWaypoint + _direction;
-            if (nextWaypoint >= _waypoints.Length || nextWaypoint < 0) {
+            if (nextWaypoint >= _waypoints.Count || nextWaypoint < 0) {
                 // change direction
                 nextWaypoint = _currentWaypoint + _direction * -1;
             }
@@ -112,7 +120,8 @@ public class PathfinderAI : MonoBehaviour {
     /// Sets the target position equal to the next waypoint
     /// </summary>
     protected void _UpdateTargetPosition() {
-        int nextWaypoint = _NextWaypoint.index;
+
+        int nextWaypoint = _waypoints.IndexOf(_NextWaypoint);
         _direction = nextWaypoint - _currentWaypoint;
         _currentWaypoint = nextWaypoint;
         _UpdateTargetPosition(_waypoints[_currentWaypoint].transform.position);

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// </summary>
 public class Waypoint : MonoBehaviour {
 
-    public int index; // position of waypoint in a patrol route
+    public Waypoint next; // the next waypoint (if any) in a path
 
     /// <summary>
     /// Ensure that the waypoint is visible in the Unity editor window.
@@ -14,22 +14,14 @@ public class Waypoint : MonoBehaviour {
     void OnDrawGizmos() {
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(this.transform.position, 0.2f);
+
+        if (this.next != null) {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(this.transform.position, this.next.transform.position);
+        }
     }
 
     public override string ToString() {
-        return string.Format("{0} : index {1} @ {2}", this.name, this.index, this.transform.position);
-    }
-
-    /// <summary>
-    /// Helper class for comparing the index of two waypoints.
-    /// </summary>
-    public class Comparer : IComparer<Waypoint> {
-        public int Compare(Waypoint wp1, Waypoint wp2) {
-            if (wp1.index == wp2.index) {
-                return 0;
-            } else {
-                return wp1.index < wp2.index ? -1 : 1;
-            }
-        }
+        return string.Format("{0} : @ {2}", this.name, this.transform.position);
     }
 }

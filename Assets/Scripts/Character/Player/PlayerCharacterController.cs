@@ -34,7 +34,7 @@ public class PlayerCharacterController : BaseCharacterController {
             _verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
 
             // Aim: Move the player's reticle.
-            var mouseDelta = new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+            var mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
             _reticle.MoveBy(mouseDelta);
 
             // Fire the equipped weapon
@@ -63,8 +63,8 @@ public class PlayerCharacterController : BaseCharacterController {
     /// Update the player's velocity.
     /// </summary>
     public override void FixedUpdate() {
-        var velocity = new Vector3(_horizontalInput, _verticalInput);
-        _character.velocity = Vector3.ClampMagnitude(velocity, 1) * _character.maxWalkSpeed;
+        var velocity = new Vector2(_horizontalInput, _verticalInput);
+        _character.velocity = Vector2.ClampMagnitude(velocity, 1) * _character.maxWalkSpeed;
 
         base.FixedUpdate();
     }

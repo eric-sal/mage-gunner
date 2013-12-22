@@ -38,7 +38,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
         // Create a reticle for this character.
         GameObject reticlePrefab = (GameObject)Resources.Load("Prefabs/Reticle");
-        Vector3 spawnPosition = _character.transform.position + _character.lookDirection;
+        Vector2 spawnPosition = (Vector2)_character.transform.position + _character.lookDirection;
         GameObject reticleInstance = (GameObject)Instantiate(reticlePrefab, spawnPosition, reticlePrefab.transform.rotation);
         reticleInstance.transform.parent = _character.transform;
         _reticle = reticleInstance.GetComponent<ReticleController>();
@@ -69,8 +69,8 @@ public abstract class BaseCharacterController : MonoBehaviour {
     }
 
     protected void _Fire() {
-        Vector3 bulletVector = _reticle.transform.position - this.transform.position;
-        Vector3 recoil = _character.equippedFirearm.Fire(bulletVector);
+        Vector2 bulletVector = _reticle.transform.position - this.transform.position;
+        Vector2 recoil = _character.equippedFirearm.Fire(bulletVector);
         _reticle.ApplyRecoil(recoil);
     }
 }

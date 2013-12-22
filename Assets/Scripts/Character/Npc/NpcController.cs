@@ -6,17 +6,21 @@ using System.Collections;
 /// </summary>
 public class NpcController : BaseCharacterController {
 
+    // When checking to see if we can see the player, we want the ray to ignore projectiles.
+    private static int _layerMask = ((1 << LayerMask.NameToLayer("Players")) |
+        (1 << LayerMask.NameToLayer("Obstacles")) |
+        (1 << LayerMask.NameToLayer("Enemies")));
+
     /* *** Member Variables *** */
 
-    protected Vector3 _estimatedPlayerVelocity;
+    protected Vector2 _estimatedPlayerVelocity;
     protected INpcBehavior _currentBehavior;
     protected PathfinderAI _pathfinderAI;
-    protected int _layerMask;
     protected NpcState _myState;
     protected PlayerState _playerState;
-    protected Vector3 _previousPlayerPosition = Vector3.zero;
+    protected Vector2 _previousPlayerPosition = Vector2.zero;
 
-    public Vector3 estimatedPlayerVelocity {
+    public Vector2 estimatedPlayerVelocity {
         get { return _estimatedPlayerVelocity; }
     }
 
@@ -36,15 +40,11 @@ public class NpcController : BaseCharacterController {
 
     public override void Awake() {
         base.Awake();
+
         _currentBehavior = new IdleBehavior();
         _myState = (NpcState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
-
-        // When checking to see if we can see the player, we want the ray to ignore projectiles.
-        _layerMask = ((1 << LayerMask.NameToLayer("Players")) |
-                      (1 << LayerMask.NameToLayer("Obstacles")) |
-                      (1 << LayerMask.NameToLayer("Enemies")));
     }
 
     /* *** MonoBehaviour Methods *** */
@@ -96,12 +96,9 @@ public class NpcController : BaseCharacterController {
 
         for (int i = _myState.fieldOfVision / 2 * -1; i < _myState.fieldOfVision / 2; i++) {
             Vector3 direction = quato * Quaternion.Euler(0, i, 0) * Vector3.forward;
-            Vector2 direction2D = new Vector2(direction.x, direction.y);
             Debug.DrawRay(this.transform.position, direction * _myState.sightDistance);
 
-            Vector2 position2D = new Vector2(this.transform.position.x, this.transform.position.y);
-            hitInfo = Physics2D.Raycast(position2D, direction2D, _myState.sightDistance, _layerMask);
-
+            hitInfo = Physics2D.Raycast(this.transform.position, direction, _myState.sightDistance, _layerMask);
             if (hitInfo.collider == _playerState.gameObject.collider2D) {
                 _myState.canSeePlayer = true;
                 break;
@@ -117,17 +114,17 @@ public class NpcController : BaseCharacterController {
     /// </summary>
     protected void _EstimatePlayerVelocity() {
         if (_myState.anticipatePlayerMovement && _myState.canSeePlayer) {
-            Vector3 currentPlayerPosition = _playerState.transform.position;
+            Vector2 currentPlayerPosition = (Vector2)_playerState.transform.position;
 
-            if (_previousPlayerPosition != Vector3.zero) {
-                Vector3 deltaPosition = currentPlayerPosition - _previousPlayerPosition;
-                _estimatedPlayerVelocity = Vector3.ClampMagnitude(deltaPosition / Time.deltaTime, 1);
+            if (_previousPlayerPosition != Vector2.zero) {
+                Vector2 deltaPosition = currentPlayerPosition - _previousPlayerPosition;
+                _estimatedPlayerVelocity = Vector2.ClampMagnitude(deltaPosition / Time.deltaTime, 1);
             }
 
             _previousPlayerPosition = currentPlayerPosition;
         } else {
-            _previousPlayerPosition = Vector3.zero;
-            _estimatedPlayerVelocity = Vector3.zero;
+            _previousPlayerPosition = Vector2.zero;
+            _estimatedPlayerVelocity = Vector2.zero;
         }
     }
 }

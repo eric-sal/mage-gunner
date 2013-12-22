@@ -10,18 +10,18 @@ public class ReticleController : MonoBehaviour {
 
     public bool constrainToScreen = false;
 
-    private Vector3 _recoil;
+    private Vector2 _recoil;
 
-	/* *** Constructors *** */
+    /* *** Constructors *** */
 
-	void Start() {
-        _recoil = Vector3.zero;
+    void Start() {
+        _recoil = Vector2.zero;
     }
 
     /* *** MonoBehaviour Methods *** */
 	
     void FixedUpdate() {
-        SetPosition(this.transform.position + _recoil);
+        SetPosition((Vector2)this.transform.position + _recoil);
     }
 
     /* *** Member Methods *** */
@@ -32,8 +32,8 @@ public class ReticleController : MonoBehaviour {
     /// <param name='delta'>
     /// The offset vector to move by.
     /// </param>
-    public void MoveBy(Vector3 worldPositionDelta) {
-        SetPosition(this.transform.position + worldPositionDelta);
+    public void MoveBy(Vector2 worldPositionDelta) {
+        SetPosition((Vector2)this.transform.position + worldPositionDelta);
     }
 
     /// <summary>
@@ -45,17 +45,17 @@ public class ReticleController : MonoBehaviour {
     /// <param name='speed'>
     /// The speed at which to move the reticle.
     /// </param>
-    public void LerpTo(Vector3 worldPosition, float speed = 1) {
+    public void LerpTo(Vector2 worldPosition, float speed = 1) {
         if (SceneController.isPaused) {
             return;
         }
 
-        Vector3 position = worldPosition;
+        Vector2 position = worldPosition;
         if (this.constrainToScreen) {
             position = CameraController.ConstrainPositionToScreen(worldPosition);
         }
 
-        this.transform.position = Vector3.Lerp(transform.position, position, Time.deltaTime * speed);
+        this.transform.position = Vector2.Lerp(transform.position, position, Time.deltaTime * speed);
     }
 
     /// <summary>
@@ -64,12 +64,12 @@ public class ReticleController : MonoBehaviour {
     /// <param name='worldPosition'>
     /// The position of the player's cursor in world space.
     /// </param>
-    public void SetPosition(Vector3 worldPosition) {
+    public void SetPosition(Vector2 worldPosition) {
         if (SceneController.isPaused) {
             return;
         }
 
-        Vector3 position = worldPosition;
+        Vector2 position = worldPosition;
         if (this.constrainToScreen) {
             position = CameraController.ConstrainPositionToScreen(worldPosition);
         }
@@ -83,7 +83,7 @@ public class ReticleController : MonoBehaviour {
     /// <param name='recoil'>
     /// The amount of recoil to apply.
     /// </param>
-    public void ApplyRecoil(Vector3 recoil) {
+    public void ApplyRecoil(Vector2 recoil) {
         _recoil += recoil;
     }
 
@@ -100,7 +100,7 @@ public class ReticleController : MonoBehaviour {
 
         if (magAfter > magBefore) {
             // slid too far in the opposite direction
-            _recoil = Vector3.zero;
+            _recoil = Vector2.zero;
         }
     }
 }

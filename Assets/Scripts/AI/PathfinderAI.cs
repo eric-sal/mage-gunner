@@ -16,7 +16,7 @@ public class PathfinderAI : MonoBehaviour {
     /* *** Member Variables *** */
 
     public Waypoint firstWaypoint;  //The first waypoint to calculate the path to
-    public Vector3 targetPosition;  //The end-point to move toward
+    public Vector2 targetPosition;  //The end-point to move toward
 
     private BaseCharacterState _character;
     private int _currentNode = 0; //The node in the A-star pathfinding graph we are currently moving toward
@@ -87,17 +87,17 @@ public class PathfinderAI : MonoBehaviour {
             _UpdateTargetPosition();
             _path = null;
             _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);
-            _character.velocity = Vector3.zero;
+            _character.velocity = Vector2.zero;
             return;
         }
 
         //Direction to the next waypoint
-        Vector3 velocity = (_path.vectorPath[_currentNode] - this.transform.position);
-        _character.velocity = Vector3.ClampMagnitude(velocity, 1) * speed;
+        Vector2 velocity = (_path.vectorPath[_currentNode] - this.transform.position);
+        _character.velocity = Vector2.ClampMagnitude(velocity, 1) * speed;
 
         //Check if we are close enough to the next waypoint
         //If we are, proceed to follow the next waypoint
-        if (Vector3.Distance(this.transform.position, _path.vectorPath[_currentNode]) < NEXT_NODE_DISTANCE) {
+        if (Vector2.Distance(this.transform.position, _path.vectorPath[_currentNode]) < NEXT_NODE_DISTANCE) {
             _currentNode++;
             return;
         }
@@ -110,8 +110,7 @@ public class PathfinderAI : MonoBehaviour {
         if (!p.error) {
             _path = p;
             _currentNode = 0;    //Reset the waypoint counter
-        }
-        else {
+        } else {
             Debug.Log(p.errorLog);
         }
     }
@@ -130,7 +129,7 @@ public class PathfinderAI : MonoBehaviour {
     /// <summary>
     /// Sets the target position to the given target location.
     /// </summary>
-    protected void _UpdateTargetPosition(Vector3 target) {
+    protected void _UpdateTargetPosition(Vector2 target) {
         this.targetPosition = target;
     }
 }

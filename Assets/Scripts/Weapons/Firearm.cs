@@ -94,26 +94,26 @@ public class Firearm : MonoBehaviour {
     /// Generates a random vector representing an offset amount to move the character's reticle.
     /// </summary>
     /// <returns>
-    /// A Vector3.
+    /// A Vector2.
     /// </returns>
-    public Vector3 RandomRecoil() {
+    public Vector2 RandomRecoil() {
         float x = UnityEngine.Random.Range(-1f, 1f);
         float y = UnityEngine.Random.Range(-1f, 1f);
-        var direction = new Vector3(x, y).normalized;
+        var direction = new Vector2(x, y).normalized;
         return direction * this.recoil;
     }
 
     /// <summary>
     /// Fire the specified direction.
-    /// Returns a Vector3 representing the degree of recoil.
+    /// Returns a Vector2 representing the degree of recoil.
     /// </summary>
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    public Vector3 Fire(Vector2 direction) {
+    public Vector2 Fire(Vector2 direction) {
         
         if (_elapsed <= _cycleTime) {
-            return Vector3.zero;
+            return Vector2.zero;
         }
         _elapsed = 0;
         
@@ -122,7 +122,7 @@ public class Firearm : MonoBehaviour {
                 _audioSource.PlayOneShot(this.dryFireSound);
             }
 
-            return Vector3.zero;
+            return Vector2.zero;
         }
 
         switch (this.fireType) {

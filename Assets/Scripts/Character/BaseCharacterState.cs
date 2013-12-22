@@ -14,7 +14,7 @@ public abstract class BaseCharacterState : MonoBehaviour {
 
     public Firearm equippedFirearm;
     public int health;
-    public Vector3 lookDirection;  // Direction the character is looking.
+    public Vector2 lookDirection;  // Direction the character is looking.
     public float maxWalkSpeed;
     public int strength;
     public Vector2 velocity;
@@ -27,8 +27,8 @@ public abstract class BaseCharacterState : MonoBehaviour {
     /// <param name='position'>
     /// Position to look at.
     /// </param>
-    public void LookAt(Vector3 position) {
-        this.lookDirection = position - this.transform.position;
+    public void LookAt(Vector2 position) {
+        this.lookDirection = position - (Vector2)this.transform.position;
     }
 
     /// <summary>

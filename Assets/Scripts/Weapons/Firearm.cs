@@ -10,12 +10,22 @@ using System.Collections;
 /// </exception>
 public class Firearm : MonoBehaviour {
 
-    public enum FireType { Standard, Spray, Spread, Burst }
+    public enum FireType {
+        Standard,
+        Spray,
+        Spread,
+        Burst
+    }
+
+    /* *** Class Variables *** */
+
+    private static GameObject _bulletBucket;    // Empty GameObject for keeping spawned bullets.
+    private static GameObject _bulletPrefab;
 
     /* *** Member Variables *** */
 
     public int ammoConsumed = 1;    // How many rounds does this use up when fired? Burst fire weapons and double-barreled shotguns would have a value > 1.
-    public float bulletSpeed;   // How fast the projectile travels.
+    public float bulletForce;   // The force with which the bullet is fired. force = mass x velocity
     public AudioClip dryFireSound; // The sound clip to play when firing but the magazine is empty
     public FireType fireType;
     public AudioClip[] firingSounds; // Different sound clips to play when firing a bullet from this firearm
@@ -35,9 +45,6 @@ public class Firearm : MonoBehaviour {
     private float _elapsed;   // How much time has elapsed since the last time the weapon was fired.
     private int _roundsFired; // The number of rounds the weapon has fired so far.
 
-    private static GameObject _bulletBucket;    // Empty GameObject for keeping spawned bullets.
-    private static GameObject _bulletPrefab;
-
     /* *** Properties *** */
 
     public bool IsEmpty {
@@ -46,7 +53,7 @@ public class Firearm : MonoBehaviour {
 
     /* *** Constructors *** */
 
-    void Start() {
+    public void Awake() {
         if (rateOfFire <= 0) {
             throw new InvalidOperationException("rateOfFire must be > 0!");
         }
@@ -62,19 +69,22 @@ public class Firearm : MonoBehaviour {
         if (_bulletBucket == null) {
             _bulletBucket = GameObject.Find("BulletBucket");
         }
-        
-        // Belongs here instead of Awake, because the object is instantiated dynamically,
-        // and the parent is set after instantiation.
-        _character = this.transform.parent.parent.GetComponent<BaseCharacterState>();
-        _audioSource = GetComponent<AudioSource>();
 
+        _audioSource = GetComponent<AudioSource>();
+        
         _cycleTime = 60 / this.rateOfFire;
         _elapsed = _cycleTime; // so we can shoot right away
     }
 
+    public void Start() {
+        // Belongs here instead of Awake, because the object is instantiated dynamically,
+        // and the parent is set after instantiation.
+        _character = this.transform.parent.parent.GetComponent<BaseCharacterState>();
+    }
+
     /* *** MonoBehaviour Methods *** */
 
-    void Update() {
+    public void Update() {
         _elapsed += Time.deltaTime;
     }
 
@@ -100,7 +110,7 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    public Vector3 Fire(Vector3 direction) {
+    public Vector3 Fire(Vector2 direction) {
         
         if (_elapsed <= _cycleTime) {
             return Vector3.zero;
@@ -165,7 +175,7 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void _FireStandardShot(Vector3 direction) {
+    private void _FireStandardShot(Vector2 direction) {
         for (int i = 0; i < this.ammoConsumed; i ++) {
             _SpawnBullet(direction);
         }
@@ -179,9 +189,9 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void _FireSprayShot(Vector3 direction) {
+    private void _FireSprayShot(Vector2 direction) {
         float scatterAmount;
-        Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
+        Quaternion quato = Quaternion.LookRotation(direction.Vector3D(), Vector3.forward);
 
         for (int i = 0; i < this.numProjectiles; i++) {
             scatterAmount = UnityEngine.Random.Range(-scatterVariation, scatterVariation);
@@ -197,10 +207,10 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void _FireSpreadShot(Vector3 direction) {
+    private void _FireSpreadShot(Vector2 direction) {
         // If we weren't in a top-down (x, y plane) view, I *think* we would use a
         // different vector than Vector3.forward <0, 0, 1> as the 2nd param here.
-        Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
+        Quaternion quato = Quaternion.LookRotation(direction.Vector3D(), Vector3.forward);
 
         for (int i = (int)Mathf.Floor(this.numProjectiles / 2f) * -1; i < (int)Mathf.Ceil(this.numProjectiles / 2f); i++) {
             _SpawnBullet(quato * Quaternion.Euler(0, scatterVariation * i, 0) * Vector3.forward);
@@ -215,9 +225,9 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private IEnumerator _FireBurstShot(Vector3 direction) {
+    private IEnumerator _FireBurstShot(Vector2 direction) {
         float scatterAmount;
-        Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
+        Quaternion quato = Quaternion.LookRotation(direction.Vector3D(), Vector3.forward);
 
         _SpawnBullet(direction);
         for (int i = 0; i < this.ammoConsumed - 1; i++) {
@@ -235,7 +245,7 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void _SpawnBullet(Vector3 direction) {
+    private void _SpawnBullet(Vector2 direction) {
         // _character.transform.position isn't quite right. Might want to figure
         // out where the character will be in the NEXT frame and use that position.
         GameObject bullet = (GameObject)Instantiate(_bulletPrefab, _character.transform.position, _bulletPrefab.transform.rotation);
@@ -243,8 +253,8 @@ public class Firearm : MonoBehaviour {
 
         ProjectileState bulletState = bullet.GetComponent<ProjectileState>();
         bulletState.spawner = _character.gameObject;
-        bulletState.velocity = Vector3.ClampMagnitude(direction, 1) * this.bulletSpeed;
         bulletState.damage = _RollForDamage();
+        bulletState.rigidbody2D.AddForce(Vector2.ClampMagnitude(direction, 1) * this.bulletForce);
     }
 
     /// <summary>

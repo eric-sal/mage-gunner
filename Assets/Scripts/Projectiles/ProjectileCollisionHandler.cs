@@ -33,9 +33,9 @@ public class ProjectileCollisionHandler : MonoBehaviour {
 
         Vector2 velocity = this.rigidbody2D.velocity;
         float distance = Mathf.Abs(velocity.magnitude * Time.fixedDeltaTime);
-        RaycastHit2D hitInfo = Physics2D.Raycast(this.transform.position.Vector2D(), velocity, distance, _layerMask);
+        RaycastHit2D hitInfo = Physics2D.Raycast(this.transform.position, velocity, distance, _layerMask);
         if (hitInfo.collider != null) {
-            _projectile.transform.position = hitInfo.point.Vector3D();
+            _projectile.transform.position = hitInfo.point;
             this.rigidbody2D.velocity = Vector2.zero;
         }
 

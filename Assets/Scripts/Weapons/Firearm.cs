@@ -191,7 +191,7 @@ public class Firearm : MonoBehaviour {
     /// </param>
     private void _FireSprayShot(Vector2 direction) {
         float scatterAmount;
-        Quaternion quato = Quaternion.LookRotation(direction.Vector3D(), Vector3.forward);
+        Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         for (int i = 0; i < this.numProjectiles; i++) {
             scatterAmount = UnityEngine.Random.Range(-scatterVariation, scatterVariation);
@@ -210,7 +210,7 @@ public class Firearm : MonoBehaviour {
     private void _FireSpreadShot(Vector2 direction) {
         // If we weren't in a top-down (x, y plane) view, I *think* we would use a
         // different vector than Vector3.forward <0, 0, 1> as the 2nd param here.
-        Quaternion quato = Quaternion.LookRotation(direction.Vector3D(), Vector3.forward);
+        Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         for (int i = (int)Mathf.Floor(this.numProjectiles / 2f) * -1; i < (int)Mathf.Ceil(this.numProjectiles / 2f); i++) {
             _SpawnBullet(quato * Quaternion.Euler(0, scatterVariation * i, 0) * Vector3.forward);
@@ -227,7 +227,7 @@ public class Firearm : MonoBehaviour {
     /// </param>
     private IEnumerator _FireBurstShot(Vector2 direction) {
         float scatterAmount;
-        Quaternion quato = Quaternion.LookRotation(direction.Vector3D(), Vector3.forward);
+        Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
         _SpawnBullet(direction);
         for (int i = 0; i < this.ammoConsumed - 1; i++) {

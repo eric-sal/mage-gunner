@@ -120,6 +120,10 @@ public class PathfinderAI : MonoBehaviour {
     /// </summary>
     protected void _UpdateTargetPosition() {
 
+        if (_waypoints.Count == 0) {
+            return;
+        }
+
         int nextWaypoint = _waypoints.IndexOf(_NextWaypoint);
         _direction = nextWaypoint - _currentWaypoint;
         _currentWaypoint = nextWaypoint;

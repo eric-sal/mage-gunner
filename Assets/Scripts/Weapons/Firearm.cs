@@ -159,8 +159,12 @@ public class Firearm : MonoBehaviour {
     /// </summary>
     public void Reload() {
         // We can't reload while we're firing.
-        if (_elapsed > _cycleTime) {
+        if (_elapsed > _cycleTime && _roundsFired > 0) {
             _roundsFired = 0;
+
+            if (this.reloadSound != null) {
+                _audioSource.PlayOneShot(this.reloadSound);
+            }
         }
     }
 

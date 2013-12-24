@@ -6,16 +6,14 @@ using System.Collections;
 /// </summary>
 public class ProjectileCollisionHandler : MonoBehaviour {
 
-    /* *** Class Variables *** */
-    private static int _layerMask = ~(1 << LayerMask.NameToLayer("Projectiles"));
-
     /* *** Member Variables *** */
-
-    private ProjectileState _projectile;
+    protected int _layerMask;
+    protected ProjectileState _projectile;
 
     /* *** Constructors *** */
 
     public void Awake() {
+        _layerMask = ~(1 << LayerMask.NameToLayer("Projectiles"));
         _projectile = GetComponent<ProjectileState>();
     }
 

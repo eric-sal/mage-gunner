@@ -6,16 +6,12 @@ using System.Collections;
 /// </summary>
 public class NpcController : BaseCharacterController {
 
-    // When checking to see if we can see the player, we want the ray to ignore projectiles.
-    private static int _layerMask = ((1 << LayerMask.NameToLayer("Players")) |
-        (1 << LayerMask.NameToLayer("Obstacles")) |
-        (1 << LayerMask.NameToLayer("Enemies")));
-
     /* *** Member Variables *** */
 
     protected Vector2 _estimatedPlayerVelocity;
     protected INpcBehavior _currentBehavior;
     protected PathfinderAI _pathfinderAI;
+    protected int _layerMask;
     protected NpcState _myState;
     protected PlayerState _playerState;
     protected Vector2 _previousPlayerPosition = Vector2.zero;
@@ -40,8 +36,11 @@ public class NpcController : BaseCharacterController {
 
     public override void Awake() {
         base.Awake();
-
         _currentBehavior = new IdleBehavior();
+        // When checking to see if we can see the player, we want the ray to ignore projectiles.
+        _layerMask = ((1 << LayerMask.NameToLayer("Players")) |
+                      (1 << LayerMask.NameToLayer("Obstacles")) |
+                      (1 << LayerMask.NameToLayer("Enemies")));
         _myState = (NpcState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();

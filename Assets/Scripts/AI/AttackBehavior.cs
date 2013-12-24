@@ -12,6 +12,11 @@ public class AttackBehavior : INpcBehavior {
     /* *** Interface Methods *** */
 
     public void doUpdate() {
+
+        if (_controller.playerState.health <= 0) {
+            return;
+        }
+
         NpcState myState = _controller.myState;
 
         // If we can see the player, then aim at him.

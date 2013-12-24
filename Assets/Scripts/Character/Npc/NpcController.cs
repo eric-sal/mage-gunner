@@ -70,6 +70,10 @@ public class NpcController : BaseCharacterController {
     /// intervals in FixedUpdate().
     /// </summary>
     public override void FixedUpdate() {
+        if (_playerState.health <= 0) {
+            return;
+        }
+
         _FindPlayer();
         _EstimatePlayerVelocity();
 
@@ -83,6 +87,7 @@ public class NpcController : BaseCharacterController {
     /// Try to find the player in the NPC's field of vision.
     /// </summary>
     protected void _FindPlayer() {
+
         // Since the raycast starts inside our enemy, we want to ignore ourself when casting the ray to find the player.
         LayerMask myLayer = gameObject.layer;
         gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
@@ -112,6 +117,7 @@ public class NpcController : BaseCharacterController {
     /// Used in anticipating the player's movement when aiming.
     /// </summary>
     protected void _EstimatePlayerVelocity() {
+
         if (_myState.anticipatePlayerMovement && _myState.canSeePlayer) {
             Vector2 currentPlayerPosition = (Vector2)_playerState.transform.position;
 

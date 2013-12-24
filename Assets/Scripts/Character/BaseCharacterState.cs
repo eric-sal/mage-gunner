@@ -51,6 +51,8 @@ public abstract class BaseCharacterState : MonoBehaviour {
     public void TakeDamage(int damage) {
         this.health -= damage;
 
+        Debug.Log(string.Format("{0} took {1} damage. {2} health remaining", this.name, damage, this.health));
+
         if (this.health < 0) {
             // If the player doesn't have any more health, they're dead.
             _Die();

@@ -9,6 +9,7 @@ public class ReticleController : MonoBehaviour {
     /* *** Member Variables *** */
 
     public bool constrainToScreen = false;
+    public bool visible = false;
 
     private Vector2 _recoil;
 
@@ -16,6 +17,8 @@ public class ReticleController : MonoBehaviour {
 
     void Start() {
         _recoil = Vector2.zero;
+
+        GetComponent<SpriteRenderer>().enabled = visible;
     }
 
     /* *** MonoBehaviour Methods *** */

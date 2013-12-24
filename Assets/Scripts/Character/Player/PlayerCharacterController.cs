@@ -18,6 +18,7 @@ public class PlayerCharacterController : BaseCharacterController {
     public override void Awake() {
         base.Awake();
         _reticle.constrainToScreen = true;
+        _reticle.visible = true;
     }
 
     /* *** MonoBehaviour Methods *** */

@@ -61,6 +61,21 @@ public class NpcController : BaseCharacterController {
             _currentBehavior = new PatrolBehavior(this);
         }
 
+        var direction = _myState.lookDirection.normalized;
+        var walking = this.rigidbody2D.velocity != Vector2.zero;
+        _animator.SetBool("walking", walking);
+
+        var localScale = _animator.transform.localScale;
+        if (direction.x < 0) {
+            localScale.x = -1;
+        } else {
+            localScale.x = 1;
+        }
+        _animator.transform.localScale = localScale;
+
+        _animator.SetFloat("inputX", Mathf.Abs(direction.x));
+        _animator.SetFloat("inputY", direction.y);
+
         _currentBehavior.doUpdate();
     }
 
@@ -95,7 +110,7 @@ public class NpcController : BaseCharacterController {
 
         for (int i = _myState.fieldOfVision / 2 * -1; i < _myState.fieldOfVision / 2; i++) {
             Vector3 direction = quato * Quaternion.Euler(0, i, 0) * Vector3.forward;
-            Debug.DrawRay(this.transform.position, direction * _myState.sightDistance);
+            //Debug.DrawRay(this.transform.position, direction * _myState.sightDistance);
 
             hitInfo = Physics2D.Raycast(this.transform.position, direction, _myState.sightDistance, _layerMask);
             if (hitInfo.collider == _playerState.gameObject.collider2D) {

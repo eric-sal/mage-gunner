@@ -15,6 +15,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     /* *** Member Variables *** */
 
+    protected Animator _animator;
     protected BaseCharacterState _character;
     protected Inventory _inventory;
     protected ReticleController _reticle;
@@ -33,6 +34,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     /* *** Constructors *** */
     public virtual void Awake() {
+        _animator = GetComponentInChildren<Animator>();
         _character = GetComponent<BaseCharacterState>();
         _inventory = GetComponentInChildren<Inventory>();
 

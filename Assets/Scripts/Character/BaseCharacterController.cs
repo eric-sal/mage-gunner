@@ -52,6 +52,17 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     public virtual void Update() {
         _character.LookAt(_reticle.transform.position);
+
+        bool isWalking = _character.rigidbody2D.velocity != Vector2.zero;
+        _animator.SetBool("walking", isWalking);
+        
+        Vector2 direction = _character.lookDirection.normalized;
+        Vector3 localScale = _animator.transform.localScale;
+        localScale.x = direction.x < 0 ? -1 : 1;
+        _animator.transform.localScale = localScale;
+        
+        _animator.SetFloat("inputX", Mathf.Abs(direction.x));
+        _animator.SetFloat("inputY", direction.y);
     }
 
     public virtual void FixedUpdate() {

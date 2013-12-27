@@ -34,20 +34,6 @@ public class PlayerCharacterController : BaseCharacterController {
             _horizontalInput = Input.GetAxis("Horizontal"); // -1.0 to 1.0
             _verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
 
-            var walking = _verticalInput != 0 || _horizontalInput != 0;
-            _animator.SetBool("walking", walking);
-
-            var localScale = _animator.transform.localScale;
-            if (_horizontalInput < 0) {
-                localScale.x = -1;
-            } else {
-                localScale.x = 1;
-            }
-            _animator.transform.localScale = localScale;
-
-            _animator.SetFloat("inputX", Mathf.Abs(_horizontalInput));
-            _animator.SetFloat("inputY", _verticalInput);
-
             // Aim: Move the player's reticle.
             var mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
             _reticle.MoveBy(mouseDelta);

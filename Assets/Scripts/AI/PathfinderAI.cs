@@ -9,7 +9,6 @@ using Pathfinding;
 /// </summary>
 public class PathfinderAI : MonoBehaviour {
 
-    const float NEXT_NODE_DISTANCE = 1f;  //The max distance from the AI to a node for it to continue to the next node
     const int FORWARD = 1;
     const int BACKWARD = -1;
 
@@ -83,22 +82,39 @@ public class PathfinderAI : MonoBehaviour {
             return;
         }
 
+        //Determine how far we will advanced down the path during fixedDeltaTime
+        float distanceRemaining = speed * Time.fixedDeltaTime; // the max distance we will move during FixedUpdate
+        Vector3 position = this.transform.position;
+
+        while (distanceRemaining > 0f && _currentNode < _path.vectorPath.Count) {
+
+            float distanceToNext = Vector2.Distance(position, _path.vectorPath[_currentNode]);
+
+            if (distanceToNext > distanceRemaining) {
+                //We won't reach the next waypoint in time, just head in that direction
+                Vector3 direction = (_path.vectorPath[_currentNode] - position).normalized;
+                position += direction * distanceRemaining;
+
+                //Set the velocity, but we've already overridden the movement so it's just for facing purposes
+                _character.velocity = Vector2.ClampMagnitude(direction * speed, speed);
+
+            } else {
+                //We can reach the next waypoint, how much further can we go?
+                position = _path.vectorPath[_currentNode];
+                _currentNode++;
+            }
+
+            distanceRemaining -= distanceToNext;
+        }
+
+        this.transform.position = position;
+
         if (_currentNode >= _path.vectorPath.Count) {
+            //End of path reached
             _UpdateTargetPosition();
             _path = null;
             _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);
             _character.velocity = Vector2.zero;
-            return;
-        }
-
-        //Direction to the next waypoint
-        Vector2 velocity = (_path.vectorPath[_currentNode] - this.transform.position);
-        _character.velocity = Vector2.ClampMagnitude(velocity, 1) * speed;
-
-        //Check if we are close enough to the next waypoint
-        //If we are, proceed to follow the next waypoint
-        if (Vector2.Distance(this.transform.position, _path.vectorPath[_currentNode]) < NEXT_NODE_DISTANCE) {
-            _currentNode++;
             return;
         }
     }

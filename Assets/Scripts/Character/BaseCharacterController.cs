@@ -53,7 +53,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
     public virtual void Update() {
         _character.LookAt(_reticle.transform.position);
 
-        bool isWalking = _character.rigidbody2D.velocity != Vector2.zero;
+        bool isWalking = _character.velocity != Vector2.zero;
         _animator.SetBool("walking", isWalking);
         
         Vector2 direction = _character.lookDirection.normalized;
@@ -66,8 +66,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
     }
 
     public virtual void FixedUpdate() {
-        this.rigidbody2D.velocity = new Vector2(_character.velocity.x, _character.velocity.y);
-
         _reticle.ReduceRecoil(_character.GetRecoilReduction());
     }
 

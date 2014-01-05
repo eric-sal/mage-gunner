@@ -56,9 +56,10 @@ public class NpcController : BaseCharacterController {
 
         if (_myState.canSeePlayer) {
             _currentBehavior = new AttackBehavior(this);
-        } else {
-            //_currentBehavior = new IdleBehavior();
+        } else if (_pathfinderAI.firstWaypoint != null) {
             _currentBehavior = new PatrolBehavior(this);
+        } else {
+            _currentBehavior = new IdleBehavior();
         }
 
         _currentBehavior.doUpdate();
@@ -74,6 +75,15 @@ public class NpcController : BaseCharacterController {
         _EstimatePlayerVelocity();
 
         _currentBehavior.doFixedUpdate();
+
+        if (_currentBehavior as PatrolBehavior == null) {
+            //PatrolBehavior handles movement on its own
+            //TODO: Behavior should indicate to FixedUpdate whether
+            //or not do its thing or maybe have a BaseBehavior that
+            //does what this function does now?
+            this.rigidbody2D.velocity = _character.velocity;
+        }
+
         base.FixedUpdate();
     }
 

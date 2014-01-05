@@ -102,14 +102,6 @@ public class NpcController : BaseCharacterController {
         _FindPlayer();
         _EstimatePlayerVelocity();
 
-        if (_patrolBehavior != null && !_patrolBehavior.isActive) {
-            //PatrolBehavior handles movement on its own
-            //TODO: Behavior should indicate to FixedUpdate whether
-            //or not do its thing or maybe have a BaseBehavior that
-            //does what this function does now?
-            this.rigidbody2D.velocity = _character.velocity;
-        }
-
         base.FixedUpdate();
     }
 

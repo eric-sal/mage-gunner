@@ -8,13 +8,21 @@ public class NpcController : BaseCharacterController {
 
     /* *** Member Variables *** */
 
+    protected AttackBehavior _attackBehavior;
+    protected BaseBehavior[] _behaviors;
+    protected ChaseBehavior _chaseBehavior;
     protected Vector2 _estimatedPlayerVelocity;
-    protected INpcBehavior _currentBehavior;
+    protected IdleBehavior _idleBehavior;
     protected PathfinderAI _pathfinderAI;
     protected int _layerMask;
     protected NpcState _myState;
+    protected PatrolBehavior _patrolBehavior;
     protected PlayerState _playerState;
     protected Vector2 _previousPlayerPosition = Vector2.zero;
+
+    public BaseBehavior[] behaviors {
+        get { return _behaviors; }
+    }
 
     public Vector2 estimatedPlayerVelocity {
         get { return _estimatedPlayerVelocity; }
@@ -26,6 +34,10 @@ public class NpcController : BaseCharacterController {
 
     public PathfinderAI pathfinderAI {
         get { return _pathfinderAI; }
+    }
+
+    public PatrolBehavior patrolBehavior {
+        get { return _patrolBehavior; }
     }
 
     public PlayerState playerState {
@@ -44,7 +56,12 @@ public class NpcController : BaseCharacterController {
         _pathfinderAI = GetComponent<PathfinderAI>();
         _myState.startingPosition = _pathfinderAI.targetPosition = this.transform.position;
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
-        _currentBehavior = new IdleBehavior(this);
+
+        _behaviors = GetComponents<BaseBehavior>();
+        _attackBehavior = GetComponent<AttackBehavior>();
+        _chaseBehavior = GetComponent<ChaseBehavior>();
+        _idleBehavior = GetComponent<IdleBehavior>();
+        _patrolBehavior = GetComponent<PatrolBehavior>();
     }
 
     /* *** MonoBehaviour Methods *** */
@@ -55,9 +72,25 @@ public class NpcController : BaseCharacterController {
     public override void Update() {
         base.Update();
 
-        _currentBehavior = _currentBehavior.GetNextBehavior();
-
-        _currentBehavior.doUpdate();
+        if (_attackBehavior != null && _myState.canSeePlayer) {
+            if (!_attackBehavior.isActive) {
+                _attackBehavior.Activate();
+            }
+        } else if (_chaseBehavior != null && _myState.didSeePlayer) {
+            if (!_chaseBehavior.isActive) {
+                _chaseBehavior.Activate();
+            }
+        } else if (_patrolBehavior != null) {
+            if (!_patrolBehavior.isActive) {
+                _patrolBehavior.Activate();
+            }
+        } else if (_idleBehavior != null) {
+            if (!_idleBehavior.isActive) {
+                _idleBehavior.Activate();
+            }
+        } else {
+            throw new System.MissingMemberException("You must include an IdleBehavior component for " + this.gameObject.name);
+        }
     }
 
     /// <summary>
@@ -69,9 +102,7 @@ public class NpcController : BaseCharacterController {
         _FindPlayer();
         _EstimatePlayerVelocity();
 
-        _currentBehavior.doFixedUpdate();
-
-        if (_currentBehavior as PatrolBehavior == null) {
+        if (_patrolBehavior != null && !_patrolBehavior.isActive) {
             //PatrolBehavior handles movement on its own
             //TODO: Behavior should indicate to FixedUpdate whether
             //or not do its thing or maybe have a BaseBehavior that

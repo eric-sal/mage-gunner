@@ -3,11 +3,9 @@ using System.Collections;
 
 public class PatrolBehavior : BaseBehavior {
 
-    public PatrolBehavior(NpcController controller) : base(controller) { }
-
     /* *** Interface Methods *** */
 
-    public override void doUpdate() {
+    protected override void _Update() {
         BaseCharacterState character = _controller.character;
 
         // If we can't see the player, aim in the direction we're moving.
@@ -25,7 +23,7 @@ public class PatrolBehavior : BaseBehavior {
         }
     }
 
-    public override void doFixedUpdate() {
+    protected override void _FixedUpdate() {
         _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed);
     }
 }

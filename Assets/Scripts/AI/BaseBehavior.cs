@@ -1,43 +1,68 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BaseBehavior : INpcBehavior {
+public class BaseBehavior : MonoBehaviour {
+
+    public bool isActive;
 
     protected NpcController _controller;
     
-    public BaseBehavior(NpcController controller) {
-        _controller = controller;
+    public void Start() {
+        _controller = GetComponent<NpcController>();
     }
 
-    public virtual void doUpdate() {
-        // Do nothing
-    }
-    
-    public virtual void doFixedUpdate() {
-        // Do nothing
-    }
-
-    public virtual INpcBehavior GetNextBehavior() {
-
-        INpcBehavior behavior = this;
-        
-        if (_controller.myState.canSeePlayer) {
-            if (!(this is AttackBehavior)) {
-                behavior = new AttackBehavior(_controller);
-            }
-        } else if (_controller.myState.didSeePlayer) {
-            if (!(this is ChaseBehavior)) {
-                behavior = new ChaseBehavior(_controller);
-            }
-        } else if (_controller.pathfinderAI.firstWaypoint != null) {
-            if (!(this is PatrolBehavior)) {
-                behavior = new PatrolBehavior(_controller);
-            }
-        } else if (!(this is IdleBehavior)) {
-            behavior = new IdleBehavior(_controller);
+    public void Update() {
+        if (this.isActive) {
+            _Update();
         }
-        
-        return behavior;
     }
 
+    /// <summary>
+    /// Override in the child classes.
+    /// </summary>
+    protected virtual void _Update() { }
+    
+    public void FixedUpdate() {
+        if (this.isActive) {
+            _FixedUpdate();
+        }
+    }
+
+    /// <summary>
+    /// Override in the child classes.
+    /// </summary>
+    protected virtual void _FixedUpdate() { }
+
+    /// <summary>
+    /// Activates this behavior. An activated behavior will perform
+    /// the Update and FixedUpdate functions.
+    /// </summary>
+    public void Activate() {
+        foreach (BaseBehavior b in _controller.behaviors) {
+            if (b.isActive) {
+                b.Deactivate();
+            }
+        }
+
+        _Activate();
+        this.isActive = true;
+    }
+
+    /// <summary>
+    /// Override in the child classes.
+    /// </summary>
+    protected virtual void _Activate() { }
+
+    /// <summary>
+    /// Deactivates this behavior. Use as a cleanup method.
+    /// </summary>
+    public void Deactivate() {
+        _Deactivate();
+        this.isActive = false;
+    }
+
+    /// <summary>
+    /// Override in the child classes.
+    /// </summary>
+    protected virtual void _Deactivate() { }
 }

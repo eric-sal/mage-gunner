@@ -3,11 +3,9 @@ using System.Collections;
 
 public class AttackBehavior : BaseBehavior {
 
-    public AttackBehavior(NpcController controller) : base(controller) { }
-
     /* *** Interface Methods *** */
 
-    public override void doUpdate() {
+    protected override void _Update() {
         NpcState myState = _controller.myState;
 
         // If we can see the player, then aim at him.
@@ -26,7 +24,7 @@ public class AttackBehavior : BaseBehavior {
         }
     }
 
-    public override void doFixedUpdate() {
+    protected override void _FixedUpdate() {
         _controller.character.velocity = Vector2.zero;
     }
 }

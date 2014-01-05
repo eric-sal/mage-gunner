@@ -5,47 +5,46 @@ public class ChaseBehavior : BaseBehavior {
 
     const float MIN_TARGET_DISTANCE = 1f;
 
-    public ChaseBehavior(NpcController controller) : base(controller) {
+    protected bool _isChasing;
+
+    protected override void _Activate() {
+        _isChasing = true;
         _controller.pathfinderAI.targetPosition = _controller.myState.playerPosition;
         _controller.pathfinderAI.RestartPath();
     }
 
-    public override void doUpdate() {
-        // Do nothing
-    }
-    
-    public override void doFixedUpdate() {
-        _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed);
+    protected override void _Deactivate() {
+        _controller.myState.didSeePlayer = false;
     }
 
-    public override INpcBehavior GetNextBehavior() {
-
+    protected override void _Update() {
         NpcState myState = _controller.myState;
-        INpcBehavior nextBehavior = base.GetNextBehavior();
+        Vector2 diff;
 
-        if (nextBehavior is IdleBehavior) {
-            Vector2 diff = myState.startingPosition - (Vector2)_controller.transform.position;
-            if (diff.sqrMagnitude >= MIN_TARGET_DISTANCE) {
-                // we haven't reached our starting position, stay in ChaseBehavior
-                nextBehavior = this;
-            }
-        }
-
-        if (!(nextBehavior is ChaseBehavior)) {
-            return nextBehavior;
-        }
-
-        if (myState.didSeePlayer) {
+        if (_isChasing) {
             PathfinderAI pathfinder = _controller.pathfinderAI;
-            Vector2 diff = pathfinder.targetPosition - (Vector2)_controller.transform.position;
+            diff = pathfinder.targetPosition - (Vector2)_controller.transform.position;
             if (diff.sqrMagnitude < MIN_TARGET_DISTANCE) {
                 // We've reached the end of our path, return to our starting position
-                myState.didSeePlayer = false;
+                _isChasing = false;
                 pathfinder.targetPosition = myState.startingPosition;
                 pathfinder.RestartPath();
             }
+        } else if (_controller.patrolBehavior != null) {
+            // If we have a PatrolBehavior, resume our patrol after we've lost the player.
+            _controller.patrolBehavior.Activate();
+        } else {
+            // If we don't have a PatrolBehavior, return to our starting position after
+            // we've lost the player.
+            diff = myState.startingPosition - (Vector2)_controller.transform.position;
+            if (diff.sqrMagnitude < MIN_TARGET_DISTANCE) {
+                // we've reached our starting position, so deactivate ourselves
+                Deactivate();
+            }
         }
+    }
 
-        return this;
+    protected override void _FixedUpdate() {
+        _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed);
     }
 }

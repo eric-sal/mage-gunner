@@ -47,7 +47,7 @@ public class PathfinderAI : MonoBehaviour {
         }
 
         //Start a new path to the targetPosition, return the result to the OnPathComplete function
-        _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);
+        RestartPath();
     }
 
     protected Waypoint _CurrentWaypoint {
@@ -112,9 +112,7 @@ public class PathfinderAI : MonoBehaviour {
         if (_currentNode >= _path.vectorPath.Count) {
             //End of path reached
             _UpdateTargetPosition();
-            _path = null;
-            _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);
-            _character.velocity = Vector2.zero;
+            RestartPath();
             return;
         }
     }
@@ -129,6 +127,15 @@ public class PathfinderAI : MonoBehaviour {
         } else {
             Debug.Log(p.errorLog);
         }
+    }
+
+    /// <summary>
+    /// Discard the current path, if any, and create a new path to the current targetPosition
+    /// </summary>
+    public void RestartPath() {
+        _path = null;
+        _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);
+        _character.velocity = Vector2.zero;
     }
 
     /// <summary>

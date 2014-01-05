@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class IdleBehavior : INpcBehavior {
+public class IdleBehavior : BaseBehavior {
 
-    public void doUpdate() {
+    public IdleBehavior(NpcController controller) : base(controller) { }
+
+    public override void doUpdate() {
         // Do nothing
     }
 
-    public void doFixedUpdate() {
+    public override void doFixedUpdate() {
         // Do nothing
     }
 }

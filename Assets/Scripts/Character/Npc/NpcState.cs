@@ -9,10 +9,13 @@ public class NpcState : BaseCharacterState {
     /* *** Member Variables *** */
 
     public bool anticipatePlayerMovement = true;    // Mostly for debugging. Can probably remove this later.
+    public bool canSeePlayer;   // Can we see the player?
+    public bool didSeePlayer;   // True when canSeePlayer changes from true to false, changes to False when we can see the player
     public int fieldOfVision;   // In degrees
 	public int lookSpeed = 2;   // How quickly the NPC looks at the player.
-    public float sightDistance;  // How far can the NPC see? TODO: distance is affected by NPC state. ie: see "further" when actively searching vs passive state.
-    public bool canSeePlayer;    // Can we see the player?
+    public Vector2 playerPosition; // Last known player position
+    public float sightDistance; // How far can the NPC see? TODO: distance is affected by NPC state. ie: see "further" when actively searching vs passive state.
+    public Vector2 startingPosition; // The NPC's starting position
 
     /* *** Member Methods *** */
 

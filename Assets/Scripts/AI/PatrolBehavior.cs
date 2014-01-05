@@ -1,17 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PatrolBehavior : INpcBehavior {
+public class PatrolBehavior : BaseBehavior {
 
-    protected NpcController _controller;
-
-    public PatrolBehavior(NpcController controller) {
-        _controller = controller;
-    }
+    public PatrolBehavior(NpcController controller) : base(controller) { }
 
     /* *** Interface Methods *** */
 
-    public void doUpdate() {
+    public override void doUpdate() {
         BaseCharacterState character = _controller.character;
 
         // If we can't see the player, aim in the direction we're moving.
@@ -29,7 +25,7 @@ public class PatrolBehavior : INpcBehavior {
         }
     }
 
-    public void doFixedUpdate() {
+    public override void doFixedUpdate() {
         _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed);
     }
 }

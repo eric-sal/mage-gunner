@@ -1,17 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class AttackBehavior : INpcBehavior {
+public class AttackBehavior : BaseBehavior {
 
-    protected NpcController _controller;
-
-    public AttackBehavior(NpcController controller) {
-        _controller = controller;
-    }
+    public AttackBehavior(NpcController controller) : base(controller) { }
 
     /* *** Interface Methods *** */
 
-    public void doUpdate() {
+    public override void doUpdate() {
         NpcState myState = _controller.myState;
 
         // If we can see the player, then aim at him.
@@ -30,7 +26,7 @@ public class AttackBehavior : INpcBehavior {
         }
     }
 
-    public void doFixedUpdate() {
+    public override void doFixedUpdate() {
         _controller.character.velocity = Vector2.zero;
     }
 }

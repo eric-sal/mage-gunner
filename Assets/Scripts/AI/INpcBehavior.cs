@@ -5,4 +5,6 @@ public interface INpcBehavior {
     void doUpdate();
 
     void doFixedUpdate();
+
+    INpcBehavior GetNextBehavior();
 }

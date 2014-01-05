@@ -36,14 +36,15 @@ public class NpcController : BaseCharacterController {
 
     public override void Awake() {
         base.Awake();
-        _currentBehavior = new IdleBehavior();
         // When checking to see if we can see the player, we want the ray to ignore projectiles.
         _layerMask = ((1 << LayerMask.NameToLayer("Players")) |
                       (1 << LayerMask.NameToLayer("Obstacles")) |
                       (1 << LayerMask.NameToLayer("Enemies")));
         _myState = (NpcState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();
+        _myState.startingPosition = _pathfinderAI.targetPosition = this.transform.position;
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
+        _currentBehavior = new IdleBehavior(this);
     }
 
     /* *** MonoBehaviour Methods *** */
@@ -54,13 +55,7 @@ public class NpcController : BaseCharacterController {
     public override void Update() {
         base.Update();
 
-        if (_myState.canSeePlayer) {
-            _currentBehavior = new AttackBehavior(this);
-        } else if (_pathfinderAI.firstWaypoint != null) {
-            _currentBehavior = new PatrolBehavior(this);
-        } else {
-            _currentBehavior = new IdleBehavior();
-        }
+        _currentBehavior = _currentBehavior.GetNextBehavior();
 
         _currentBehavior.doUpdate();
     }
@@ -97,8 +92,7 @@ public class NpcController : BaseCharacterController {
         LayerMask myLayer = gameObject.layer;
         gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 
-        _myState.canSeePlayer = false;
-        //_pathfinderAI.targetPosition = _playerState.transform.position;
+        bool canSeePlayer = false;
 
         RaycastHit2D hitInfo;
         Quaternion quato = Quaternion.LookRotation(_myState.lookDirection, Vector3.forward);
@@ -108,11 +102,19 @@ public class NpcController : BaseCharacterController {
             //Debug.DrawRay(this.transform.position, direction * _myState.sightDistance);
 
             hitInfo = Physics2D.Raycast(this.transform.position, direction, _myState.sightDistance, _layerMask);
-            if (hitInfo.collider == _playerState.gameObject.collider2D) {
-                _myState.canSeePlayer = true;
+            if (hitInfo.collider != null && Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
+                canSeePlayer = true;
+                _myState.playerPosition = _playerState.transform.position;
                 break;
             }
         }
+
+        if (canSeePlayer) {
+            _myState.didSeePlayer = false;
+        } else if (canSeePlayer != _myState.canSeePlayer) {
+            _myState.didSeePlayer = _myState.canSeePlayer && !canSeePlayer;
+        }
+        _myState.canSeePlayer = canSeePlayer;
 
         gameObject.layer = myLayer;
     }

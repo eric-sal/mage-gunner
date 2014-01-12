@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using Pathfinding;
 
@@ -9,62 +8,22 @@ using Pathfinding;
 /// </summary>
 public class PathfinderAI : MonoBehaviour {
 
-    const int FORWARD = 1;
-    const int BACKWARD = -1;
+    public delegate void OnEndOfPath(); // The signature of a function to call when the end of the current path is reached
 
     /* *** Member Variables *** */
 
-    public Waypoint firstWaypoint;  //The first waypoint to calculate the path to
     public Vector2 targetPosition;  //The end-point to move toward
 
     private BaseCharacterState _character;
     private int _currentNode = 0; //The node in the A-star pathfinding graph we are currently moving toward
-    private int _currentWaypoint = 0; //The waypoint object we are currently moving toward
-    private int _direction = FORWARD; //A 1 indicates we are moving "forwards" on the route and a -1 indicates "backwards"
     private Path _path;   //The calculated path
     private Seeker _seeker;
-    private List<Waypoint> _waypoints;
 
     /* *** Constructors *** */
 
     void Awake() {
         _character = GetComponent<BaseCharacterState>();
         _seeker = GetComponent<Seeker>();
-        _waypoints = new List<Waypoint>();
-    }
-
-    void Start() {
-
-        if (this.firstWaypoint != null) {
-
-            Waypoint next = this.firstWaypoint;
-            while (next != null) {
-                _waypoints.Add(next);
-                next = next.next;
-            }
-
-            this.targetPosition = _waypoints[_currentWaypoint].transform.position;
-        }
-
-        //Start a new path to the targetPosition, return the result to the OnPathComplete function
-        RestartPath();
-    }
-
-    protected Waypoint _CurrentWaypoint {
-        get {
-            return _waypoints[_currentWaypoint];
-        }
-    }
-
-    protected Waypoint _NextWaypoint {
-        get {
-            int nextWaypoint = _currentWaypoint + _direction;
-            if (nextWaypoint >= _waypoints.Count || nextWaypoint < 0) {
-                // change direction
-                nextWaypoint = _currentWaypoint + _direction * -1;
-            }
-            return _waypoints[nextWaypoint];
-        }
     }
 
     /* *** Member Methods *** */
@@ -75,7 +34,7 @@ public class PathfinderAI : MonoBehaviour {
     /// <param name='speed'>
     /// The speed at which to move.
     /// </param>
-    public void MoveAlongPath(float speed) {
+    public void MoveAlongPath(float speed, OnEndOfPath callback = null) {
 
         if (_path == null) {
             //We have no path to move along yet
@@ -109,18 +68,16 @@ public class PathfinderAI : MonoBehaviour {
 
         this.transform.position = position;
 
-        if (_currentNode >= _path.vectorPath.Count) {
+        if (_currentNode >= _path.vectorPath.Count && callback != null) {
             //End of path reached
-            _UpdateTargetPosition();
-            RestartPath();
-            return;
+            callback.Invoke();
         }
     }
 
     /// <summary>
     /// Callback sent to the Seeker.StartPath method.
     /// </summary>
-    public void OnPathComplete(Path p) {
+    public void OnPathCalculated(Path p) {
         if (!p.error) {
             _path = p;
             _currentNode = 0;    //Reset the waypoint counter
@@ -134,29 +91,7 @@ public class PathfinderAI : MonoBehaviour {
     /// </summary>
     public void RestartPath() {
         _path = null;
-        _seeker.StartPath(this.transform.position, this.targetPosition, OnPathComplete);
+        _seeker.StartPath(this.transform.position, this.targetPosition, OnPathCalculated);
         _character.velocity = Vector2.zero;
-    }
-
-    /// <summary>
-    /// Sets the target position equal to the next waypoint
-    /// </summary>
-    protected void _UpdateTargetPosition() {
-
-        if (_waypoints.Count == 0) {
-            return;
-        }
-
-        int nextWaypoint = _waypoints.IndexOf(_NextWaypoint);
-        _direction = nextWaypoint - _currentWaypoint;
-        _currentWaypoint = nextWaypoint;
-        _UpdateTargetPosition(_waypoints[_currentWaypoint].transform.position);
-    }
-
-    /// <summary>
-    /// Sets the target position to the given target location.
-    /// </summary>
-    protected void _UpdateTargetPosition(Vector2 target) {
-        this.targetPosition = target;
     }
 }

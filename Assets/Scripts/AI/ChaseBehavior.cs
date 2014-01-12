@@ -21,12 +21,16 @@ public class ChaseBehavior : BaseBehavior {
     
     protected void _HandleOnEndOfPath() {
         if (_isChasing) {
+            _isChasing = false;
+
             // If we don't have a PatrolBehavior, return to our starting position after
             // we've lost the player.
-            _ReturnToStartingPosition();
-        } else if (_controller.patrolBehavior != null) {
-            // If we have a PatrolBehavior, resume our patrol after we've lost the player.
-            _controller.patrolBehavior.Activate();
+            if (_controller.patrolBehavior != null) {
+                // If we have a PatrolBehavior, resume our patrol after we've lost the player.
+                _controller.patrolBehavior.Activate();
+            } else {
+                _ReturnToStartingPosition();
+            }
         } else {
             // we've reached our starting position, so deactivate ourselves
             Deactivate();
@@ -36,7 +40,6 @@ public class ChaseBehavior : BaseBehavior {
     protected void _ReturnToStartingPosition() {
         // We've reached the end of our path, return to our starting position
         PathfinderAI pathfinder = _controller.pathfinderAI;
-        _isChasing = false;
         pathfinder.targetPosition = _controller.myState.startingPosition;
         pathfinder.RestartPath();
     }

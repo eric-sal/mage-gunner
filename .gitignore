@@ -8,6 +8,7 @@
 *.sln
 *.userprefs
 *.pidb
+*.suo
 
 # OS-specific files
 .DS_Store

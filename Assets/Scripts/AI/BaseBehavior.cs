@@ -39,9 +39,7 @@ public class BaseBehavior : MonoBehaviour {
     /// </summary>
     public void Activate() {
         foreach (BaseBehavior b in _controller.behaviors) {
-            if (b.isActive) {
-                b.Deactivate();
-            }
+            b.Deactivate();
         }
 
         _Activate();
@@ -57,8 +55,10 @@ public class BaseBehavior : MonoBehaviour {
     /// Deactivates this behavior. Use as a cleanup method.
     /// </summary>
     public void Deactivate() {
-        _Deactivate();
-        this.isActive = false;
+        if (this.isActive) {
+            _Deactivate();
+            this.isActive = false;
+        }
     }
 
     /// <summary>

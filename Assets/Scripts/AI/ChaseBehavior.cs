@@ -3,8 +3,6 @@ using System.Collections;
 
 public class ChaseBehavior : BaseBehavior {
 
-    const float MIN_TARGET_DISTANCE = 1f;
-
     protected bool _isChasing;
 
     protected override void _Activate() {
@@ -17,34 +15,29 @@ public class ChaseBehavior : BaseBehavior {
         _controller.myState.didSeePlayer = false;
     }
 
-    protected override void _Update() {
-        NpcState myState = _controller.myState;
-        Vector2 diff;
-
+    protected override void _FixedUpdate() {
+        _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed, _HandleOnEndOfPath);
+    }
+    
+    protected void _HandleOnEndOfPath() {
         if (_isChasing) {
-            PathfinderAI pathfinder = _controller.pathfinderAI;
-            diff = pathfinder.targetPosition - (Vector2)_controller.transform.position;
-            if (diff.sqrMagnitude < MIN_TARGET_DISTANCE) {
-                // We've reached the end of our path, return to our starting position
-                _isChasing = false;
-                pathfinder.targetPosition = myState.startingPosition;
-                pathfinder.RestartPath();
-            }
+            // If we don't have a PatrolBehavior, return to our starting position after
+            // we've lost the player.
+            _ReturnToStartingPosition();
         } else if (_controller.patrolBehavior != null) {
             // If we have a PatrolBehavior, resume our patrol after we've lost the player.
             _controller.patrolBehavior.Activate();
         } else {
-            // If we don't have a PatrolBehavior, return to our starting position after
-            // we've lost the player.
-            diff = myState.startingPosition - (Vector2)_controller.transform.position;
-            if (diff.sqrMagnitude < MIN_TARGET_DISTANCE) {
-                // we've reached our starting position, so deactivate ourselves
-                Deactivate();
-            }
+            // we've reached our starting position, so deactivate ourselves
+            Deactivate();
         }
     }
 
-    protected override void _FixedUpdate() {
-        _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed);
+    protected void _ReturnToStartingPosition() {
+        // We've reached the end of our path, return to our starting position
+        PathfinderAI pathfinder = _controller.pathfinderAI;
+        _isChasing = false;
+        pathfinder.targetPosition = _controller.myState.startingPosition;
+        pathfinder.RestartPath();
     }
 }

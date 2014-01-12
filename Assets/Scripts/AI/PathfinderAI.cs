@@ -41,7 +41,7 @@ public class PathfinderAI : MonoBehaviour {
             return;
         }
 
-        //Determine how far we will advanced down the path during fixedDeltaTime
+        //Determine how far we will advance down the path during fixedDeltaTime
         float distanceRemaining = speed * Time.fixedDeltaTime; // the max distance we will move during FixedUpdate
         Vector3 position = this.transform.position;
 
@@ -68,9 +68,12 @@ public class PathfinderAI : MonoBehaviour {
 
         this.transform.position = position;
 
-        if (_currentNode >= _path.vectorPath.Count && callback != null) {
+        if (_currentNode >= _path.vectorPath.Count) {
             //End of path reached
-            callback.Invoke();
+            _character.velocity = Vector2.zero;
+            if (callback != null) {
+                callback.Invoke();
+            }
         }
     }
 

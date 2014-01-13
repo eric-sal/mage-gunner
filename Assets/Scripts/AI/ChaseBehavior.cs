@@ -23,24 +23,25 @@ public class ChaseBehavior : BaseBehavior {
         if (_isChasing) {
             _isChasing = false;
 
-            // If we don't have a PatrolBehavior, return to our starting position after
-            // we've lost the player.
             if (_controller.patrolBehavior != null) {
                 // If we have a PatrolBehavior, resume our patrol after we've lost the player.
                 _controller.patrolBehavior.Activate();
             } else {
+                // If we don't have a PatrolBehavior, return to our starting position after we've lost the player.
                 _ReturnToStartingPosition();
             }
         } else {
-            // we've reached our starting position, so deactivate ourselves
+            // We've reached our starting position, so deactivate ourselves, and look in the
+            // direction our startingPosition Waypoint tells us to look.
+            _controller.reticle.SetPosition(_controller.myState.startingPosition.lookPosition);
             Deactivate();
         }
     }
 
     protected void _ReturnToStartingPosition() {
-        // We've reached the end of our path, return to our starting position
+        // We've reached the end of our path, return to our starting position.
         PathfinderAI pathfinder = _controller.pathfinderAI;
-        pathfinder.targetPosition = _controller.myState.startingPosition;
+        pathfinder.targetPosition = _controller.myState.startingPosition.transform.position;
         pathfinder.RestartPath();
     }
 }

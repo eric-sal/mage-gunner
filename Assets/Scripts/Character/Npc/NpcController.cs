@@ -54,7 +54,12 @@ public class NpcController : BaseCharacterController {
                       (1 << LayerMask.NameToLayer("Enemies")));
         _myState = (NpcState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();
-        _myState.startingPosition = _pathfinderAI.targetPosition = this.transform.position;
+        if (_myState.startingPosition == null) {
+            // startingPosition should be a Waypoint. If it is null, we'll create a new Waypoint for this NPC on the fly.
+            _myState.startingPosition = Waypoint.Create(this.transform.position);
+            _myState.startingPosition.lookDirection = _myState.lookDirection;
+        }
+        _pathfinderAI.targetPosition = _myState.startingPosition.transform.position;
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
 
         _behaviors = GetComponents<BaseBehavior>();
@@ -152,13 +157,10 @@ public class NpcController : BaseCharacterController {
 
             if (_previousPlayerPosition != Vector2.zero) {
                 Vector2 deltaPosition = currentPlayerPosition - _previousPlayerPosition;
-                _estimatedPlayerVelocity = Vector2.ClampMagnitude(deltaPosition / Time.deltaTime, 1);
+                _estimatedPlayerVelocity = deltaPosition / Time.fixedDeltaTime;
             }
 
             _previousPlayerPosition = currentPlayerPosition;
-        } else {
-            _previousPlayerPosition = Vector2.zero;
-            _estimatedPlayerVelocity = Vector2.zero;
         }
     }
 }

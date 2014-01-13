@@ -16,6 +16,7 @@ public class NpcState : BaseCharacterState {
     public Vector2 playerPosition; // Last known player position
     public float sightDistance; // How far can the NPC see? TODO: distance is affected by NPC state. ie: see "further" when actively searching vs passive state.
     public Waypoint startingPosition; // The NPC's starting position
+    public float timeSinceDidSeePlayer; // How long has it been since we've seen the player?
 
     /* *** Member Methods *** */
 

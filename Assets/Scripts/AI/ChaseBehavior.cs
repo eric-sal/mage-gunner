@@ -13,6 +13,34 @@ public class ChaseBehavior : BaseBehavior {
 
     protected override void _Deactivate() {
         _controller.myState.didSeePlayer = false;
+        _controller.myState.timeSinceDidSeePlayer = 0;
+    }
+
+    protected override void _Update() {
+        Vector2 position = (Vector2)this.transform.position;
+        Vector2 lookAt = position + _controller.character.velocity; // Look in the direction we're moving.
+
+        if (_isChasing) {
+            // Since the raycast starts inside our enemy, we want to ignore ourself when casting the ray to find the player.
+            LayerMask myLayer = gameObject.layer;
+            gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+
+            Vector2 expectedPlayerPosition = _controller.expectedPlayerPosition;
+            Vector2 direction = expectedPlayerPosition - position;
+            RaycastHit2D hitInfo = Physics2D.Raycast(position, direction, direction.magnitude);
+            // Debug.DrawRay(position, direction);
+
+            // If we can we see the expectedPlayerPosition, then look at that point, otherwise
+            // look in the direction we're moving. Similar human behavior: looking around corner
+            // after existing the room you were in.
+            if (hitInfo.collider == null || hitInfo.point == expectedPlayerPosition) {
+                lookAt = expectedPlayerPosition;
+            }
+
+            gameObject.layer = myLayer;
+        }
+
+        _controller.reticle.LerpTo(lookAt, _controller.myState.lookSpeed);
     }
 
     protected override void _FixedUpdate() {

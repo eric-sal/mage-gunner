@@ -28,6 +28,32 @@ public class NpcController : BaseCharacterController {
         get { return _estimatedPlayerVelocity; }
     }
 
+    // The expectedPlayerPosition is where the NPC expects the player to be based on
+    // the last known player position, the estimated velocity, and the amount of time
+    // that has passed since they last saw the player.
+    public Vector2 expectedPlayerPosition {
+        get {
+            Vector2 expected;
+            Vector2 estimatedDistanceTraveled = estimatedPlayerVelocity * _myState.timeSinceDidSeePlayer;
+
+            // Since the NPC doesn't have any spatial reasoning, we'll fake it for them
+            // to hopefully make the NPCs *look* smart.
+            // Cast a ray from the last known player position to our expected player
+            // position. If we hit an obstacle, then we know that the player couldn't
+            // have moved through it. This may provide more info to the NPC than they
+            // would/should normally have, but the intention is to create the illusion
+            // of intelligence, so we'll live with it.
+            RaycastHit2D hitInfo = Physics2D.Raycast(_myState.playerPosition, estimatedDistanceTraveled, estimatedDistanceTraveled.magnitude);
+            if (hitInfo.collider != null) {
+                expected = hitInfo.point;
+            } else {
+                expected = _myState.playerPosition + estimatedDistanceTraveled;
+            }
+
+            return expected;
+        }
+    }
+
     public NpcState myState {
         get { return _myState; }
     }
@@ -142,6 +168,13 @@ public class NpcController : BaseCharacterController {
         } else if (canSeePlayer != _myState.canSeePlayer) {
             _myState.didSeePlayer = _myState.canSeePlayer && !canSeePlayer;
         }
+
+        if (_myState.didSeePlayer) {
+            _myState.timeSinceDidSeePlayer += Time.fixedDeltaTime;
+        } else {
+            _myState.timeSinceDidSeePlayer = 0;
+        }
+
         _myState.canSeePlayer = canSeePlayer;
 
         gameObject.layer = myLayer;

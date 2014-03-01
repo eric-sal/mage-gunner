@@ -53,9 +53,9 @@ public class PlayerCharacterController : BaseCharacterController {
 
             // Cycle through weapons
             if (Input.GetButtonDown("Next Weapon")) {
-                _inventory.NextWeapon();
+                EquipWeapon(_inventory.NextWeapon());
             } else if (Input.GetButtonDown("Previous Weapon")) {
-                _inventory.PreviousWeapon();
+                EquipWeapon(_inventory.PreviousWeapon());
             }
         }
     }

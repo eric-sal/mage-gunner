@@ -72,6 +72,18 @@ public abstract class BaseCharacterController : MonoBehaviour {
     /* *** Member Methods *** */
 
     /// <summary>
+    /// Equip the passed in firearm
+    /// </summary>
+    /// <param name='firearm'>
+    /// The firearm to equip.
+    /// </param>
+    public void EquipWeapon(Firearm firearm) {
+        _character.equippedFirearm = firearm;
+        _reticle.ResetRecoil();
+        _reticle.updateReticlePosition = firearm.recoilMovesReticle;
+    }
+
+    /// <summary>
     /// Fires the currently equipped firearm, and applies the recoil
     /// to the reticle.
     /// </summary>

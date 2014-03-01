@@ -23,6 +23,12 @@ public class Inventory : MonoBehaviour {
     public List<InventoryItem> values;
     private Dictionary<string,InventoryItem> _inventory;
 
+    /* *** Properties *** */
+
+    public Firearm CurrentFirearm {
+        get { return _firearms[_currentFirearmIndex].instance.GetComponent<Firearm>(); }
+    }
+
     /* *** Constructors *** */
 
     void Awake() {
@@ -35,7 +41,7 @@ public class Inventory : MonoBehaviour {
 
     void Start() {
         if (_firearms.Count > 0) {
-            SetWeapon(_currentFirearmIndex);
+            _controller.EquipWeapon(this.CurrentFirearm);
         }
     }
 
@@ -86,34 +92,24 @@ public class Inventory : MonoBehaviour {
     /// <summary>
     /// Cycle to the next weapon.
     /// </summary>
-    public void NextWeapon() {
+    public Firearm NextWeapon() {
         _currentFirearmIndex += 1;
         if (_currentFirearmIndex >= _firearms.Count) {
             _currentFirearmIndex = 0;
         }
 
-        SetWeapon(_currentFirearmIndex);
+        return this.CurrentFirearm;
     }
 
     /// <summary>
     /// Cycle to the previous weapon.
     /// </summary>
-    public void PreviousWeapon() {
+    public Firearm PreviousWeapon() {
         _currentFirearmIndex -= 1;
         if (_currentFirearmIndex < 0) {
             _currentFirearmIndex = _firearms.Count - 1;
         }
 
-        SetWeapon(_currentFirearmIndex);
-    }
-
-    /// <summary>
-    /// Cycle to the weapon at the specified index.
-    /// </summary>
-    /// <param name='index'>
-    /// The index of the weapon to use.
-    /// </param>
-    public void SetWeapon(int index) {
-        _controller.character.equippedFirearm = _firearms[index].instance.GetComponent<Firearm>();
+        return this.CurrentFirearm;
     }
 }

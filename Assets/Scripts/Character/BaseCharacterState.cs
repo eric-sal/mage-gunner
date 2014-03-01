@@ -32,17 +32,6 @@ public abstract class BaseCharacterState : MonoBehaviour {
     }
 
     /// <summary>
-    /// Gets the recoil reduction amount.
-    /// Directly related to the strength of the player.
-    /// </summary>
-    /// <returns>
-    /// The recoil reduction.
-    /// </returns>
-    public float GetRecoilReduction() {
-        return this.strength * 0.05f;
-    }
-
-    /// <summary>
     /// Reduce the player's health by the specified amout of damage.
     /// </summary>
     /// <param name='damage'>

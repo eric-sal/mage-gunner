@@ -6,6 +6,8 @@ using System.Collections;
 /// </summary>
 public class ReticleController : MonoBehaviour {
 
+    const float RETICLE_DECELERATION = 0.1f;
+
     /* *** Member Variables *** */
 
     public bool constrainToScreen = false;
@@ -37,6 +39,7 @@ public class ReticleController : MonoBehaviour {
         if (this.updateReticlePosition) {
             SetPosition(this.OffsetPosition);
         }
+        ReduceRecoil(RETICLE_DECELERATION);
     }
 
     void OnDrawGizmos() {
@@ -103,7 +106,7 @@ public class ReticleController : MonoBehaviour {
     /// <param name='recoil'>
     /// The amount of recoil to apply.
     /// </param>
-    public void ApplyRecoil(Vector2 recoil) {
+    public void AddRecoil(Vector2 recoil) {
         _recoil += recoil;
     }
 

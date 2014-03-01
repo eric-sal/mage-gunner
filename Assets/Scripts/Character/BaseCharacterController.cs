@@ -65,9 +65,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
         _animator.SetFloat("inputY", direction.y);
     }
 
-    public virtual void FixedUpdate() {
-        _reticle.ReduceRecoil(_character.GetRecoilReduction());
-    }
+    public virtual void FixedUpdate() { }
 
     /* *** Member Methods *** */
 
@@ -105,6 +103,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
             recoil = Vector2.zero;
         }
 
-        _reticle.ApplyRecoil(recoil);
+        _reticle.AddRecoil(recoil);
     }
 }

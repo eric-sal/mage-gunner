@@ -80,8 +80,19 @@ public abstract class BaseCharacterController : MonoBehaviour {
     }
 
     protected void _Fire() {
-        Vector2 bulletVector = _reticle.transform.position - this.transform.position;
+        Vector2 bulletVector = _reticle.OffsetPosition - (Vector2)this.transform.position;
         Vector2 recoil = _character.equippedFirearm.Fire(bulletVector);
+
+        // TODO: Extract into a generic utility function. Similar functionality to ReduceRecoil.
+        float magBefore = recoil.sqrMagnitude;
+        recoil -= recoil.normalized * (_character.strength / 2);
+        float magAfter = recoil.sqrMagnitude;
+
+        if (magAfter > magBefore) {
+            // slid too far in the opposite direction
+            recoil = Vector2.zero;
+        }
+
         _reticle.ApplyRecoil(recoil);
     }
 }

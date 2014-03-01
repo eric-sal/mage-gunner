@@ -9,9 +9,19 @@ public class ReticleController : MonoBehaviour {
     /* *** Member Variables *** */
 
     public bool constrainToScreen = false;
+    public bool updateReticlePosition = false;
     public bool visible = false;
 
     private Vector2 _recoil;
+
+    /// <summary>
+    /// The position of the reticle offset by our recoil.
+    /// It represents the position at which the next bullet will fire.
+    /// This isn't ever actually drawn onscreen.
+    /// </summary>
+    public Vector2 OffsetPosition {
+        get { return (Vector2)this.transform.position + _recoil; }
+    }
 
     /* *** Constructors *** */
 
@@ -22,9 +32,16 @@ public class ReticleController : MonoBehaviour {
     }
 
     /* *** MonoBehaviour Methods *** */
-	
+
     void FixedUpdate() {
-        SetPosition((Vector2)this.transform.position + _recoil);
+        if (this.updateReticlePosition) {
+            SetPosition(this.OffsetPosition);
+        }
+    }
+
+    void OnDrawGizmos() {
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(this.OffsetPosition, 0.5f);
     }
 
     /* *** Member Methods *** */
@@ -105,5 +122,9 @@ public class ReticleController : MonoBehaviour {
             // slid too far in the opposite direction
             _recoil = Vector2.zero;
         }
+    }
+
+    public void ResetRecoil() {
+        _recoil = Vector2.zero;
     }
 }

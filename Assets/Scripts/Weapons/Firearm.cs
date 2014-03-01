@@ -36,6 +36,7 @@ public class Firearm : MonoBehaviour {
     public int numProjectiles = 1;  // How many bullets do we spawn when the trigger is pulled? Defaults to 1. Different than ammoConsumed. Buckshot spawns many projectiles but consumes 1 round.
     public float rateOfFire;        // The number of rounds per minute.
     public float recoil;            // Closer to 0 is less recoil.
+    public bool recoilMovesReticle; // When firing, the recoil from this weapon updates the transform of the reticle.
     public AudioClip reloadSound; // The sound clip to play when reloading
     public float scatterVariation;  // In degrees. Closer to 0 is less scatter.
 

@@ -27,6 +27,8 @@ public class PlayerCharacterController : BaseCharacterController {
     /// Capture input from the player.
     /// </summary>
     public override void Update() {
+        float mouseSensitivity = PlayerPrefs.GetFloat("MouseSensitivity");
+
         base.Update();
 
         if (this.isPlayerInputEnabled) {
@@ -35,7 +37,7 @@ public class PlayerCharacterController : BaseCharacterController {
             _verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
 
             // Aim: Move the player's reticle.
-            var mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+            var mouseDelta = new Vector2(Input.GetAxis("Mouse X") * mouseSensitivity, Input.GetAxis("Mouse Y") * mouseSensitivity);
             _reticle.MoveBy(mouseDelta);
 
             // Fire the equipped weapon

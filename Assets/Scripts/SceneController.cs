@@ -10,12 +10,14 @@ public class SceneController : MonoBehaviour {
     /* *** Member Variables *** */
 
     public static bool isPaused = false;
+    private PauseMenu _pauseMenu;
 
     /* *** Constructors *** */
 
     void Awake() {
         // Hide the OS cursor
         Screen.lockCursor = true;
+        _pauseMenu = GetComponent<PauseMenu>();
     }
 
     /* *** MonoBehaviour Methods *** */
@@ -23,14 +25,15 @@ public class SceneController : MonoBehaviour {
     void Update() {
         if (Input.GetKeyDown("escape")) {
             // Pause the game and unlock the cursor
-            Screen.lockCursor = false;
-            isPaused = true;
-            Time.timeScale = 0f; // Stop time - pause movement
-        } else if (Input.GetMouseButtonDown(0)) {
-            // Unpause when the screen receives focus again
-            Screen.lockCursor = true;
-            isPaused = false;
-            Time.timeScale = 1f; // Restart time
+            Screen.lockCursor = !Screen.lockCursor;
+            isPaused = !isPaused;
+            _pauseMenu.enabled = !_pauseMenu.enabled;
+
+            if (isPaused) {
+                Time.timeScale = 0f; // Stop time - pause movement
+            } else {
+                Time.timeScale = 1f; // Restart time
+            }
         }
     }
 }

@@ -6,23 +6,23 @@ using System.Collections;
 /// </summary>
 public class ReticleController : MonoBehaviour {
 
-    const float RETICLE_DECELERATION = 0.1f;
-
     /* *** Member Variables *** */
 
     public bool constrainToScreen = false;
-    public bool updateReticlePosition = false;
+    public bool willUpdateReticlePosition = false;
     public bool visible = false;
 
+    private BaseCharacterState _character;
     private Vector2 _recoil;
 
     /// <summary>
     /// The position of the reticle offset by our recoil.
-    /// It represents the position at which the next bullet will fire.
+    /// It represents the position at which the next bullet will fire
+    /// which isn't necessarily the same position where the player sees the reticle.
     /// This isn't ever actually drawn onscreen.
     /// </summary>
-    public Vector2 OffsetPosition {
-        get { return (Vector2)this.transform.position + _recoil; }
+    public Vector2 ActualTargetPosition {
+        get { return (Vector2)this.transform.position + _recoil * Time.fixedDeltaTime; }
     }
 
     /* *** Constructors *** */
@@ -31,20 +31,29 @@ public class ReticleController : MonoBehaviour {
         _recoil = Vector2.zero;
 
         GetComponent<SpriteRenderer>().enabled = visible;
+
+        _character = this.transform.parent.gameObject.GetComponent<BaseCharacterState>();
+        if (_character == null) {
+            string errMsg = "The game object for {0} requires a BaseCharacterState component!";
+            throw new MissingComponentException(string.Format(errMsg, this.gameObject.name));
+        }
     }
 
     /* *** MonoBehaviour Methods *** */
 
     void FixedUpdate() {
-        if (this.updateReticlePosition) {
-            SetPosition(this.OffsetPosition);
+        // Reduce recoil before it moves the reticle.
+        // This way, the reticle will not move for high strength
+        // characters that are shooting low recoil weapons.
+        ReduceRecoil(_character.recoilReductionRate);
+        if (this.willUpdateReticlePosition) {
+            SetPosition(this.ActualTargetPosition);
         }
-        ReduceRecoil(RETICLE_DECELERATION);
     }
 
     void OnDrawGizmos() {
         Gizmos.color = Color.green;
-        Gizmos.DrawSphere(this.OffsetPosition, 0.5f);
+        Gizmos.DrawSphere(this.ActualTargetPosition, 0.5f);
     }
 
     /* *** Member Methods *** */

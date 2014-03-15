@@ -101,7 +101,8 @@ public class Firearm : MonoBehaviour {
         float x = UnityEngine.Random.Range(-1f, 1f);
         float y = UnityEngine.Random.Range(-1f, 1f);
         var direction = new Vector2(x, y).normalized;
-        return direction * this.recoil;
+        float magnitude = (this.recoil + 1) * 2;
+        return direction * magnitude;
     }
 
     /// <summary>

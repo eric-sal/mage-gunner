@@ -16,8 +16,13 @@ public abstract class BaseCharacterState : MonoBehaviour {
     public int health;
     public Vector2 lookDirection;  // Direction the character is looking.
     public float maxWalkSpeed;
-    public int strength;
+    public int strength; // 10 is average strength
     public Vector2 velocity;
+
+    public float recoilReductionRate {
+        // TODO: Figure out how to do this correctly
+        get { return (5 * this.strength + 8) * Time.fixedDeltaTime; }
+    }
 
     /* *** Member Methods *** */
 

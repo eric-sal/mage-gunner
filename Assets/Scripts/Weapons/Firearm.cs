@@ -25,7 +25,7 @@ public class Firearm : MonoBehaviour {
     /* *** Member Variables *** */
 
     public int ammoConsumed = 1;    // How many rounds does this use up when fired? Burst fire weapons and double-barreled shotguns would have a value > 1.
-    public float bulletForce;   // The force with which the bullet is fired. force = mass x velocity
+    public float bulletVelocity;   // The velocity with which the bullet leaves the firearm (Unity caps the max value at 100)
     public AudioClip dryFireSound; // The sound clip to play when firing but the magazine is empty
     public FireType fireType;
     public AudioClip[] firingSounds; // Different sound clips to play when firing a bullet from this firearm
@@ -260,7 +260,7 @@ public class Firearm : MonoBehaviour {
         ProjectileState bulletState = bullet.GetComponent<ProjectileState>();
         bulletState.spawner = _character.gameObject;
         bulletState.damage = _RollForDamage();
-        bulletState.rigidbody2D.AddForce(Vector2.ClampMagnitude(direction, 1) * this.bulletForce);
+        bulletState.rigidbody2D.velocity = Vector2.ClampMagnitude(direction, 1) * this.bulletVelocity;
     }
 
     /// <summary>

@@ -19,11 +19,11 @@ public class CharacterCollisionHandler : MonoBehaviour {
     /* *** MonoBehaviour Methods *** */
 
     public virtual void OnCollisionEnter2D(Collision2D collision) {
-//        Debug.Log(string.Format("{0} hit {1}", gameObject.name, collision.gameObject.name));
+        // Debug.Log(string.Format("{0} hit {1}", gameObject.name, collision.gameObject.name));
     }
 
     public virtual void OnTriggerEnter2D(Collider2D other) {
-//        Debug.Log(string.Format("{0} triggered {1}", gameObject.name, other.gameObject.name));
+        // Debug.Log(string.Format("{0} triggered {1}", gameObject.name, other.gameObject.name));
 
         switch (other.gameObject.tag) {
         case "Projectiles":

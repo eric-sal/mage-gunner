@@ -80,12 +80,6 @@ public class NpcController : BaseCharacterController {
                       (1 << LayerMask.NameToLayer("Enemies")));
         _myState = (NpcState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();
-        if (_myState.startingPosition == null) {
-            // startingPosition should be a Waypoint. If it is null, we'll create a new Waypoint for this NPC on the fly.
-            _myState.startingPosition = Waypoint.Create(this.transform.position);
-            _myState.startingPosition.lookDirection = _myState.lookDirection;
-        }
-        _pathfinderAI.targetPosition = _myState.startingPosition.transform.position;
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
 
         _behaviors = GetComponents<BaseBehavior>();
@@ -93,6 +87,12 @@ public class NpcController : BaseCharacterController {
         _chaseBehavior = GetComponent<ChaseBehavior>();
         _idleBehavior = GetComponent<IdleBehavior>();
         _patrolBehavior = GetComponent<PatrolBehavior>();
+    }
+
+    public void Start() {
+        if (_pathfinderAI != null) {
+            _pathfinderAI.targetPosition = _myState.startingPosition.transform.position;
+        }
     }
 
     /* *** MonoBehaviour Methods *** */

@@ -18,6 +18,16 @@ public class NpcState : BaseCharacterState {
     public Waypoint startingPosition; // The NPC's starting position
     public float timeSinceDidSeePlayer; // How long has it been since we've seen the player?
 
+    /* *** Constructors *** */
+
+    public void Awake() {
+        if (this.startingPosition == null) {
+            // startingPosition should be a Waypoint. If it is null, we'll create a new Waypoint for this NPC on the fly.
+            this.startingPosition = Waypoint.Create(this.transform.position);
+            this.startingPosition.lookDirection = this.lookDirection;
+        }
+    }
+
     /* *** Member Methods *** */
 
     /// <summary>

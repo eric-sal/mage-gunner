@@ -47,6 +47,6 @@ public class Waypoint : MonoBehaviour {
     }
 
     public override string ToString() {
-        return string.Format("{0} : @ {2}", this.name, this.transform.position);
+        return string.Format("{0} : @ {1}", this.name, this.transform.position);
     }
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class ChaseBehavior : BaseBehavior {
@@ -7,7 +7,7 @@ public class ChaseBehavior : BaseBehavior {
 
     protected override void _Activate() {
         _isChasing = true;
-        _controller.pathfinderAI.targetPosition = _controller.myState.playerPosition;
+        _controller.pathfinderAI.targetPosition = _controller.myState.lastKnownPlayerPosition;
         _controller.pathfinderAI.RestartPath();
     }
 

@@ -43,11 +43,11 @@ public class NpcController : BaseCharacterController {
             // have moved through it. This may provide more info to the NPC than they
             // would/should normally have, but the intention is to create the illusion
             // of intelligence, so we'll live with it.
-            RaycastHit2D hitInfo = Physics2D.Raycast(_myState.playerPosition, estimatedDistanceTraveled, estimatedDistanceTraveled.magnitude);
+            RaycastHit2D hitInfo = Physics2D.Raycast(_myState.lastKnownPlayerPosition, estimatedDistanceTraveled, estimatedDistanceTraveled.magnitude);
             if (hitInfo.collider != null) {
                 expected = hitInfo.point;
             } else {
-                expected = _myState.playerPosition + estimatedDistanceTraveled;
+                expected = _myState.lastKnownPlayerPosition + estimatedDistanceTraveled;
             }
 
             return expected;
@@ -158,7 +158,7 @@ public class NpcController : BaseCharacterController {
             hitInfo = Physics2D.Raycast(this.transform.position, direction, _myState.sightDistance, _layerMask);
             if (hitInfo.collider != null && Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
                 canSeePlayer = true;
-                _myState.playerPosition = _playerState.transform.position;
+                _myState.lastKnownPlayerPosition = _playerState.transform.position;
                 break;
             }
         }

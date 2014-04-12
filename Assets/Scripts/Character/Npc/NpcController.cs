@@ -148,18 +148,32 @@ public class NpcController : BaseCharacterController {
 
         bool canSeePlayer = false;
 
-        RaycastHit2D hitInfo;
-        Quaternion quato = Quaternion.LookRotation(_myState.lookDirection, Vector3.forward);
+        Vector3 playerPosition = _playerState.transform.position;
+        Vector3 npcPosition = this.transform.position;
+        Vector2 npcToPlayerVector = _playerState.transform.position - this.transform.position;
+        float halfFieldOfVision = _myState.fieldOfVision / 2;
 
-        for (int i = _myState.fieldOfVision / 2 * -1; i < _myState.fieldOfVision / 2; i++) {
-            Vector3 direction = quato * Quaternion.Euler(0, i, 0) * Vector3.forward;
-            //Debug.DrawRay(this.transform.position, direction * _myState.sightDistance);
+        //Debug.DrawRay(npcPosition, _myState.lookDirection, Color.green);
+        //Debug.DrawRay(npcPosition, npcToPlayerVector, Color.red);
 
-            hitInfo = Physics2D.Raycast(this.transform.position, direction, _myState.sightDistance, _layerMask);
-            if (hitInfo.collider != null && Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
-                canSeePlayer = true;
-                _myState.lastKnownPlayerPosition = _playerState.transform.position;
-                break;
+        // field of vision lines
+        //Quaternion leftRotation = Quaternion.AngleAxis(-halfFieldOfVision, Vector3.forward);
+        //Debug.DrawRay(npcPosition, leftRotation * _myState.lookDirection, Color.white);
+        //Quaternion rightRotation = Quaternion.AngleAxis(halfFieldOfVision, Vector3.forward);
+        //Debug.DrawRay(npcPosition, rightRotation * _myState.lookDirection, Color.white);
+
+        float angle = Vector2.Angle(_myState.lookDirection, npcToPlayerVector); // 0 to 180
+        if (angle <= halfFieldOfVision) {
+            float distance = Vector3.Distance(npcPosition, playerPosition);
+            if (distance <= _myState.sightDistance) {
+                // player is close enough and in the field of view
+                // is there anything obstructing our view of the player?
+                RaycastHit2D hitInfo;
+                hitInfo = Physics2D.Raycast(npcPosition, npcToPlayerVector, _myState.sightDistance, _layerMask);
+                if (hitInfo.collider != null && Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
+                    canSeePlayer = true;
+                    _myState.lastKnownPlayerPosition = _playerState.transform.position;
+                }
             }
         }
 

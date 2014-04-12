@@ -8,9 +8,9 @@ public class AttackBehavior : BaseBehavior {
     protected override void _Update() {
         NpcState myState = _controller.myState;
 
-        // If we can see the player, then aim at him.
-        Vector2 playerPosition = (Vector2)_controller.playerState.transform.position + _controller.estimatedPlayerVelocity;
-        _controller.reticle.LerpTo(playerPosition, myState.lookSpeed);
+        // If we can see the player, then aim at him - with a little bit of a lead.
+        Vector2 playerPosition = (Vector2)_controller.playerState.transform.position + (_controller.estimatedPlayerVelocity * Time.fixedDeltaTime * 10);
+        _controller.reticle.SetPosition(playerPosition);
 
         // Fire the equipped weapon
         var gun = myState.equippedFirearm;

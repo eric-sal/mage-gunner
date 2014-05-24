@@ -41,15 +41,26 @@ public class PlayerCharacterController : BaseCharacterController {
             _reticle.MoveBy(mouseDelta);
 
             // Fire the equipped weapon
-            Firearm gun = _character.equippedFirearm;
-            if (gun != null) {
-                if (gun.fullAuto && Input.GetButton("Fire1") ||
-                    !gun.fullAuto && Input.GetButtonDown("Fire1")) {
-                    // If full-auto is enabled and the player is holding down the fire button, or
-                    // if the firearm only allows for semi-auto fire, and the player clicks the fire button.
-                    _Fire();
-                } else if (Input.GetButton("Reload")) {
-                    gun.Reload();
+//            Firearm gun = _character.equippedFirearm;
+//            if (gun != null) {
+//                if (gun.fullAuto && Input.GetButton("Fire1") ||
+//                    !gun.fullAuto && Input.GetButtonDown("Fire1")) {
+//                    // If full-auto is enabled and the player is holding down the fire button, or
+//                    // if the firearm only allows for semi-auto fire, and the player clicks the fire button.
+//                    _Fire();
+//                } else if (Input.GetButton("Reload")) {
+//                    gun.Reload();
+//                }
+//            }
+            if (Input.GetButton("Fire1")) {
+                var grenade = GameObject.Find("Grenade");
+                if (grenade.rigidbody.velocity == Vector3.zero) {
+                    var direction = _character.lookDirection.normalized * 8;
+                    //grenade.rigidbody.AddForce();
+                    var p = grenade.transform.position;
+                    var position = new Vector3(p.x, p.y + 0.4f, p.z);
+                    grenade.rigidbody.AddForceAtPosition(new Vector3(direction.x, direction.y, -30),
+                                                         position);
                 }
             }
 
@@ -66,9 +77,9 @@ public class PlayerCharacterController : BaseCharacterController {
     /// Update the player's velocity.
     /// </summary>
     public override void FixedUpdate() {
-        var velocity = new Vector2(_horizontalInput, _verticalInput);
-        _character.velocity = Vector2.ClampMagnitude(velocity * _character.maxWalkSpeed, _character.maxWalkSpeed);
-        this.rigidbody2D.velocity = new Vector2(_character.velocity.x, _character.velocity.y);
+        var velocity = new Vector3(_horizontalInput, _verticalInput);
+        _character.velocity = Vector3.ClampMagnitude(velocity * _character.maxWalkSpeed, _character.maxWalkSpeed);
+        this.rigidbody.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
         base.FixedUpdate();
     }
 }

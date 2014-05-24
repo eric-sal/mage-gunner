@@ -15,7 +15,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     /* *** Member Variables *** */
 
-    protected Animator _animator;
     protected BaseCharacterState _character;
     protected Inventory _inventory;
     protected ReticleController _reticle;
@@ -34,9 +33,9 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     /* *** Constructors *** */
     public virtual void Awake() {
-        _animator = GetComponentInChildren<Animator>();
         _character = GetComponent<BaseCharacterState>();
         _inventory = GetComponentInChildren<Inventory>();
+        this.rigidbody.useGravity = false;
 
         // Create a reticle for this character.
         GameObject reticlePrefab = (GameObject)Resources.Load("Prefabs/Reticle");
@@ -52,17 +51,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     public virtual void Update() {
         _character.LookAt(_reticle.transform.position);
-
-        bool isWalking = _character.velocity != Vector2.zero;
-        _animator.SetBool("walking", isWalking);
-        
-        Vector2 direction = _character.lookDirection.normalized;
-        Vector3 localScale = _animator.transform.localScale;
-        localScale.x = direction.x < 0 ? -1 : 1;
-        _animator.transform.localScale = localScale;
-        
-        _animator.SetFloat("inputX", Mathf.Abs(direction.x));
-        _animator.SetFloat("inputY", direction.y);
     }
 
     public virtual void FixedUpdate() { }

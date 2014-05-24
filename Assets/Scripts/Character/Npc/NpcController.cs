@@ -14,7 +14,8 @@ public class NpcController : BaseCharacterController {
     protected Vector2 _estimatedPlayerVelocity;
     protected IdleBehavior _idleBehavior;
     protected PathfinderAI _pathfinderAI;
-    protected int _layerMask;
+    protected int _lineOfSightLayerMask;
+    protected int _lineOfFireLayerMask;
     protected NpcState _myState;
     protected PatrolBehavior _patrolBehavior;
     protected PlayerState _playerState;
@@ -75,9 +76,9 @@ public class NpcController : BaseCharacterController {
     public override void Awake() {
         base.Awake();
         // When checking to see if we can see the player, we want the ray to ignore projectiles.
-        _layerMask = ((1 << LayerMask.NameToLayer("Players")) |
-                      (1 << LayerMask.NameToLayer("Obstacles")) |
-                      (1 << LayerMask.NameToLayer("Enemies")));
+        _lineOfSightLayerMask = ((1 << LayerMask.NameToLayer("Players")) | (1 << LayerMask.NameToLayer("FullCover")) | (1 << LayerMask.NameToLayer("Enemies")));
+        _lineOfFireLayerMask = _lineOfSightLayerMask | (1 << LayerMask.NameToLayer("HalfCover"));
+
         _myState = (NpcState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();
         _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
@@ -169,7 +170,7 @@ public class NpcController : BaseCharacterController {
                 // player is close enough and in the field of view
                 // is there anything obstructing our view of the player?
                 RaycastHit2D hitInfo;
-                hitInfo = Physics2D.Raycast(npcPosition, npcToPlayerVector, _myState.sightDistance, _layerMask);
+                hitInfo = Physics2D.Raycast(npcPosition, npcToPlayerVector, _myState.sightDistance, _lineOfSightLayerMask);
                 if (hitInfo.collider != null && Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
                     canSeePlayer = true;
                     _myState.lastKnownPlayerPosition = _playerState.transform.position;

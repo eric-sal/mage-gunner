@@ -14,6 +14,7 @@ public abstract class BaseCharacterState : MonoBehaviour {
 
     public Firearm equippedFirearm;
     public int health;
+    public bool kneeling = false;
     public Vector2 lookDirection;  // Direction the character is looking.
     public float maxWalkSpeed;
     public int strength; // 10 is average strength

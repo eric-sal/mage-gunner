@@ -53,9 +53,38 @@ public abstract class BaseCharacterController : MonoBehaviour {
         _character.LookAt(_reticle.transform.position);
     }
 
-    public virtual void FixedUpdate() { }
+    public virtual void FixedUpdate() {
+    }
 
     /* *** Member Methods *** */
+
+    public void Kneel() {
+        if (!_character.kneeling) {
+            Vector3 scale = this.transform.localScale;
+            Vector3 halfHeight = new Vector3(scale.x, scale.y, scale.z / 2);
+            this.transform.localScale = halfHeight;
+
+            Vector3 position = this.transform.position;
+            Vector3 newPosition = new Vector3(position.x, position.y, position.z + halfHeight.z / 2);
+            this.transform.position = newPosition;
+
+            _character.kneeling = true;
+        }
+    }
+
+    public void Stand() {
+        if (_character.kneeling) {
+            Vector3 scale = this.transform.localScale;
+            Vector3 fullHeight = new Vector3(scale.x, scale.y, scale.z * 2);
+            this.transform.localScale = fullHeight;
+
+            Vector3 position = this.transform.position;
+            Vector3 newPosition = new Vector3(position.x, position.y, position.z - fullHeight.z / 4);
+            this.transform.position = newPosition;
+
+            _character.kneeling = false;
+        }
+    }
 
     /// <summary>
     /// Equip the passed in firearm

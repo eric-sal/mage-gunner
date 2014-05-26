@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class CoverCollisionSensorController : MonoBehaviour {
     public CoverCollisionSensor neSensor;
@@ -17,11 +18,7 @@ public class CoverCollisionSensorController : MonoBehaviour {
 	
     void Update() {
         if (_inCover()) {
-            if (!_wasInCover) {
-                _controller.Kneel();
-                this._activateCover();
-            }
-
+            _controller.Kneel();
             _wasInCover = true;
         } else if (_wasInCover) {
             _controller.Stand();
@@ -29,32 +26,46 @@ public class CoverCollisionSensorController : MonoBehaviour {
         }
     }
 
-    private void _activateCover() {
-        List<CoverController> covers = new List<CoverController>();
-        covers.AddRange(neSensor.Covers);
-        covers.AddRange(nwSensor.Covers);
-        covers.AddRange(seSensor.Covers);
-        covers.AddRange(swSensor.Covers);
-
+    private void _activateCover(IEnumerable<CoverController> covers) {
         foreach (CoverController cover in covers) {
             cover.Activate();
         }
     }
 
     private bool _collidedNorth() {
-        return neSensor.Triggered && nwSensor.Triggered;
+        bool triggered = neSensor.Triggered && nwSensor.Triggered;
+        if (triggered) {
+            this._activateCover(neSensor.Covers.Union(nwSensor.Covers));
+        }
+
+        return triggered;
     }
 
     private bool _collidedSouth() {
-        return seSensor.Triggered && swSensor.Triggered;
+        bool triggered = seSensor.Triggered && swSensor.Triggered;
+        if (triggered) {
+            this._activateCover(seSensor.Covers.Union(swSensor.Covers));
+        }
+
+        return triggered;
     }
     
     private bool _collidedEast() {
-        return neSensor.Triggered && seSensor.Triggered;
+        bool triggered = neSensor.Triggered && seSensor.Triggered;
+        if (triggered) {
+            this._activateCover(neSensor.Covers.Union(seSensor.Covers));
+        }
+
+        return triggered;
     }
     
     private bool _collidedWest() {
-        return nwSensor.Triggered && swSensor.Triggered;
+        bool triggered = nwSensor.Triggered && swSensor.Triggered;
+        if (triggered) {
+            this._activateCover(nwSensor.Covers.Union(swSensor.Covers));
+        }
+
+        return triggered;
     }
     
     private bool _inCover() {

@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CoverCollisionSensor : MonoBehaviour {
-    private List<Collider> _others = new List<Collider>();    // Everything this trigger is colliding with
+    private List<CoverController> _covers = new List<CoverController>();    // Everything this trigger is colliding with
     private bool _triggered = false;
     
-    public List<Collider> Others {
-        get { return _others; }
+    public List<CoverController> Covers {
+        get { return _covers; }
     }
     
     public bool Triggered {
@@ -16,24 +16,28 @@ public class CoverCollisionSensor : MonoBehaviour {
     
     void OnDrawGizmos() {
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(this.transform.position, 0.1f);
+        Gizmos.DrawSphere(this.transform.position, 0.05f);
     }
 
     public void OnTriggerEnter(Collider other) {
-        if (other.CompareTag("Player")) {
-            return;
+        if (other.CompareTag("Cover")) {
+            _triggered = true;
+            _covers.Add(other.GetComponent<CoverController>());
         }
-        
-        _triggered = true;
-        _others.Add(other);
     }
 
+    /// <summary>
+    /// Untriggers the sensor and deactivates the cover it *was* touching.
+    /// We can deactivate cover here because both sensors MUST be touching
+    /// the cover in order for it to be activated.
+    /// </summary>
     public void OnTriggerExit(Collider other) {
-        if (other.CompareTag("Player")) {
-            return;
-        }
+        if (other.CompareTag("Cover")) {
+            _triggered = false;
 
-        _triggered = false;
-        _others.Remove(other);
+            CoverController cover = other.GetComponent<CoverController>();
+            cover.Deactivate();
+            _covers.Remove(cover);
+        }
     }
 }

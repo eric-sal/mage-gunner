@@ -17,18 +17,34 @@ public class CoverCollisionSensorController : MonoBehaviour {
 	
     void Update() {
         if (_inCover()) {
+            if (!_wasInCover) {
+                _controller.Kneel();
+                this._activateCover();
+            }
+
             _wasInCover = true;
-            _controller.Kneel();
         } else if (_wasInCover) {
-            _wasInCover = false;
             _controller.Stand();
+            _wasInCover = false;
         }
     }
-    
+
+    private void _activateCover() {
+        List<CoverController> covers = new List<CoverController>();
+        covers.AddRange(neSensor.Covers);
+        covers.AddRange(nwSensor.Covers);
+        covers.AddRange(seSensor.Covers);
+        covers.AddRange(swSensor.Covers);
+
+        foreach (CoverController cover in covers) {
+            cover.Activate();
+        }
+    }
+
     private bool _collidedNorth() {
         return neSensor.Triggered && nwSensor.Triggered;
     }
-    
+
     private bool _collidedSouth() {
         return seSensor.Triggered && swSensor.Triggered;
     }
@@ -42,6 +58,6 @@ public class CoverCollisionSensorController : MonoBehaviour {
     }
     
     private bool _inCover() {
-        return _collidedNorth() || _collidedSouth() || _collidedEast() || _collidedWest();
+        return this._collidedNorth() || this._collidedSouth() || this._collidedEast() || this._collidedWest();
     }
 }

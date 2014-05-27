@@ -33,11 +33,15 @@ public class CoverCollisionSensor : MonoBehaviour {
     /// </summary>
     public void OnTriggerExit(Collider other) {
         if (other.CompareTag("Cover")) {
-            _triggered = false;
-
             CoverController cover = other.GetComponent<CoverController>();
             cover.Deactivate();
             _covers.Remove(cover);
+
+            // We should only deactivate if _covers is empty. If it's not,
+            // we're still touching at least one cover.
+            if (_covers.Count == 0) {
+                _triggered = false;
+            }
         }
     }
 }

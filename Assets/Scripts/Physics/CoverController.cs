@@ -3,7 +3,7 @@ using System.Collections;
 
 public class CoverController : MonoBehaviour {
     private bool _active = false;
-    private bool _wasActive = false;
+    private bool _wasActive = false;  // So we're not setting the color every frame in which the cover is !_active.
 
     void Update() {
         if (_active) {

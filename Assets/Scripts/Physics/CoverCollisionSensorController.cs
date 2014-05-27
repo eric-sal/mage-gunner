@@ -11,24 +11,16 @@ public class CoverCollisionSensorController : MonoBehaviour {
     
     private BaseCharacterController _controller;
     private bool _popUp = false;
-    private bool _wasInCover = false;
     
     void Awake() {
         _controller = this.transform.parent.GetComponent<BaseCharacterController>();
     }
 	
     void Update() {
-        if (_inCover()) {
-            if (_popUp) {
-                _controller.Stand();
-            } else {
-                _controller.Kneel();
-            }
-
-            _wasInCover = true;
-        } else if (_wasInCover) {
+        if (_inCover() && !_popUp) {
+            _controller.Kneel();
+        } else {
             _controller.Stand();
-            _wasInCover = false;
         }
 
         _popUp = false;

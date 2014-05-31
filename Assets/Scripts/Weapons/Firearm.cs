@@ -254,12 +254,15 @@ public class Firearm : MonoBehaviour {
     private void _SpawnBullet(Vector3 direction) {
         // _character.transform.position isn't quite right. Might want to figure
         // out where the character will be in the NEXT frame and use that position.
-        GameObject bullet = (GameObject)Instantiate(_bulletPrefab, _character.transform.position, _bulletPrefab.transform.rotation);
+        Vector3 ap = _character.aimPoint;
+        Vector3 bulletOrigin = new Vector3(ap.x, ap.y, ap.z - 0.1f); // TODO: Adjust for bullet drop due to gravity instead of hardcoding 0.1
+        GameObject bullet = (GameObject)Instantiate(_bulletPrefab, bulletOrigin, _bulletPrefab.transform.rotation);
         bullet.transform.parent = _bulletBucket.transform;
 
         ProjectileState bulletState = bullet.GetComponent<ProjectileState>();
         bulletState.spawner = _character.gameObject;
         bulletState.damage = _RollForDamage();
+        //Debug.DrawRay(_character.aimPoint, direction, Color.yellow, 0.5f);
         bulletState.rigidbody.velocity = Vector3.ClampMagnitude(direction, 1) * this.bulletVelocity;
     }
 

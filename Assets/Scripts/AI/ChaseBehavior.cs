@@ -34,7 +34,7 @@ public class ChaseBehavior : BaseBehavior {
                 // If we can we see the expectedPlayerPosition, then look at that point, otherwise
                 // look in the direction we're moving. Similar human behavior: looking around corner
                 // after existing the room you were in.
-                if (hitInfo.collider == null || hitInfo.point == expectedPlayerPosition) {
+                if (hitInfo.point == expectedPlayerPosition) {
                     lookAt = expectedPlayerPosition;
                 }
             }

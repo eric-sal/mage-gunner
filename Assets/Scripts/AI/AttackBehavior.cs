@@ -9,7 +9,7 @@ public class AttackBehavior : BaseBehavior {
         NpcState myState = _controller.myState;
 
         // If we can see the player, then aim at him - with a little bit of a lead.
-        Vector3 playerPosition = _controller.playerState.transform.position + (_controller.estimatedPlayerVelocity * Time.fixedDeltaTime * 10);
+        Vector3 playerPosition = _controller.playerState.aimPoint + (_controller.estimatedPlayerVelocity * Time.fixedDeltaTime * 10);
         _controller.reticle.SetPosition(playerPosition);
 
         // Fire the equipped weapon

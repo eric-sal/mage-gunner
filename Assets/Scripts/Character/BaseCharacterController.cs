@@ -107,7 +107,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
     }
 
     protected void _Fire() {
-        Vector3 bulletVector = _reticle.ActualTargetPosition - this.transform.position;
+        Vector3 bulletVector = _reticle.ActualTargetPosition - _character.aimPoint;
         Vector3 recoil = _character.equippedFirearm.Fire(bulletVector);
         _reticle.AddRecoil(recoil);
     }

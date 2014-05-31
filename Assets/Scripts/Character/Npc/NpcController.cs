@@ -150,15 +150,10 @@ public class NpcController : BaseCharacterController {
 
         bool canSeePlayer = false;
 
-        Vector3 playerPosition = _playerState.transform.position;
-        float playerHeight = _playerState.transform.localScale.z;
-        playerPosition -= new Vector3(0, 0, playerHeight * 0.3f);
+        Vector3 playerAimPoint = _playerState.aimPoint;
+        Vector3 npcAimPoint = _myState.aimPoint;
 
-        Vector3 npcPosition = this.transform.position;
-        float height = this.transform.localScale.z;
-        npcPosition -= new Vector3(0, 0, height * 0.3f);
-
-        Vector3 npcToPlayerVector = playerPosition - npcPosition;
+        Vector3 npcToPlayerVector = playerAimPoint - npcAimPoint;
         float halfFieldOfVision = _myState.fieldOfVision / 2;
 
         //Debug.DrawRay(npcPosition, _myState.lookDirection, Color.green);
@@ -166,19 +161,19 @@ public class NpcController : BaseCharacterController {
 
         // field of vision lines
         //Quaternion leftRotation = Quaternion.AngleAxis(-halfFieldOfVision, Vector3.forward);
-        //Debug.DrawRay(npcPosition, leftRotation * _myState.lookDirection, Color.white);
+        //Debug.DrawRay(npcAimPoint, leftRotation * _myState.lookDirection * _myState.sightDistance, Color.white);
         //Quaternion rightRotation = Quaternion.AngleAxis(halfFieldOfVision, Vector3.forward);
-        //Debug.DrawRay(npcPosition, rightRotation * _myState.lookDirection, Color.white);
+        //Debug.DrawRay(npcAimPoint, rightRotation * _myState.lookDirection * _myState.sightDistance, Color.white);
 
         float angle = Vector3.Angle(_myState.lookDirection, npcToPlayerVector); // 0 to 180
         if (angle <= halfFieldOfVision) {
-            float distance = Vector3.Distance(npcPosition, playerPosition);
+            float distance = Vector3.Distance(npcAimPoint, playerAimPoint);
             if (distance <= _myState.sightDistance) {
                 // player is close enough and in the field of view
                 // is there anything obstructing our view of the player?
                 RaycastHit hitInfo;
-                if (Physics.Raycast(npcPosition, npcToPlayerVector, out hitInfo, _myState.sightDistance, _lineOfSightLayerMask)) {
-                    if (hitInfo.collider != null && Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
+                if (Physics.Raycast(npcAimPoint, npcToPlayerVector, out hitInfo, _myState.sightDistance, _lineOfSightLayerMask)) {
+                    if (Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
                         canSeePlayer = true;
                         _myState.lastKnownPlayerPosition = _playerState.transform.position;
                     }
@@ -187,7 +182,7 @@ public class NpcController : BaseCharacterController {
         }
 
         if (canSeePlayer) {
-            Debug.DrawRay(npcPosition, npcToPlayerVector, Color.red);
+            //Debug.DrawRay(npcAimPoint, npcToPlayerVector, Color.red);
             _myState.didSeePlayer = false;
         } else if (canSeePlayer != _myState.canSeePlayer) {
             _myState.didSeePlayer = _myState.canSeePlayer && !canSeePlayer;

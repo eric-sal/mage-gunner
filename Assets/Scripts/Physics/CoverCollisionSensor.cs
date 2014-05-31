@@ -3,9 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CoverCollisionSensor : MonoBehaviour {
+
+    /* *** Member Variables *** */
+
     private List<CoverController> _covers = new List<CoverController>();    // Everything this trigger is colliding with
     private bool _triggered = false;
-    
+
+    /* *** Properties *** */
+
     public List<CoverController> Covers {
         get { return _covers; }
     }
@@ -13,7 +18,13 @@ public class CoverCollisionSensor : MonoBehaviour {
     public bool Triggered {
         get { return _triggered; }
     }
-    
+
+    /* *** Constructors *** */
+    public void Awake() {
+        gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+    }
+
+    /* *** MonoBehavior Methods *** */
     void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(this.transform.position, 0.05f);

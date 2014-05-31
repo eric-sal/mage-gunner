@@ -20,6 +20,15 @@ public abstract class BaseCharacterState : MonoBehaviour {
     public int strength; // 10 is average strength
     public Vector3 velocity;
 
+    /* *** Properties *** */
+
+    public Vector3 aimPoint {
+        get {
+            float height = this.transform.localScale.z;
+            return this.transform.position - new Vector3(0, 0, height * 0.3f);
+        }
+    }
+
     public float recoilReductionRate {
         // TODO: Figure out how to do this correctly
         get { return (5 * this.strength + 8) * Time.fixedDeltaTime; }
@@ -34,7 +43,7 @@ public abstract class BaseCharacterState : MonoBehaviour {
     /// Position to look at.
     /// </param>
     public void LookAt(Vector3 position) {
-        this.lookDirection = position - this.transform.position;
+        this.lookDirection = position - this.aimPoint;
     }
 
     /// <summary>

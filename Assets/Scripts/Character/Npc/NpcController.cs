@@ -11,7 +11,7 @@ public class NpcController : BaseCharacterController {
     protected AttackBehavior _attackBehavior;
     protected BaseBehavior[] _behaviors;
     protected ChaseBehavior _chaseBehavior;
-    protected Vector2 _estimatedPlayerVelocity;
+    protected Vector3 _estimatedPlayerVelocity;
     protected IdleBehavior _idleBehavior;
     protected PathfinderAI _pathfinderAI;
     protected int _lineOfSightLayerMask;
@@ -19,23 +19,23 @@ public class NpcController : BaseCharacterController {
     protected NpcState _myState;
     protected PatrolBehavior _patrolBehavior;
     protected PlayerState _playerState;
-    protected Vector2 _previousPlayerPosition = Vector2.zero;
+    protected Vector3 _previousPlayerPosition = Vector3.zero;
 
     public BaseBehavior[] behaviors {
         get { return _behaviors; }
     }
 
-    public Vector2 estimatedPlayerVelocity {
+    public Vector3 estimatedPlayerVelocity {
         get { return _estimatedPlayerVelocity; }
     }
 
     // The expectedPlayerPosition is where the NPC expects the player to be based on
     // the last known player position, the estimated velocity, and the amount of time
     // that has passed since they last saw the player.
-    public Vector2 expectedPlayerPosition {
+    public Vector3 expectedPlayerPosition {
         get {
-            Vector2 expected;
-            Vector2 estimatedDistanceTraveled = estimatedPlayerVelocity * _myState.timeSinceDidSeePlayer;
+            Vector3 expected;
+            Vector3 estimatedDistanceTraveled = estimatedPlayerVelocity * _myState.timeSinceDidSeePlayer;
 
             // Since the NPC doesn't have any spatial reasoning, we'll fake it for them
             // to hopefully make the NPCs *look* smart.
@@ -44,11 +44,12 @@ public class NpcController : BaseCharacterController {
             // have moved through it. This may provide more info to the NPC than they
             // would/should normally have, but the intention is to create the illusion
             // of intelligence, so we'll live with it.
-            RaycastHit2D hitInfo = Physics2D.Raycast(_myState.lastKnownPlayerPosition, estimatedDistanceTraveled, estimatedDistanceTraveled.magnitude);
-            if (hitInfo.collider != null) {
-                expected = hitInfo.point;
-            } else {
-                expected = _myState.lastKnownPlayerPosition + estimatedDistanceTraveled;
+            RaycastHit hitInfo;
+            expected = _myState.lastKnownPlayerPosition + estimatedDistanceTraveled;
+            if (Physics.Raycast(_myState.lastKnownPlayerPosition, estimatedDistanceTraveled, out hitInfo, estimatedDistanceTraveled.magnitude)) {
+                if (hitInfo.collider != null) {
+                    expected = hitInfo.point;
+                }
             }
 
             return expected;
@@ -76,8 +77,8 @@ public class NpcController : BaseCharacterController {
     public override void Awake() {
         base.Awake();
         // When checking to see if we can see the player, we want the ray to ignore projectiles.
-        _lineOfSightLayerMask = ((1 << LayerMask.NameToLayer("Players")) | (1 << LayerMask.NameToLayer("FullCover")) | (1 << LayerMask.NameToLayer("Enemies")));
-        _lineOfFireLayerMask = _lineOfSightLayerMask | (1 << LayerMask.NameToLayer("HalfCover"));
+        _lineOfSightLayerMask = ((1 << LayerMask.NameToLayer("Players")) | (1 << LayerMask.NameToLayer("Obstacles")) | (1 << LayerMask.NameToLayer("Enemies")));
+//        _lineOfFireLayerMask = _lineOfSightLayerMask | (1 << LayerMask.NameToLayer("HalfCover"));
 
         _myState = (NpcState)_character;
         _pathfinderAI = GetComponent<PathfinderAI>();
@@ -150,8 +151,14 @@ public class NpcController : BaseCharacterController {
         bool canSeePlayer = false;
 
         Vector3 playerPosition = _playerState.transform.position;
+        float playerHeight = _playerState.transform.localScale.z;
+        playerPosition -= new Vector3(0, 0, playerHeight * 0.3f);
+
         Vector3 npcPosition = this.transform.position;
-        Vector2 npcToPlayerVector = _playerState.transform.position - this.transform.position;
+        float height = this.transform.localScale.z;
+        npcPosition -= new Vector3(0, 0, height * 0.3f);
+
+        Vector3 npcToPlayerVector = playerPosition - npcPosition;
         float halfFieldOfVision = _myState.fieldOfVision / 2;
 
         //Debug.DrawRay(npcPosition, _myState.lookDirection, Color.green);
@@ -163,22 +170,24 @@ public class NpcController : BaseCharacterController {
         //Quaternion rightRotation = Quaternion.AngleAxis(halfFieldOfVision, Vector3.forward);
         //Debug.DrawRay(npcPosition, rightRotation * _myState.lookDirection, Color.white);
 
-        float angle = Vector2.Angle(_myState.lookDirection, npcToPlayerVector); // 0 to 180
+        float angle = Vector3.Angle(_myState.lookDirection, npcToPlayerVector); // 0 to 180
         if (angle <= halfFieldOfVision) {
             float distance = Vector3.Distance(npcPosition, playerPosition);
             if (distance <= _myState.sightDistance) {
                 // player is close enough and in the field of view
                 // is there anything obstructing our view of the player?
-                RaycastHit2D hitInfo;
-                hitInfo = Physics2D.Raycast(npcPosition, npcToPlayerVector, _myState.sightDistance, _lineOfSightLayerMask);
-                if (hitInfo.collider != null && Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
-                    canSeePlayer = true;
-                    _myState.lastKnownPlayerPosition = _playerState.transform.position;
+                RaycastHit hitInfo;
+                if (Physics.Raycast(npcPosition, npcToPlayerVector, out hitInfo, _myState.sightDistance, _lineOfSightLayerMask)) {
+                    if (hitInfo.collider != null && Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
+                        canSeePlayer = true;
+                        _myState.lastKnownPlayerPosition = _playerState.transform.position;
+                    }
                 }
             }
         }
 
         if (canSeePlayer) {
+            Debug.DrawRay(npcPosition, npcToPlayerVector, Color.red);
             _myState.didSeePlayer = false;
         } else if (canSeePlayer != _myState.canSeePlayer) {
             _myState.didSeePlayer = _myState.canSeePlayer && !canSeePlayer;
@@ -201,10 +210,10 @@ public class NpcController : BaseCharacterController {
     /// </summary>
     protected void _EstimatePlayerVelocity() {
         if (_myState.anticipatePlayerMovement && _myState.canSeePlayer) {
-            Vector2 currentPlayerPosition = (Vector2)_playerState.transform.position;
+            Vector3 currentPlayerPosition = _playerState.transform.position;
 
-            if (_previousPlayerPosition != Vector2.zero) {
-                Vector2 deltaPosition = currentPlayerPosition - _previousPlayerPosition;
+            if (_previousPlayerPosition != Vector3.zero) {
+                Vector3 deltaPosition = currentPlayerPosition - _previousPlayerPosition;
                 _estimatedPlayerVelocity = deltaPosition / Time.fixedDeltaTime;
             }
 

@@ -19,6 +19,7 @@ public abstract class BaseCharacterState : MonoBehaviour {
     public float maxWalkSpeed;
     public int strength; // 10 is average strength
     public Vector3 velocity;
+    public bool isDodging;
 
     /* *** Properties *** */
 

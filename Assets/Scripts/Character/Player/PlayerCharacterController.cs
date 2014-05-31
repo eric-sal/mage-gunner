@@ -31,14 +31,23 @@ public class PlayerCharacterController : BaseCharacterController {
 
         base.Update();
 
+        // Aim: Move the player's reticle.
+        var mouseDelta = new Vector2(Input.GetAxis("Mouse X") * mouseSensitivity, Input.GetAxis("Mouse Y") * mouseSensitivity);
+        _reticle.MoveBy(mouseDelta);
+
         if (this.isPlayerInputEnabled) {
+
+            if (_character.isDodging) {
+                return;
+            }
+
             // Get player input from the keyboard or joystick
             _horizontalInput = Input.GetAxis("Horizontal"); // -1.0 to 1.0
             _verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
 
-            // Aim: Move the player's reticle.
-            var mouseDelta = new Vector2(Input.GetAxis("Mouse X") * mouseSensitivity, Input.GetAxis("Mouse Y") * mouseSensitivity);
-            _reticle.MoveBy(mouseDelta);
+            if (Input.GetButton("Jump")) {
+                StartCoroutine(Dodge(0.5f));
+            }
 
             // Fire the equipped weapon
 //            Firearm gun = _character.equippedFirearm;
@@ -77,9 +86,25 @@ public class PlayerCharacterController : BaseCharacterController {
     /// Update the player's velocity.
     /// </summary>
     public override void FixedUpdate() {
+
         var velocity = new Vector3(_horizontalInput, _verticalInput);
-        _character.velocity = Vector3.ClampMagnitude(velocity * _character.maxWalkSpeed, _character.maxWalkSpeed);
-        this.rigidbody.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
+        if (!_character.isDodging) {
+            var maxVelocity = _character.maxWalkSpeed;
+            _character.velocity = Vector3.ClampMagnitude(velocity * maxVelocity, maxVelocity);
+            this.rigidbody.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
+        }
         base.FixedUpdate();
     }
+
+    public IEnumerator Dodge(float duration) {
+        _character.isDodging = true;
+        this.isPlayerInputEnabled = false;
+        _character.transform.rigidbody.AddForce(_character.velocity.normalized * 1000);
+        _character.transform.rigidbody.drag = 10;
+        yield return new WaitForSeconds(duration);
+        _character.isDodging = false;
+        this.isPlayerInputEnabled = true;
+        _character.transform.rigidbody.drag = 0;
+    }
+
 }

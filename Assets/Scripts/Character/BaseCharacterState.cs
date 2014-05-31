@@ -15,10 +15,10 @@ public abstract class BaseCharacterState : MonoBehaviour {
     public Firearm equippedFirearm;
     public int health;
     public bool kneeling = false;
-    public Vector2 lookDirection;  // Direction the character is looking.
+    public Vector3 lookDirection;  // Direction the character is looking.
     public float maxWalkSpeed;
     public int strength; // 10 is average strength
-    public Vector2 velocity;
+    public Vector3 velocity;
 
     public float recoilReductionRate {
         // TODO: Figure out how to do this correctly
@@ -33,8 +33,8 @@ public abstract class BaseCharacterState : MonoBehaviour {
     /// <param name='position'>
     /// Position to look at.
     /// </param>
-    public void LookAt(Vector2 position) {
-        this.lookDirection = position - (Vector2)this.transform.position;
+    public void LookAt(Vector3 position) {
+        this.lookDirection = position - this.transform.position;
     }
 
     /// <summary>

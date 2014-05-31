@@ -21,7 +21,7 @@ public class ProjectileCollisionHandler : MonoBehaviour {
 
     public void FixedUpdate() {
 
-        if (this.rigidbody2D.velocity == Vector2.zero) {
+        if (this.rigidbody.velocity == Vector3.zero) {
             // The projectile was stopped in a previous call to FixedUpdate
             return;
         }
@@ -35,14 +35,16 @@ public class ProjectileCollisionHandler : MonoBehaviour {
             _projectile.spawner.layer = LayerMask.NameToLayer("Projectiles");
         }
 
-        Vector2 velocity = this.rigidbody2D.velocity;
+        Vector3 velocity = this.rigidbody.velocity;
         float distance = Mathf.Abs(velocity.magnitude * Time.fixedDeltaTime);
 
-        RaycastHit2D hitInfo = Physics2D.Raycast(this.transform.position, velocity, distance, _layerMask);
-        if (hitInfo.collider != null) {
-            // the project hit something, stop it
-            _projectile.transform.position = hitInfo.point;
-            this.rigidbody2D.velocity = Vector2.zero;
+        RaycastHit hitInfo;
+        if (Physics.Raycast(this.transform.position, velocity, out hitInfo, distance, _layerMask)) {
+            if (hitInfo.collider != null) {
+                // the project hit something, stop it
+                _projectile.transform.position = hitInfo.point;
+                this.rigidbody.velocity = Vector3.zero;
+            }
         }
 
         if (_projectile.spawner != null) {

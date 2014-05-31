@@ -95,27 +95,27 @@ public class Firearm : MonoBehaviour {
     /// Generates a random vector representing an offset amount to move the character's reticle.
     /// </summary>
     /// <returns>
-    /// A Vector2.
+    /// A Vector3.
     /// </returns>
-    public Vector2 RandomRecoil() {
+    public Vector3 RandomRecoil() {
         float x = UnityEngine.Random.Range(-1f, 1f);
         float y = UnityEngine.Random.Range(-1f, 1f);
-        var direction = new Vector2(x, y).normalized;
+        var direction = new Vector3(x, y).normalized;
         float magnitude = (this.recoil + 1) * 2;
         return direction * magnitude;
     }
 
     /// <summary>
     /// Fire the specified direction.
-    /// Returns a Vector2 representing the degree of recoil.
+    /// Returns a Vector3 representing the degree of recoil.
     /// </summary>
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    public Vector2 Fire(Vector2 direction) {
+    public Vector3 Fire(Vector3 direction) {
         
         if (_elapsed <= _cycleTime) {
-            return Vector2.zero;
+            return Vector3.zero;
         }
         _elapsed = 0;
         
@@ -124,7 +124,7 @@ public class Firearm : MonoBehaviour {
                 _audioSource.PlayOneShot(this.dryFireSound);
             }
 
-            return Vector2.zero;
+            return Vector3.zero;
         }
 
         switch (this.fireType) {
@@ -181,7 +181,7 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void _FireStandardShot(Vector2 direction) {
+    private void _FireStandardShot(Vector3 direction) {
         for (int i = 0; i < this.ammoConsumed; i ++) {
             _SpawnBullet(direction);
         }
@@ -195,7 +195,7 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void _FireSprayShot(Vector2 direction) {
+    private void _FireSprayShot(Vector3 direction) {
         float scatterAmount;
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
@@ -213,7 +213,7 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void _FireSpreadShot(Vector2 direction) {
+    private void _FireSpreadShot(Vector3 direction) {
         // If we weren't in a top-down (x, y plane) view, I *think* we would use a
         // different vector than Vector3.forward <0, 0, 1> as the 2nd param here.
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
@@ -231,7 +231,7 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private IEnumerator _FireBurstShot(Vector2 direction) {
+    private IEnumerator _FireBurstShot(Vector3 direction) {
         float scatterAmount;
         Quaternion quato = Quaternion.LookRotation(direction, Vector3.forward);
 
@@ -251,7 +251,7 @@ public class Firearm : MonoBehaviour {
     /// <param name='direction'>
     /// The direction in which we're firing.
     /// </param>
-    private void _SpawnBullet(Vector2 direction) {
+    private void _SpawnBullet(Vector3 direction) {
         // _character.transform.position isn't quite right. Might want to figure
         // out where the character will be in the NEXT frame and use that position.
         GameObject bullet = (GameObject)Instantiate(_bulletPrefab, _character.transform.position, _bulletPrefab.transform.rotation);
@@ -260,7 +260,7 @@ public class Firearm : MonoBehaviour {
         ProjectileState bulletState = bullet.GetComponent<ProjectileState>();
         bulletState.spawner = _character.gameObject;
         bulletState.damage = _RollForDamage();
-        bulletState.rigidbody2D.velocity = Vector2.ClampMagnitude(direction, 1) * this.bulletVelocity;
+        bulletState.rigidbody.velocity = Vector3.ClampMagnitude(direction, 1) * this.bulletVelocity;
     }
 
     /// <summary>

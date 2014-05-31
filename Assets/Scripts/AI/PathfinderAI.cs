@@ -12,7 +12,7 @@ public class PathfinderAI : MonoBehaviour {
 
     /* *** Member Variables *** */
 
-    public Vector2 targetPosition;  //The end-point to move toward
+    public Vector3 targetPosition;  //The end-point to move toward
 
     private BaseCharacterState _character;
     private int _currentNode = 0; //The node in the A-star pathfinding graph we are currently moving toward
@@ -47,7 +47,7 @@ public class PathfinderAI : MonoBehaviour {
 
         while (distanceRemaining > 0f && _currentNode < _path.vectorPath.Count) {
 
-            float distanceToNext = Vector2.Distance(position, _path.vectorPath[_currentNode]);
+            float distanceToNext = Vector3.Distance(position, _path.vectorPath[_currentNode]);
 
             if (distanceToNext > distanceRemaining) {
                 //We won't reach the next waypoint in time, just head in that direction
@@ -55,7 +55,7 @@ public class PathfinderAI : MonoBehaviour {
                 position += direction * distanceRemaining;
 
                 //Set the velocity, but we've already overridden the movement so it's just for facing purposes
-                _character.velocity = Vector2.ClampMagnitude(direction * speed, speed);
+                _character.velocity = Vector3.ClampMagnitude(direction * speed, speed);
 
             } else {
                 //We can reach the next waypoint, how much further can we go?
@@ -70,7 +70,7 @@ public class PathfinderAI : MonoBehaviour {
 
         if (_currentNode >= _path.vectorPath.Count) {
             //End of path reached
-            _character.velocity = Vector2.zero;
+            _character.velocity = Vector3.zero;
             if (callback != null) {
                 callback.Invoke();
             }
@@ -95,6 +95,6 @@ public class PathfinderAI : MonoBehaviour {
     public void RestartPath() {
         _path = null;
         _seeker.StartPath(this.transform.position, this.targetPosition, OnPathCalculated);
-        _character.velocity = Vector2.zero;
+        _character.velocity = Vector3.zero;
     }
 }

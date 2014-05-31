@@ -6,19 +6,19 @@ using System.Collections.Generic;
 /// </summary>
 public class Waypoint : MonoBehaviour {
 
-    public Vector2 lookDirection;   // When the NPC reaches this waypoint, in which direction should they look?
+    public Vector3 lookDirection;   // When the NPC reaches this waypoint, in which direction should they look?
     public Waypoint next; // the next waypoint (if any) in a path
 
     private static GameObject _waypointPrefab;
 
-    public Vector2 lookPosition {
-        get { return (Vector2)this.transform.position + lookDirection; }
+    public Vector3 lookPosition {
+        get { return this.transform.position + lookDirection; }
     }
 
     /// <summary>
     /// Create a Waypoint instance in the scene.
     /// </summary>
-    public static Waypoint Create(Vector2 spawnPosition) {
+    public static Waypoint Create(Vector3 spawnPosition) {
         if (_waypointPrefab == null) {
             _waypointPrefab = (GameObject)Resources.Load("Prefabs/Waypoint");
         }
@@ -31,7 +31,7 @@ public class Waypoint : MonoBehaviour {
     /// Ensure that the waypoint is visible in the Unity editor window.
     /// </summary>
     void OnDrawGizmos() {
-        Vector2 position = (Vector2)this.transform.position;
+        Vector3 position = this.transform.position;
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(position, 0.2f);
 

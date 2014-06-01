@@ -46,7 +46,7 @@ public class PlayerCharacterController : BaseCharacterController {
             _verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
 
             if (Input.GetButton("Jump")) {
-                StartCoroutine(Dodge(0.5f));
+                StartCoroutine("Dodge");
             }
 
             // Fire the equipped weapon
@@ -86,25 +86,51 @@ public class PlayerCharacterController : BaseCharacterController {
     /// Update the player's velocity.
     /// </summary>
     public override void FixedUpdate() {
-
-        var velocity = new Vector3(_horizontalInput, _verticalInput);
         if (!_character.isDodging) {
+            var velocity = new Vector3(_horizontalInput, _verticalInput);
             var maxVelocity = _character.maxWalkSpeed;
             _character.velocity = Vector3.ClampMagnitude(velocity * maxVelocity, maxVelocity);
-            this.rigidbody.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
         }
+
+        this.rigidbody.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
         base.FixedUpdate();
     }
 
-    public IEnumerator Dodge(float duration) {
+    public IEnumerator Dodge() {
+        _horizontalInput = 0;
+        _verticalInput = 0;
+
         _character.isDodging = true;
         this.isPlayerInputEnabled = false;
-        _character.transform.rigidbody.AddForce(_character.velocity.normalized * 1000);
-        _character.transform.rigidbody.drag = 10;
-        yield return new WaitForSeconds(duration);
+
+        // Dodge by reducing velocity
+        _character.velocity *= 4;  // Initially, give our player an extra boost of speed
+        float d = 0.25f;  // Amount of time we want the slide to take
+        float c = 0.0f;  // Amount of time passed since we started the slide
+        float t = 0.0f;  // c / d = 0..1
+        float factor = 1.0f;  // The factor we will multiply our velocity by = 1..0
+        while (_character.velocity.sqrMagnitude > 1f) {  // Stop the loop once our velocity almost reaches zero.
+            c += Time.deltaTime;
+            t = c / d;
+
+            // Equations describing the rate at which we want the velocity to fall off to zero.
+            if (t > 0.75) {
+                // If we're near the end of our slide, smooth out our velocity fall off.
+                factor = Mathf.Cos(Mathf.PI * t - 0.5f) / 2 + 0.5f;
+            } else {
+                // Keep the velocity near initial value until about halfway through the slide,
+                // then drop off sharply.
+                factor = Mathf.Cos(Mathf.Pow(t, 2) * Mathf.PI) / 2 + 0.5f;
+            }
+            // Debug.Log(factor);
+
+            _character.velocity = _character.velocity * factor;
+
+            yield return null;
+        }
+
         _character.isDodging = false;
         this.isPlayerInputEnabled = true;
-        _character.transform.rigidbody.drag = 0;
     }
 
 }

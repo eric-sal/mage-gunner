@@ -37,16 +37,14 @@ public class PlayerCharacterController : BaseCharacterController {
 
         if (this.isPlayerInputEnabled) {
 
-            if (_character.isDodging) {
-                return;
-            }
+            if (!_character.isDodging) {
+                // Get player input from the keyboard or joystick
+                _horizontalInput = Input.GetAxis("Horizontal"); // -1.0 to 1.0
+                _verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
 
-            // Get player input from the keyboard or joystick
-            _horizontalInput = Input.GetAxis("Horizontal"); // -1.0 to 1.0
-            _verticalInput = Input.GetAxis("Vertical"); // -1.0 to 1.0
-
-            if (Input.GetButton("Jump")) {
-                StartCoroutine("Dodge");
+                if (Input.GetButtonDown("Jump")) {
+                    StartCoroutine(Dodge());
+                }
             }
 
             // Fire the equipped weapon
@@ -101,7 +99,6 @@ public class PlayerCharacterController : BaseCharacterController {
         _verticalInput = 0;
 
         _character.isDodging = true;
-        this.isPlayerInputEnabled = false;
 
         // Dodge by reducing velocity
         _character.velocity *= 4;  // Initially, give our player an extra boost of speed
@@ -110,6 +107,12 @@ public class PlayerCharacterController : BaseCharacterController {
         float t = 0.0f;  // c / d = 0..1
         float factor = 1.0f;  // The factor we will multiply our velocity by = 1..0
         while (_character.velocity.sqrMagnitude > 1f) {  // Stop the loop once our velocity almost reaches zero.
+            if (this.cancelDodge) {
+                StopDodge();
+
+                yield break;
+            }
+
             c += Time.deltaTime;
             t = c / d;
 
@@ -129,8 +132,12 @@ public class PlayerCharacterController : BaseCharacterController {
             yield return null;
         }
 
-        _character.isDodging = false;
-        this.isPlayerInputEnabled = true;
+        StopDodge();
     }
 
+    private void StopDodge() {
+        _character.velocity = Vector3.zero;
+        _character.isDodging = false;
+        this.cancelDodge = false;
+    }
 }

@@ -49,9 +49,9 @@ public class CoverCollisionSensorController : MonoBehaviour {
 
             var cover = neSensor.Covers.Union(nwSensor.Covers);
             if (_popUp) {
-                this._deactivateCover(cover);
+                _deactivateCover(cover);
             } else {
-                this._activateCover(cover);
+                _activateCover(cover);
             }
         }
 
@@ -65,9 +65,9 @@ public class CoverCollisionSensorController : MonoBehaviour {
 
             var cover = seSensor.Covers.Union(swSensor.Covers);
             if (_popUp) {
-                this._deactivateCover(cover);
+                _deactivateCover(cover);
             } else {
-                this._activateCover(cover);
+                _activateCover(cover);
             }
         }
 
@@ -81,9 +81,9 @@ public class CoverCollisionSensorController : MonoBehaviour {
 
             var cover = neSensor.Covers.Union(seSensor.Covers);
             if (_popUp) {
-                this._deactivateCover(cover);
+                _deactivateCover(cover);
             } else {
-                this._activateCover(cover);
+                _activateCover(cover);
             }
         }
 
@@ -97,9 +97,9 @@ public class CoverCollisionSensorController : MonoBehaviour {
 
             var cover = nwSensor.Covers.Union(swSensor.Covers);
             if (_popUp) {
-                this._deactivateCover(cover);
+                _deactivateCover(cover);
             } else {
-                this._activateCover(cover);
+                _activateCover(cover);
             }
         }
 
@@ -111,10 +111,10 @@ public class CoverCollisionSensorController : MonoBehaviour {
         // methods to execute completely. Calling them chained in a conditional
         // would short-circuit the statement, preventing the other methods
         // from executing as soon as one returns true.
-        bool collidedNorth = this._checkCollisionNorth();
-        bool collidedSouth = this._checkCollisionSouth();
-        bool collidedEast = this._checkCollisionEast();
-        bool collidedWest = this._checkCollisionWest();
+        bool collidedNorth = _checkCollisionNorth();
+        bool collidedSouth = _checkCollisionSouth();
+        bool collidedEast = _checkCollisionEast();
+        bool collidedWest = _checkCollisionWest();
 
         return collidedNorth || collidedSouth || collidedEast || collidedWest;
     }

@@ -15,8 +15,6 @@ public abstract class BaseCharacterController : MonoBehaviour {
 
     /* *** Member Variables *** */
 
-    public bool cancelDodge;
-
     protected BaseCharacterState _character;
     protected Inventory _inventory;
     protected ReticleController _reticle;

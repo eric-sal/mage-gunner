@@ -106,10 +106,13 @@ public class PlayerCharacterController : BaseCharacterController {
         float c = 0.0f;  // Amount of time passed since we started the slide
         float t = 0.0f;  // c / d = 0..1
         float factor = 1.0f;  // The factor we will multiply our velocity by = 1..0
-        while (_character.velocity.sqrMagnitude > 1f) {  // Stop the loop once our velocity almost reaches zero.
-            if (this.cancelDodge) {
-                StopDodge();
 
+        while (_character.velocity.sqrMagnitude > 1f) {  // Stop the loop once our velocity almost reaches zero.
+
+            yield return new WaitForFixedUpdate();
+
+            if (this.rigidbody.velocity.sqrMagnitude < 0.5f) {
+                StopDodge();
                 yield break;
             }
 
@@ -128,8 +131,6 @@ public class PlayerCharacterController : BaseCharacterController {
             // Debug.Log(factor);
 
             _character.velocity = _character.velocity * factor;
-
-            yield return null;
         }
 
         StopDodge();
@@ -138,6 +139,5 @@ public class PlayerCharacterController : BaseCharacterController {
     private void StopDodge() {
         _character.velocity = Vector3.zero;
         _character.isDodging = false;
-        this.cancelDodge = false;
     }
 }

@@ -27,10 +27,6 @@ public class CoverCollisionSensorController : MonoBehaviour {
     }
 
     private void _activateCover(IEnumerable<CoverController> covers) {
-        if (_controller.character.isDodging) {
-            _controller.cancelDodge = true;
-        }
-
         foreach (CoverController cover in covers) {
             if (!cover.isActive) {
                 cover.Activate();

@@ -32,13 +32,17 @@ public class CoverCollisionSensorController : MonoBehaviour {
         }
 
         foreach (CoverController cover in covers) {
-            cover.Activate();
+            if (!cover.isActive) {
+                cover.Activate();
+            }
         }
     }
 
     private void _deactivateCover(IEnumerable<CoverController> covers) {
         foreach (CoverController cover in covers) {
-            cover.Deactivate();
+            if (cover.isActive) {
+                cover.Deactivate();
+            }
         }
     }
 

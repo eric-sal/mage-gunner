@@ -48,28 +48,28 @@ public class PlayerCharacterController : BaseCharacterController {
             }
 
             // Fire the equipped weapon
-//            Firearm gun = _character.equippedFirearm;
-//            if (gun != null) {
-//                if (gun.fullAuto && Input.GetButton("Fire1") ||
-//                    !gun.fullAuto && Input.GetButtonDown("Fire1")) {
-//                    // If full-auto is enabled and the player is holding down the fire button, or
-//                    // if the firearm only allows for semi-auto fire, and the player clicks the fire button.
-//                    _Fire();
-//                } else if (Input.GetButton("Reload")) {
-//                    gun.Reload();
-//                }
-//            }
-            if (Input.GetButton("Fire1")) {
-                var grenade = GameObject.Find("Grenade");
-                if (grenade.rigidbody.velocity == Vector3.zero) {
-                    var direction = _character.lookDirection.normalized * 8;
-                    //grenade.rigidbody.AddForce();
-                    var p = grenade.transform.position;
-                    var position = new Vector3(p.x, p.y + 0.4f, p.z);
-                    grenade.rigidbody.AddForceAtPosition(new Vector3(direction.x, direction.y, -30),
-                                                         position);
+            Firearm gun = _character.equippedFirearm;
+            if (gun != null) {
+                if (gun.fullAuto && Input.GetButton("Fire1") ||
+                    !gun.fullAuto && Input.GetButtonDown("Fire1")) {
+                    // If full-auto is enabled and the player is holding down the fire button, or
+                    // if the firearm only allows for semi-auto fire, and the player clicks the fire button.
+                    _Fire();
+                } else if (Input.GetButton("Reload")) {
+                    gun.Reload();
                 }
             }
+//            if (Input.GetButton("Fire1")) {
+//                var grenade = GameObject.Find("Grenade");
+//                if (grenade.rigidbody.velocity == Vector3.zero) {
+//                    var direction = _character.lookDirection.normalized * 8;
+//                    //grenade.rigidbody.AddForce();
+//                    var p = grenade.transform.position;
+//                    var position = new Vector3(p.x, p.y + 0.4f, p.z);
+//                    grenade.rigidbody.AddForceAtPosition(new Vector3(direction.x, direction.y, -30),
+//                                                         position);
+//                }
+//            }
 
             // Cycle through weapons
             if (Input.GetButtonDown("Next Weapon")) {

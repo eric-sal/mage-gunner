@@ -107,7 +107,26 @@ public abstract class BaseCharacterController : MonoBehaviour {
     }
 
     protected void _Fire() {
-        Vector3 bulletVector = _reticle.ActualTargetPosition - _character.aimPoint;
+        Vector3 aimPoint = _character.aimPoint;
+
+        if (_character.kneeling) {
+            aimPoint += new Vector3(0, 0, 0.3f); // Move the bullet spawn point to above the cover
+        }
+
+        Vector3 bulletVector = _reticle.ActualTargetPosition - aimPoint;
+
+        if (_character.kneeling) {
+            RaycastHit hitInfo;
+            if (Physics.Raycast(this.transform.position, bulletVector, out hitInfo)) {
+                if (hitInfo.collider.CompareTag("Cover")) {
+                    // TODO: Don't hardcode this range. Make it an attribute on the firearm?
+                    float scatterAmount = UnityEngine.Random.Range(-20, 20);
+                    Quaternion quato = Quaternion.LookRotation(bulletVector, Vector3.forward);
+                    bulletVector = quato * Quaternion.Euler(0, scatterAmount, 0) * Vector3.forward;
+                }
+            }
+        }
+
         Vector3 recoil = _character.equippedFirearm.Fire(bulletVector);
         _reticle.AddRecoil(recoil);
     }

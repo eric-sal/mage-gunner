@@ -18,6 +18,7 @@ public class SceneController : MonoBehaviour {
         // Hide the OS cursor
         Screen.lockCursor = true;
         _pauseMenu = GetComponent<PauseMenu>();
+        _pauseMenu.enabled = false;
     }
 
     /* *** MonoBehaviour Methods *** */

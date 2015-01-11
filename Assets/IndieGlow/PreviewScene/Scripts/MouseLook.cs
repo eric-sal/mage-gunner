@@ -1,45 +1,42 @@
-  /* This program is free software. It comes without any warranty, to
+/* This program is free software. It comes without any warranty, to
      the extent permitted by applicable law. You can redistribute it
      and/or modify it under the terms of the TMG To Public License,
      Version 1, as published by Team Mongo Games. 
      See http://www.teammongogames.kilu.de/Licsence for more details. */
-
 using UnityEngine;
 using System.Collections;
 
 public class MouseLook : MonoBehaviour {
 
-    public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
-	
+    public enum RotationAxes {
+        MouseXAndY = 0,
+        MouseX = 1,
+        MouseY = 2
+    }
+    
     public RotationAxes axes = RotationAxes.MouseXAndY;
     public float sensitivityX = 0.0f;
     public float sensitivityY = 0.0f;
-
     public float minimumX = -360f;
     public float maximumX = 360f;
-
     public float  minimumY = -60f;
     public float maximumY = 60f;
-
     float rotationX = 0;
     float rotationY = 0;
-
     Quaternion originalRotation;
-	
-	bool UseMenu;
+    bool UseMenu;
 
-	void Start () {
-        if (rigidbody)
-        {
+    void Start() {
+        if (rigidbody) {
             rigidbody.freezeRotation = true;
         }
         originalRotation = transform.localRotation;
-	}
-	
-	void Update () {
-		
-		if(GlowCamera.GlowMenuActive())
-			return;
+    }
+    
+    void Update() {
+        
+        if (GlowCamera.GlowMenuActive())
+            return;
 
         sensitivityX = 3;
         sensitivityY = 3;
@@ -47,8 +44,7 @@ public class MouseLook : MonoBehaviour {
         Quaternion yQuaternion;
         Quaternion xQuaternion;
 
-        if (axes == RotationAxes.MouseXAndY)
-        {
+        if (axes == RotationAxes.MouseXAndY) {
             // Read the mouse input axis
             rotationX += Input.GetAxis("Mouse X") * sensitivityX;
             rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
@@ -60,17 +56,13 @@ public class MouseLook : MonoBehaviour {
             yQuaternion = Quaternion.AngleAxis(rotationY, Vector3.left);
 
             transform.localRotation = originalRotation * xQuaternion * yQuaternion;
-        }
-        else if (axes == RotationAxes.MouseX)
-        {
+        } else if (axes == RotationAxes.MouseX) {
             rotationX += Input.GetAxis("Mouse X") * sensitivityX;
             rotationX = ClampAngle(rotationX, minimumX, maximumX);
 
             xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
             transform.localRotation = originalRotation * xQuaternion;
-       }
-       else
-       {
+        } else {
             rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
             rotationY = ClampAngle(rotationY, minimumY, maximumY);
 
@@ -79,13 +71,12 @@ public class MouseLook : MonoBehaviour {
         }
     }
 
-    static float ClampAngle ( float angle, float min, float max)
-    {
-	    if (angle < -360)
-		    angle += 360;
-	    if (angle > 360)
-		    angle -= 360;
-	    return Mathf.Clamp (angle, min, max);
+    static float ClampAngle(float angle, float min, float max) {
+        if (angle < -360)
+            angle += 360;
+        if (angle > 360)
+            angle -= 360;
+        return Mathf.Clamp(angle, min, max);
     }
 
 }

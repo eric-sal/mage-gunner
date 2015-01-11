@@ -11,6 +11,6 @@ public class ReactorRingRotate : MonoBehaviour {
 	}
 	
 	void Update () {
-		transform.RotateAround(Axis, RotSpeed * Time.deltaTime);
+		transform.Rotate(Axis, RotSpeed * Time.deltaTime);
 	}
 }

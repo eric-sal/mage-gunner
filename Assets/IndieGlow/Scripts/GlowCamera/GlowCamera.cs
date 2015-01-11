@@ -200,11 +200,11 @@ public class GlowCamera : MonoBehaviour
 	
 	void UpdateCameraSettings() {
 		if(!gameObject.camera.orthographic) {
-			MiniMainCam.camera.fov = gameObject.camera.fov;
+            MiniMainCam.camera.fieldOfView = gameObject.camera.fieldOfView;
 			MiniMainCam.camera.nearClipPlane = gameObject.camera.nearClipPlane;
 			MiniMainCam.camera.farClipPlane = gameObject.camera.farClipPlane;
 			
-			GlowCamObj.camera.fov = gameObject.camera.fov;
+            GlowCamObj.camera.fieldOfView = gameObject.camera.fieldOfView;
 			GlowCamObj.camera.nearClipPlane = gameObject.camera.nearClipPlane;
 			GlowCamObj.camera.farClipPlane = gameObject.camera.farClipPlane;
 		} else {

@@ -113,6 +113,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
             aimPoint += new Vector3(0, 0, 0.3f); // Move the bullet spawn point to above the cover
         }
 
+        // TODO: Ensure that we aren't firing into the ground when the reticle is close to the player
         Vector3 bulletVector = _reticle.ActualTargetPosition - aimPoint;
 
         if (_character.kneeling) {

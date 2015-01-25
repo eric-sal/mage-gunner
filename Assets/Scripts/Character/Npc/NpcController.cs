@@ -156,8 +156,8 @@ public class NpcController : BaseCharacterController {
         Vector3 npcToPlayerVector = playerAimPoint - npcAimPoint;
         float halfFieldOfVision = _myState.fieldOfVision / 2;
 
-        //Debug.DrawRay(npcPosition, _myState.lookDirection, Color.green);
-        //Debug.DrawRay(npcPosition, npcToPlayerVector, Color.red);
+        //Debug.DrawRay(npcAimPoint, _myState.lookDirection * _myState.sightDistance, Color.green);
+        //Debug.DrawRay(npcAimPoint, npcToPlayerVector, Color.red);
 
         // field of vision lines
         //Quaternion leftRotation = Quaternion.AngleAxis(-halfFieldOfVision, Vector3.forward);

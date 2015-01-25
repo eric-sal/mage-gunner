@@ -44,7 +44,8 @@ public abstract class BaseCharacterState : MonoBehaviour {
     /// Position to look at.
     /// </param>
     public void LookAt(Vector3 position) {
-        this.lookDirection = position - this.aimPoint;
+        var eyePosition = new Vector3(position.x, position.y, this.aimPoint.z);
+        this.lookDirection = (eyePosition - this.aimPoint).normalized;
     }
 
     /// <summary>

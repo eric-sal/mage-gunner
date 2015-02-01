@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// Scene controller.
@@ -10,6 +10,7 @@ public class SceneController : MonoBehaviour {
     /* *** Member Variables *** */
 
     public static bool isPaused = false;
+    public static HashSet<CoverWaypoint> activeCoverWaypoints;
     private PauseMenu _pauseMenu;
 
     /* *** Constructors *** */
@@ -19,6 +20,7 @@ public class SceneController : MonoBehaviour {
         Screen.lockCursor = true;
         _pauseMenu = GetComponent<PauseMenu>();
         _pauseMenu.enabled = false;
+        activeCoverWaypoints = new HashSet<CoverWaypoint>();
     }
 
     /* *** MonoBehaviour Methods *** */

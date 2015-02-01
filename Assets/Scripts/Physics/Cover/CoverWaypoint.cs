@@ -39,6 +39,7 @@ public class CoverWaypoint : MonoBehaviour {
 
         case "ActiveArea":
             this.isActive = true;
+            SceneController.activeCoverWaypoints.Add(this);
             break;
 
         case "VisibleArea":
@@ -57,6 +58,7 @@ public class CoverWaypoint : MonoBehaviour {
             
         case "ActiveArea":
             this.isActive = false;
+            SceneController.activeCoverWaypoints.Remove(this);
             break;
             
         case "VisibleArea":

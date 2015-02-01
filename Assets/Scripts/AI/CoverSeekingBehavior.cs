@@ -1,11 +1,21 @@
 ﻿using UnityEngine;
-using System.Collections;
+using Pathfinding;
+using System.Collections.Generic;
 
 public class CoverSeekingBehavior : AttackBehavior {
 
     protected override void _Activate() {
-        _controller.pathfinderAI.targetPosition = GameObject.Find("CoverWaypoint").transform.position;
-        _controller.pathfinderAI.RestartPath();
+
+        var targets = new List<Vector3>(SceneController.activeCoverWaypoints.Count);
+
+        foreach (CoverWaypoint wp in SceneController.activeCoverWaypoints) {
+            if (wp.isViable) {
+                Debug.Log(Vector3.Distance(wp.transform.position, this.transform.position));
+                targets.Add(wp.transform.position);
+            }
+        }
+
+        _controller.pathfinderAI.TakeShortestPath(targets);
     }
     
     protected override void _Deactivate() {

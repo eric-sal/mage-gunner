@@ -97,4 +97,19 @@ public class PathfinderAI : MonoBehaviour {
         _seeker.StartPath(this.transform.position, this.targetPosition, OnPathCalculated);
         _character.velocity = Vector3.zero;
     }
+
+    /// <summary>
+    /// Calculate paths to all given target positions and select the shortest path
+    /// </summary>
+    /// <param name="targets">Targets.</param>
+    public void TakeShortestPath(IList<Vector3> targets) {
+        Path shortestPath = null;
+        foreach (Vector3 t in targets) {
+            Path p = _seeker.GetNewPath(this.transform.position, t); // TODO: Use a coroutine instead
+            if (shortestPath == null || p.vectorPath.Count < shortestPath.vectorPath.Count) {
+                shortestPath = p;
+            }
+        }
+        _seeker.StartPath(shortestPath, OnPathCalculated);
+    }
 }

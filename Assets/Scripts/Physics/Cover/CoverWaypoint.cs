@@ -4,22 +4,12 @@ using System.Collections;
 public class CoverWaypoint : MonoBehaviour {
 
     public CoverController attachedTo;
-
-    protected bool _isViable = false;
-    protected GameObject _occupiedBy = null;
-
-    public bool isViable {
-        get { return _isViable; }
-    }
+    public bool isActive = false;
+    public bool isViable = false;
+    public GameObject occupiedBy = null; // The current game object occupying this cover point
 
     protected static PlayerState _playerState = null;
 
-    /// <summary>
-    /// The current game object occupying this cover point
-    /// </summary>
-    public GameObject occupiedBy {
-        get { return _occupiedBy; }
-    }
 
 	void Start() {
 	    if (this.attachedTo == null) {
@@ -32,24 +22,56 @@ public class CoverWaypoint : MonoBehaviour {
 	}
 	
 	void FixedUpdate() {
+        if (!this.isActive) {
+            return;
+        }
+
         Vector3 origin = this.transform.position;
         Vector3 direction = _playerState.aimPoint - origin;
         Debug.DrawRay(origin, direction, Color.yellow);
         var hitInfo = new RaycastHit();
         Physics.Raycast(origin, direction, out hitInfo);
-        _isViable = hitInfo.collider.gameObject != _playerState.gameObject;
+        this.isViable = hitInfo.collider.gameObject != _playerState.gameObject;
 	}
 
     public void OnTriggerEnter(Collider other) {
-        _occupiedBy = other.gameObject;
+        switch (other.name) {
+
+        case "ActiveArea":
+            this.isActive = true;
+            break;
+
+        case "VisibleArea":
+        case "Bullet":
+        case "Floor":
+            break;
+
+        default:
+            this.occupiedBy = other.gameObject;
+            break;
+        }
     }
     
     public void OnTriggerExit(Collider other) {
-        _occupiedBy = null;
+        switch (other.name) {
+            
+        case "ActiveArea":
+            this.isActive = false;
+            break;
+            
+        case "VisibleArea":
+        case "Bullet":
+        case "Floor":
+            break;
+            
+        default:
+            this.occupiedBy = null;
+            break;
+        }
     }
 
     void OnDrawGizmos() {
-        Gizmos.color = _isViable ? Color.green : Color.red;
+        Gizmos.color = this.isViable ? Color.green : Color.red;
         Gizmos.DrawSphere(this.transform.position, 0.2f);
     }
 }

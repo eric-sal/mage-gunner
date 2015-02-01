@@ -140,49 +140,52 @@ public class NpcController : BaseCharacterController {
 
     /* *** Member Methods *** */
 
+    public void OnTriggerEnter(Collider other) {
+        if (other.name == "VisibleArea") {
+            _myState.onScreen = true;
+        }
+    }
+    
+    public void OnTriggerExit(Collider other) {
+        if (other.name == "VisibleArea") {
+            _myState.onScreen = false;
+        }
+    }
+
     /// <summary>
-    /// Try to find the player in the NPC's field of vision.
+    /// Try to find the player on the screen.
     /// </summary>
     protected void _FindPlayer() {
-        // Since the raycast starts inside our enemy, we want to ignore ourself when casting the ray to find the player.
-        LayerMask myLayer = gameObject.layer;
-        gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
 
         bool canSeePlayer = false;
 
-        Vector3 playerAimPoint = _playerState.aimPoint;
-        Vector3 npcAimPoint = _myState.aimPoint;
+        if (_myState.onScreen) {
 
-        Vector3 npcToPlayerVector = playerAimPoint - npcAimPoint;
-        float halfFieldOfVision = _myState.fieldOfVision / 2;
+            // Since the raycast starts inside our enemy, we want to ignore ourself when casting the ray to find the player.
+            LayerMask myLayer = gameObject.layer;
+            gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+            
+            Vector3 playerAimPoint = _playerState.aimPoint;
+            Vector3 npcAimPoint = _myState.aimPoint;
+            
+            Vector3 npcToPlayerVector = playerAimPoint - npcAimPoint;
+            
+            //Debug.DrawRay(npcAimPoint, _myState.lookDirection * _myState.sightDistance, Color.green);
+            //Debug.DrawRay(npcAimPoint, npcToPlayerVector, Color.red);
 
-        //Debug.DrawRay(npcAimPoint, _myState.lookDirection * _myState.sightDistance, Color.green);
-        //Debug.DrawRay(npcAimPoint, npcToPlayerVector, Color.red);
-
-        // field of vision lines
-        //Quaternion leftRotation = Quaternion.AngleAxis(-halfFieldOfVision, Vector3.forward);
-        //Debug.DrawRay(npcAimPoint, leftRotation * _myState.lookDirection * _myState.sightDistance, Color.white);
-        //Quaternion rightRotation = Quaternion.AngleAxis(halfFieldOfVision, Vector3.forward);
-        //Debug.DrawRay(npcAimPoint, rightRotation * _myState.lookDirection * _myState.sightDistance, Color.white);
-
-        float angle = Vector3.Angle(_myState.lookDirection, npcToPlayerVector); // 0 to 180
-        if (angle <= halfFieldOfVision) {
-            float distance = Vector3.Distance(npcAimPoint, playerAimPoint);
-            if (distance <= _myState.sightDistance) {
-                // player is close enough and in the field of view
-                // is there anything obstructing our view of the player?
-                RaycastHit hitInfo;
-                if (Physics.Raycast(npcAimPoint, npcToPlayerVector, out hitInfo, _myState.sightDistance, _lineOfSightLayerMask)) {
-                    if (Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
-                        canSeePlayer = true;
-                        _myState.lastKnownPlayerPosition = _playerState.transform.position;
-                    }
+            // is there anything obstructing our view of the player?
+            RaycastHit hitInfo;
+            if (Physics.Raycast(npcAimPoint, npcToPlayerVector, out hitInfo, npcToPlayerVector.sqrMagnitude, _lineOfSightLayerMask)) {
+                if (Object.ReferenceEquals(hitInfo.collider.gameObject, _playerState.gameObject)) {
+                    canSeePlayer = true;
+                    _myState.lastKnownPlayerPosition = _playerState.transform.position;
                 }
             }
+
+            gameObject.layer = myLayer;
         }
 
         if (canSeePlayer) {
-            //Debug.DrawRay(npcAimPoint, npcToPlayerVector, Color.red);
             _myState.didSeePlayer = false;
         } else if (canSeePlayer != _myState.canSeePlayer) {
             _myState.didSeePlayer = _myState.canSeePlayer && !canSeePlayer;
@@ -195,8 +198,6 @@ public class NpcController : BaseCharacterController {
         }
 
         _myState.canSeePlayer = canSeePlayer;
-
-        gameObject.layer = myLayer;
     }
 
     /// <summary>

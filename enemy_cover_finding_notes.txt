@@ -1,6 +1,6 @@
 cover will have "cover points" which are locations that enemies can navigate to when taking cover.  This makes it look like natural places to cover in.
 
-We'll cast rays from the cover points to the player when they are visible on-screen.  Based on this, the cover points will be marked as "viable" so that an enemy can determine if it will protect them from the player's fire.  The nearest viable cover point in terms of "time to reach" will be selected by the enemy.
+We'll cast rays from the cover points to the player when they are visible on-screen.  Based on this, the cover points will be marked as "viable" so that an enemy can determine if it will protect them from the player's fire.  The nearest viable cover point in terms of "length of path" will be selected by the enemy.
 
 When calcuating the paths to the viable points, calculate time to reach in order of distance from enemy.  Stop calcuating any path as soon as it can be determined that a shorter path exists.  A shorter path becomes the new "cutoff point" for subsequent calcuations.
 

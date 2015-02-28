@@ -9,7 +9,6 @@ public class PlayerCharacterController : BaseCharacterController {
     /* *** Member Variables *** */
 
     public bool isPlayerInputEnabled;
-
     private float _horizontalInput;
     private float _verticalInput;
 

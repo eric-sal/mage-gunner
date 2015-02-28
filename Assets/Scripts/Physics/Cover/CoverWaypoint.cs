@@ -11,8 +11,8 @@ public class CoverWaypoint : MonoBehaviour {
     protected static int _layerMask;
     protected static PlayerState _playerState = null;
 
-	void Start() {
-	    if (this.attachedTo == null) {
+    void Start() {
+        if (this.attachedTo == null) {
             throw new MissingReferenceException(this.ToString() + " is not attached to a CoverController");
         }
 
@@ -20,9 +20,9 @@ public class CoverWaypoint : MonoBehaviour {
             _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
             _layerMask = (1 << LayerMask.NameToLayer("Obstacles")) | (1 << LayerMask.NameToLayer("Players"));
         }
-	}
-	
-	void FixedUpdate() {
+    }
+    
+    void FixedUpdate() {
         if (!this.isActive) {
             return;
         }
@@ -33,7 +33,7 @@ public class CoverWaypoint : MonoBehaviour {
         Physics.Raycast(origin, direction, out hitInfo, distance, _layerMask);
         this.isViable = (hitInfo.collider == null) || (hitInfo.collider.gameObject != _playerState.gameObject);
         Debug.DrawRay(origin, direction, this.isViable ? Color.green : Color.red);
-	}
+    }
 
     public void OnTriggerEnter(Collider other) {
         switch (other.name) {

@@ -10,12 +10,11 @@ public class CoverSeekingBehavior : AttackBehavior {
 
         foreach (CoverWaypoint wp in SceneController.activeCoverWaypoints) {
             if (wp.isViable) {
-                Debug.Log(Vector3.Distance(wp.transform.position, this.transform.position));
                 targets.Add(wp.transform.position);
             }
         }
 
-        _controller.pathfinderAI.TakeShortestPath(targets);
+        StartCoroutine(_controller.pathfinderAI.TakeShortestPath(targets));
     }
     
     protected override void _Deactivate() {

@@ -81,6 +81,11 @@ public class PathfinderAI : MonoBehaviour {
     /// Callback sent to the Seeker.StartPath method.
     /// </summary>
     public void OnPathCalculated(Path p) {
+        
+        if (p == null) {
+            return;
+        }
+
         if (!p.error) {
             _path = p;
             _currentNode = 0;    //Reset the waypoint counter
@@ -102,14 +107,16 @@ public class PathfinderAI : MonoBehaviour {
     /// Calculate paths to all given target positions and select the shortest path
     /// </summary>
     /// <param name="targets">Targets.</param>
-    public void TakeShortestPath(IList<Vector3> targets) {
+    public System.Collections.IEnumerator TakeShortestPath(IList<Vector3> targets) {
         Path shortestPath = null;
         foreach (Vector3 t in targets) {
-            Path p = _seeker.GetNewPath(this.transform.position, t); // TODO: Use a coroutine instead
+            Path p = _seeker.StartPath(this.transform.position, t);
+            yield return StartCoroutine((p.WaitForPath()));
+            
             if (shortestPath == null || p.vectorPath.Count < shortestPath.vectorPath.Count) {
                 shortestPath = p;
             }
         }
-        _seeker.StartPath(shortestPath, OnPathCalculated);
+        OnPathCalculated(shortestPath);
     }
 }

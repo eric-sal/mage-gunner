@@ -8,8 +8,8 @@ public class CoverWaypoint : MonoBehaviour {
     public bool isViable = false;
     public GameObject occupiedBy = null; // The current game object occupying this cover point
 
+    protected static int _layerMask;
     protected static PlayerState _playerState = null;
-
 
 	void Start() {
 	    if (this.attachedTo == null) {
@@ -18,6 +18,7 @@ public class CoverWaypoint : MonoBehaviour {
 
         if (_playerState == null) {
             _playerState = GameObject.Find("Player").GetComponentInChildren<PlayerState>();
+            _layerMask = (1 << LayerMask.NameToLayer("Obstacles")) | (1 << LayerMask.NameToLayer("Players"));
         }
 	}
 	
@@ -25,13 +26,13 @@ public class CoverWaypoint : MonoBehaviour {
         if (!this.isActive) {
             return;
         }
-
         Vector3 origin = this.transform.position;
         Vector3 direction = _playerState.aimPoint - origin;
-        Debug.DrawRay(origin, direction, Color.yellow);
         var hitInfo = new RaycastHit();
-        Physics.Raycast(origin, direction, out hitInfo);
-        this.isViable = hitInfo.collider.gameObject != _playerState.gameObject;
+        float distance = (direction - origin).sqrMagnitude;
+        Physics.Raycast(origin, direction, out hitInfo, distance, _layerMask);
+        this.isViable = (hitInfo.collider == null) || (hitInfo.collider.gameObject != _playerState.gameObject);
+        Debug.DrawRay(origin, direction, this.isViable ? Color.green : Color.red);
 	}
 
     public void OnTriggerEnter(Collider other) {

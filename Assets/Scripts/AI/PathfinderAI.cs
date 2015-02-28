@@ -41,40 +41,32 @@ public class PathfinderAI : MonoBehaviour {
             return;
         }
 
-        //Determine how far we will advance down the path during fixedDeltaTime
-        float distanceRemaining = speed * Time.fixedDeltaTime; // the max distance we will move during FixedUpdate
-        Vector3 position = this.transform.position;
-
-        while (distanceRemaining > 0f && _currentNode < _path.vectorPath.Count) {
-
-            float distanceToNext = Vector3.Distance(position, _path.vectorPath[_currentNode]);
-
-            if (distanceToNext > distanceRemaining) {
-                //We won't reach the next waypoint in time, just head in that direction
-                Vector3 direction = (_path.vectorPath[_currentNode] - position).normalized;
-                position += direction * distanceRemaining;
-
-                //Set the velocity, but we've already overridden the movement so it's just for facing purposes
-                _character.velocity = Vector3.ClampMagnitude(direction * speed, speed);
-
-            } else {
-                //We can reach the next waypoint, how much further can we go?
-                position = _path.vectorPath[_currentNode];
-                _currentNode++;
-            }
-
-            distanceRemaining -= distanceToNext;
-        }
-
-        this.transform.position = position;
-
         if (_currentNode >= _path.vectorPath.Count) {
             //End of path reached
-            _character.velocity = Vector3.zero;
             if (callback != null) {
                 callback.Invoke();
             }
+
+            return;
         }
+
+        //Determine how far we will advance down the path during fixedDeltaTime
+        Vector3 velocity = Vector3.zero;
+        float distanceRemaining = speed * Time.fixedDeltaTime; // the max distance we will move during FixedUpdate
+        float distanceToNext = Vector3.Distance(this.transform.position, _path.vectorPath[_currentNode]);
+        Vector3 direction = (_path.vectorPath[_currentNode] - this.transform.position).normalized;
+
+        if (distanceToNext > distanceRemaining) {
+            //We won't reach the next waypoint in time, just head in that direction
+            velocity = Vector3.ClampMagnitude(direction * speed, speed);
+        } else {
+            //We can reach the next waypoint, so adjust velocity so we don't overshoot the waypoint.
+            velocity = direction * distanceToNext / Time.fixedDeltaTime;
+            _currentNode++;
+        }
+
+        _character.velocity = velocity;
+        this.rigidbody.velocity = velocity;
     }
 
     /// <summary>

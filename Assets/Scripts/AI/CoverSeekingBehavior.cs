@@ -3,22 +3,25 @@ using Pathfinding;
 using System.Collections.Generic;
 
 public class CoverSeekingBehavior : AttackBehavior {
-
     protected override void _Activate() {
-
         var targets = new List<Vector3>(SceneController.activeCoverWaypoints.Count);
-
+        
         foreach (CoverWaypoint wp in SceneController.activeCoverWaypoints) {
             if (wp.isViable) {
                 targets.Add(wp.transform.position);
             }
         }
 
-        StartCoroutine(_controller.pathfinderAI.TakeShortestPath(targets));
+        if (targets.Count > 0) {
+            StartCoroutine(_controller.pathfinderAI.TakeShortestPath(targets));
+        } else {
+            Deactivate();
+        }
     }
-    
-    protected override void _Deactivate() {
 
+    protected override void _Deactivate() {
+        _controller.character.velocity = Vector3.zero;
+        this.rigidbody.velocity = Vector3.zero;
     }
     
     protected override void _Update() {
@@ -31,7 +34,6 @@ public class CoverSeekingBehavior : AttackBehavior {
     }
     
     protected void _HandleOnEndOfPath() {
-
+        Deactivate();
     }
-
 }

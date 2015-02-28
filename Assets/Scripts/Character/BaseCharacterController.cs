@@ -131,4 +131,9 @@ public abstract class BaseCharacterController : MonoBehaviour {
         Vector3 recoil = _character.equippedFirearm.Fire(bulletVector);
         _reticle.AddRecoil(recoil);
     }
+
+    /// <summary>
+    /// Returns true if the character will pop up from cover.
+    /// </summary>
+    public abstract bool WillPopUp(Vector3 fromDirection);
 }

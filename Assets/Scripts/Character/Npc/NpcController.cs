@@ -216,4 +216,8 @@ public class NpcController : BaseCharacterController {
             _previousPlayerPosition = currentPlayerPosition;
         }
     }
+
+    public override bool WillPopUp(Vector3 fromDirection) {
+        return false;
+    }
 }

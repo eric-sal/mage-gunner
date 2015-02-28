@@ -45,7 +45,7 @@ public class CoverCollisionSensorController : MonoBehaviour {
     private bool _checkCollisionNorth() {
         bool triggered = neSensor.Triggered && nwSensor.Triggered;
         if (triggered) {
-            _popUp = _popUp || Input.GetAxis("Vertical") >= 0.5f;
+            _popUp = _popUp || _controller.WillPopUp(Vector3.up);
 
             var cover = neSensor.Covers.Union(nwSensor.Covers);
             if (_popUp) {
@@ -61,7 +61,7 @@ public class CoverCollisionSensorController : MonoBehaviour {
     private bool _checkCollisionSouth() {
         bool triggered = seSensor.Triggered && swSensor.Triggered;
         if (triggered) {
-            _popUp = _popUp || Input.GetAxis("Vertical") <= -0.5f;
+            _popUp = _popUp || _controller.WillPopUp(Vector3.down);
 
             var cover = seSensor.Covers.Union(swSensor.Covers);
             if (_popUp) {
@@ -77,7 +77,7 @@ public class CoverCollisionSensorController : MonoBehaviour {
     private bool _checkCollisionEast() {
         bool triggered = neSensor.Triggered && seSensor.Triggered;
         if (triggered) {
-            _popUp = _popUp || Input.GetAxis("Horizontal") >= 0.5f;
+            _popUp = _popUp || _controller.WillPopUp(Vector3.right);
 
             var cover = neSensor.Covers.Union(seSensor.Covers);
             if (_popUp) {
@@ -93,7 +93,7 @@ public class CoverCollisionSensorController : MonoBehaviour {
     private bool _checkCollisionWest() {
         bool triggered = nwSensor.Triggered && swSensor.Triggered;
         if (triggered) {
-            _popUp = _popUp || Input.GetAxis("Horizontal") <= -0.5f;
+            _popUp = _popUp || _controller.WillPopUp(Vector3.left);
 
             var cover = nwSensor.Covers.Union(swSensor.Covers);
             if (_popUp) {

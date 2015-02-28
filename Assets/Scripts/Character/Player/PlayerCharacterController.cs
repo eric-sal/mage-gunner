@@ -140,4 +140,18 @@ public class PlayerCharacterController : BaseCharacterController {
         _character.velocity = Vector3.zero;
         _character.isDodging = false;
     }
+
+    public override bool WillPopUp(Vector3 fromDirection) {
+        if (fromDirection == Vector3.up) {
+            return Input.GetAxis("Vertical") >= 0.5f;
+        } else if (fromDirection == Vector3.up) {
+            return Input.GetAxis("Vertical") <= -0.5f;
+        } else if (fromDirection == Vector3.left) {
+            return Input.GetAxis("Horizontal") <= -0.5f;
+        } else if (fromDirection == Vector3.right) {
+            return Input.GetAxis("Horizontal") >= 0.5f;
+        }
+        
+        throw new System.ArgumentException("Unhandled direction: " + fromDirection.ToString());
+    }
 }

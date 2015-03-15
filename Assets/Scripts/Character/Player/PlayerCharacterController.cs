@@ -9,8 +9,9 @@ public class PlayerCharacterController : BaseCharacterController {
     /* *** Member Variables *** */
 
     public bool isPlayerInputEnabled;
-    private float _horizontalInput;
-    private float _verticalInput;
+    
+    protected float _horizontalInput;
+    protected float _verticalInput;
 
     /* *** Constructors *** */
 
@@ -89,7 +90,7 @@ public class PlayerCharacterController : BaseCharacterController {
             _character.velocity = Vector3.ClampMagnitude(velocity * maxVelocity, maxVelocity);
         }
 
-        this.rigidbody.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
+        _rigidbody.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
         base.FixedUpdate();
     }
 
@@ -110,7 +111,7 @@ public class PlayerCharacterController : BaseCharacterController {
 
             yield return new WaitForFixedUpdate();
 
-            if (this.rigidbody.velocity.sqrMagnitude < 0.5f) {
+            if (_rigidbody.velocity.sqrMagnitude < 0.5f) {
                 StopDodge();
                 yield break;
             }

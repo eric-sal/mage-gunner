@@ -6,9 +6,11 @@ public class BaseBehavior : MonoBehaviour {
     public bool isActive;
 
     protected NpcController _controller;
+    protected Rigidbody _rigidbody;
     
     public void Start() {
         _controller = GetComponent<NpcController>();
+        _rigidbody = GetComponent<Rigidbody>();
     }
 
     public void Update() {

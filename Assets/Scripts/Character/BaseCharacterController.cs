@@ -18,6 +18,7 @@ public abstract class BaseCharacterController : MonoBehaviour {
     protected BaseCharacterState _character;
     protected Inventory _inventory;
     protected ReticleController _reticle;
+    protected Rigidbody _rigidbody;
 
     public BaseCharacterState character {
         get { return _character; }
@@ -35,7 +36,8 @@ public abstract class BaseCharacterController : MonoBehaviour {
     public virtual void Awake() {
         _character = GetComponent<BaseCharacterState>();
         _inventory = GetComponentInChildren<Inventory>();
-        this.rigidbody.useGravity = false;
+        _rigidbody = GetComponent<Rigidbody>();
+        _rigidbody.useGravity = false;
 
         // Create a reticle for this character.
         GameObject reticlePrefab = (GameObject)Resources.Load("Prefabs/Reticle");

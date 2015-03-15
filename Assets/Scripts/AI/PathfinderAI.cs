@@ -14,16 +14,18 @@ public class PathfinderAI : MonoBehaviour {
 
     public Vector3 targetPosition;  //The end-point to move toward
 
-    private BaseCharacterState _character;
-    private int _currentNode = 0; //The node in the A-star pathfinding graph we are currently moving toward
-    private Path _path;   //The calculated path
-    private Seeker _seeker;
+    protected BaseCharacterState _character;
+    protected int _currentNode = 0; //The node in the A-star pathfinding graph we are currently moving toward
+    protected Path _path;   //The calculated path
+    protected Rigidbody _rigidbody;
+    protected Seeker _seeker;
 
     /* *** Constructors *** */
 
     void Awake() {
         _character = GetComponent<BaseCharacterState>();
         _seeker = GetComponent<Seeker>();
+        _rigidbody = GetComponent<Rigidbody>();
     }
 
     /* *** Member Methods *** */
@@ -66,7 +68,7 @@ public class PathfinderAI : MonoBehaviour {
         }
 
         _character.velocity = velocity;
-        this.rigidbody.velocity = velocity;
+        _rigidbody.velocity = velocity;
     }
 
     /// <summary>

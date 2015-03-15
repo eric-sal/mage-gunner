@@ -9,19 +9,21 @@ public class ProjectileCollisionHandler : MonoBehaviour {
     /* *** Member Variables *** */
     protected int _layerMask;
     protected ProjectileState _projectile;
+    protected Rigidbody _rigidbody;
 
     /* *** Constructors *** */
 
     public void Awake() {
         _layerMask = ~(1 << LayerMask.NameToLayer("Projectiles"));
         _projectile = GetComponent<ProjectileState>();
+        _rigidbody = GetComponent<Rigidbody>();
     }
 
     /* *** MonoBehaviour Methods *** */
 
     public void FixedUpdate() {
 
-        if (this.rigidbody.velocity == Vector3.zero) {
+        if (_rigidbody.velocity == Vector3.zero) {
             // The projectile was stopped in a previous call to FixedUpdate
             return;
         }
@@ -35,7 +37,7 @@ public class ProjectileCollisionHandler : MonoBehaviour {
             _projectile.spawner.layer = LayerMask.NameToLayer("Projectiles");
         }
 
-        Vector3 velocity = this.rigidbody.velocity;
+        Vector3 velocity = _rigidbody.velocity;
         float distance = Mathf.Abs(velocity.magnitude * Time.fixedDeltaTime);
 
         RaycastHit hitInfo;
@@ -43,7 +45,7 @@ public class ProjectileCollisionHandler : MonoBehaviour {
             if (hitInfo.collider != null) {
                 // the project hit something, stop it
                 _projectile.transform.position = hitInfo.point;
-                this.rigidbody.velocity = Vector3.zero;
+                _rigidbody.velocity = Vector3.zero;
             }
         }
 

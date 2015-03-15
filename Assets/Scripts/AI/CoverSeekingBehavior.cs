@@ -21,7 +21,7 @@ public class CoverSeekingBehavior : AttackBehavior {
 
     protected override void _Deactivate() {
         _controller.character.velocity = Vector3.zero;
-        this.rigidbody.velocity = Vector3.zero;
+        _rigidbody.velocity = Vector3.zero;
     }
     
     protected override void _Update() {

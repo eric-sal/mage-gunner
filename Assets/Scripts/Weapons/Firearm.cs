@@ -263,7 +263,7 @@ public class Firearm : MonoBehaviour {
         bulletState.spawner = _character.gameObject;
         bulletState.damage = _RollForDamage();
         //Debug.DrawRay(_character.aimPoint, direction, Color.yellow, 0.5f);
-        bulletState.rigidbody.velocity = Vector3.ClampMagnitude(direction, 1) * this.bulletVelocity;
+        bulletState.GetComponent<Rigidbody>().velocity = Vector3.ClampMagnitude(direction, 1) * this.bulletVelocity;
     }
 
     /// <summary>

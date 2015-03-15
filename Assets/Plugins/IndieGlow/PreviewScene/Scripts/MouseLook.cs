@@ -27,8 +27,8 @@ public class MouseLook : MonoBehaviour {
     bool UseMenu;
 
     void Start() {
-        if (rigidbody) {
-            rigidbody.freezeRotation = true;
+        if (GetComponent<Rigidbody>()) {
+            GetComponent<Rigidbody>().freezeRotation = true;
         }
         originalRotation = transform.localRotation;
     }

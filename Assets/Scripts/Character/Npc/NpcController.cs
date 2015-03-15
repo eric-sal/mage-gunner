@@ -92,9 +92,9 @@ public class NpcController : BaseCharacterController {
     }
 
     public void Start() {
-        if (_pathfinderAI != null) {
-            _pathfinderAI.targetPosition = _myState.startingPosition.transform.position;
-        }
+//        if (_pathfinderAI != null) {
+//            _pathfinderAI.targetPosition = _myState.startingPosition.transform.position;
+//        }
     }
 
     /* *** MonoBehaviour Methods *** */

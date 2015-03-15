@@ -7,8 +7,8 @@ public class ChaseBehavior : BaseBehavior {
 
     protected override void _Activate() {
         _isChasing = true;
-        _controller.pathfinderAI.targetPosition = _controller.myState.lastKnownPlayerPosition;
-        _controller.pathfinderAI.RestartPath();
+//        _controller.pathfinderAI.targetPosition = _controller.myState.lastKnownPlayerPosition;
+//        _controller.pathfinderAI.RestartPath();
     }
 
     protected override void _Deactivate() {
@@ -46,7 +46,7 @@ public class ChaseBehavior : BaseBehavior {
     }
 
     protected override void _FixedUpdate() {
-        _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed, _HandleOnEndOfPath);
+//        _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed, _HandleOnEndOfPath);
     }
     
     protected void _HandleOnEndOfPath() {
@@ -70,8 +70,8 @@ public class ChaseBehavior : BaseBehavior {
 
     protected void _ReturnToStartingPosition() {
         // We've reached the end of our path, return to our starting position.
-        PathfinderAI pathfinder = _controller.pathfinderAI;
-        pathfinder.targetPosition = _controller.myState.startingPosition.transform.position;
-        pathfinder.RestartPath();
+//        PathfinderAI pathfinder = _controller.pathfinderAI;
+//        pathfinder.targetPosition = _controller.myState.startingPosition.transform.position;
+//        pathfinder.RestartPath();
     }
 }

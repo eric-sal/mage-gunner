@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Pathfinding;
 using System.Collections.Generic;
 
 public class CoverSeekingBehavior : AttackBehavior {
@@ -13,7 +12,7 @@ public class CoverSeekingBehavior : AttackBehavior {
         }
 
         if (targets.Count > 0) {
-            StartCoroutine(_controller.pathfinderAI.TakeShortestPath(targets));
+//            StartCoroutine(_controller.pathfinderAI.TakeShortestPath(targets));
         } else {
             Deactivate();
         }
@@ -30,7 +29,7 @@ public class CoverSeekingBehavior : AttackBehavior {
     }
     
     protected override void _FixedUpdate() {
-        _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed, _HandleOnEndOfPath);
+//        _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed, _HandleOnEndOfPath);
     }
     
     protected void _HandleOnEndOfPath() {

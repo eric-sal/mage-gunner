@@ -44,9 +44,9 @@ public class PatrolBehavior : BaseBehavior {
     /* *** Member Methods *** */
 
     protected override void _Activate() {
-        PathfinderAI pathfinder = _controller.pathfinderAI;
-        pathfinder.targetPosition = _waypoints[_currentWaypoint].transform.position;
-        pathfinder.RestartPath();
+//        PathfinderAI pathfinder = _controller.pathfinderAI;
+//        pathfinder.targetPosition = _waypoints[_currentWaypoint].transform.position;
+//        pathfinder.RestartPath();
     }
 
     protected override void _Update() {
@@ -68,7 +68,7 @@ public class PatrolBehavior : BaseBehavior {
     }
 
     protected override void _FixedUpdate() {
-        _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed, _UpdateTargetPosition);
+//        _controller.pathfinderAI.MoveAlongPath(_controller.myState.maxWalkSpeed, _UpdateTargetPosition);
     }
 
     /// <summary>
@@ -80,12 +80,12 @@ public class PatrolBehavior : BaseBehavior {
             return;
         }
 
-        PathfinderAI pathfinder = _controller.pathfinderAI;
+//        PathfinderAI pathfinder = _controller.pathfinderAI;
 
         int nextWaypoint = _waypoints.IndexOf(_NextWaypoint);
         _direction = nextWaypoint - _currentWaypoint;
         _currentWaypoint = nextWaypoint;
-        pathfinder.targetPosition = _waypoints[_currentWaypoint].transform.position;
-        pathfinder.RestartPath();
+//        pathfinder.targetPosition = _waypoints[_currentWaypoint].transform.position;
+//        pathfinder.RestartPath();
     }
 }

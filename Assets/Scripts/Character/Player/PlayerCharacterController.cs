@@ -32,7 +32,7 @@ public class PlayerCharacterController : BaseCharacterController {
         base.Update();
 
         // Aim: Move the player's reticle.
-        var mouseDelta = new Vector2(Input.GetAxis("Mouse X") * mouseSensitivity, Input.GetAxis("Mouse Y") * mouseSensitivity);
+        var mouseDelta = new Vector3(Input.GetAxis("Mouse X") * mouseSensitivity, 0f, Input.GetAxis("Mouse Y") * mouseSensitivity);
         _reticle.MoveBy(mouseDelta);
 
         if (this.isPlayerInputEnabled) {
@@ -85,12 +85,12 @@ public class PlayerCharacterController : BaseCharacterController {
     /// </summary>
     public override void FixedUpdate() {
         if (!_character.isDodging) {
-            var velocity = new Vector3(_horizontalInput, _verticalInput);
+            var velocity = new Vector3(_horizontalInput, 0f, _verticalInput);
             var maxVelocity = _character.maxWalkSpeed;
             _character.velocity = Vector3.ClampMagnitude(velocity * maxVelocity, maxVelocity);
         }
 
-        _rigidbody.velocity = new Vector3(_character.velocity.x, _character.velocity.y);
+        _rigidbody.velocity = new Vector3(_character.velocity.x, 0f, _character.velocity.z);
         base.FixedUpdate();
     }
 

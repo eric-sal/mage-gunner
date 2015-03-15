@@ -63,11 +63,11 @@ public abstract class BaseCharacterController : MonoBehaviour {
     public void Kneel() {
         if (!_character.kneeling) {
             Vector3 scale = this.transform.localScale;
-            Vector3 halfHeight = new Vector3(scale.x, scale.y, scale.z / 2);
+            Vector3 halfHeight = new Vector3(scale.x, scale.y / 2, scale.z);
             this.transform.localScale = halfHeight;
 
             Vector3 position = this.transform.position;
-            Vector3 newPosition = new Vector3(position.x, position.y, position.z + halfHeight.z / 2);
+            Vector3 newPosition = new Vector3(position.x, position.y - halfHeight.y / 2, position.z);
             this.transform.position = newPosition;
 
             _character.kneeling = true;
@@ -77,11 +77,11 @@ public abstract class BaseCharacterController : MonoBehaviour {
     public void Stand() {
         if (_character.kneeling) {
             Vector3 scale = this.transform.localScale;
-            Vector3 fullHeight = new Vector3(scale.x, scale.y, scale.z * 2);
+            Vector3 fullHeight = new Vector3(scale.x, scale.y * 2, scale.z);
             this.transform.localScale = fullHeight;
 
             Vector3 position = this.transform.position;
-            Vector3 newPosition = new Vector3(position.x, position.y, position.z - fullHeight.z / 4);
+            Vector3 newPosition = new Vector3(position.x, position.y + fullHeight.y / 4, position.z);
             this.transform.position = newPosition;
 
             _character.kneeling = false;

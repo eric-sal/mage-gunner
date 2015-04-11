@@ -16,8 +16,7 @@ public class SceneController : MonoBehaviour {
     /* *** Constructors *** */
 
     void Awake() {
-        // Hide the OS cursor
-        Screen.lockCursor = true;
+        Cursor.visible = false;
         _pauseMenu = GetComponent<PauseMenu>();
         _pauseMenu.enabled = false;
         activeCoverWaypoints = new HashSet<CoverWaypoint>();
@@ -28,7 +27,7 @@ public class SceneController : MonoBehaviour {
     void Update() {
         if (Input.GetKeyDown("escape")) {
             // Pause the game and unlock the cursor
-            Screen.lockCursor = !Screen.lockCursor;
+            Cursor.visible = !Cursor.visible;
             isPaused = !isPaused;
             _pauseMenu.enabled = !_pauseMenu.enabled;
 

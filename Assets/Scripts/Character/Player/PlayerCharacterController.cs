@@ -144,7 +144,7 @@ public class PlayerCharacterController : BaseCharacterController {
     public override bool WillPopUp(Vector3 fromDirection) {
         if (fromDirection == Vector3.up) {
             return Input.GetAxis("Vertical") >= 0.5f;
-        } else if (fromDirection == Vector3.up) {
+        } else if (fromDirection == Vector3.down) {
             return Input.GetAxis("Vertical") <= -0.5f;
         } else if (fromDirection == Vector3.left) {
             return Input.GetAxis("Horizontal") <= -0.5f;

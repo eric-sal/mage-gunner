@@ -23,10 +23,13 @@ public abstract class BaseCharacterState : MonoBehaviour {
 
     /* *** Properties *** */
 
+    /// <summary>
+    /// The point that we aim from and that other things aim at.
+    /// </summary>
     public Vector3 aimPoint {
         get {
-            float height = this.transform.localScale.z;
-            return this.transform.position - new Vector3(0, 0, height * 0.3f);
+            float height = this.transform.localScale.y;
+            return this.transform.position + new Vector3(0, height * 0.3f, 0);
         }
     }
 
@@ -44,7 +47,7 @@ public abstract class BaseCharacterState : MonoBehaviour {
     /// Position to look at.
     /// </param>
     public void LookAt(Vector3 position) {
-        var eyePosition = new Vector3(position.x, position.y, this.aimPoint.z);
+        var eyePosition = new Vector3(position.x, this.aimPoint.y, position.z);
         this.lookDirection = (eyePosition - this.aimPoint).normalized;
     }
 

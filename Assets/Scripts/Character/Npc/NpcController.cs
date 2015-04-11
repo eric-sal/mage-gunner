@@ -105,7 +105,7 @@ public class NpcController : BaseCharacterController {
     public override void Update() {
         base.Update();
 
-        if (_attackBehavior != null && _myState.canSeePlayer) {
+        if (_attackBehavior != null && (_myState.canSeePlayer || _attackBehavior.isActive)) {
             if (!_attackBehavior.isActive) {
                 _attackBehavior.Activate();
             }
@@ -170,8 +170,7 @@ public class NpcController : BaseCharacterController {
             
             Vector3 npcToPlayerVector = playerAimPoint - npcAimPoint;
             
-            //Debug.DrawRay(npcAimPoint, _myState.lookDirection * _myState.sightDistance, Color.green);
-            //Debug.DrawRay(npcAimPoint, npcToPlayerVector, Color.red);
+            Debug.DrawRay(npcAimPoint, npcToPlayerVector, Color.yellow);
 
             // is there anything obstructing our view of the player?
             RaycastHit hitInfo;
